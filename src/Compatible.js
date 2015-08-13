@@ -76,6 +76,11 @@ Compatible.prototype.prefix = (function () {
 Compatible.prototype.keyframe = function (keyframe) {
     return '@' + this.prefix + 'keyframes ' + keyframe;
 };
+Compatible.prototype.percent = function (percent) {
+    percent = (percent + '').trim();
+    var percents = percent.split(/\s+/);
+    return percents.join('%, ') + '%';
+};
 Compatible.prototype.patchCombine = function (key, value) {
     return this._combine.do(key + ' ', value);
 };

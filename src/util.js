@@ -4,6 +4,13 @@
  **/
 
 var Util = {
+    inherit: function (Child, Parent) {
+        var Clz = new Function();
+        Clz.prototype = Parent.prototype;
+        Child.prototype = new Clz();
+        Child.prototype.constructor = Child;
+        Child.superClass = Parent;
+    },
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },

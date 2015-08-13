@@ -5,6 +5,7 @@
 
 /* global Checker Compatible Util */
 function Compiler() {
+    Compiler.superClass.call(this);
     this._stringObject = new Checker('string', 'object');
     this._object = new Checker('object');
     this._classStore = {};
@@ -26,6 +27,7 @@ function Compiler() {
         return compatible.keyframe(keyframe) + body;
     };
 }
+Util.inherit(Compiler, EventEmitter);
 
 Compiler.prototype.defineClass = function (className, metaData) {
     if (this._object.check(arguments)) {
@@ -85,17 +87,24 @@ Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
 };
 
 Compiler.prototype._effect = function (classes, keyframes) {
-    var frag = document.createDocumentFragment();
+    var frag = this._fragment();
     this._absorb(classes, this._classId, this._classText, this._classStore, frag);
     this._absorb(keyframes, this._keyframeId, this._keyframeText, this._keyframeStore, frag);
-    document.querySelector('head').appendChild(frag);
+    frag.effect();
 };
-
+Compiler.prototype._fragment = function () {
+    var fragment = document.createDocumentFragment();
+    fragment.effect = function() {
+        document.querySelector('head').appendChild(fragment);
+    };
+    return fragment;
+};
 Compiler.prototype._styleSheet = function (cssText, id) {
     var style = document.createElement('style');
     style.type = 'text/css';
     style.id = id;
     style.innerHTML = cssText;
+    this.emit(Event.style, id, cssText);
     return style;
 };
 Compiler.prototype._refreshStyleSheet = function (cssText, id) {
@@ -123,5 +132,5 @@ Compiler.prototype._compileKeyframe = function (metaData) {
     return body;
 };
 Compiler.prototype._compileFrame = function (percent, metaData) {
-    return percent + '%' + this._compileClass(metaData);
+    return this._compatible.percent(percent) + this._compileClass(metaData);
 };

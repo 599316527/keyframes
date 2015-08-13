@@ -23,13 +23,13 @@ Pitch.prototype.use = function (name, keys, handler) {
 Pitch.prototype.next = function (index, key, value, opt) {
     var middleware = this._router[index];
     if (middleware) {
-        if (middleware._keys.trim() === '*') {
-            return middleware._handler(key.trim(), value, opt);
+        if (middleware.keys.trim() === '*') {
+            return middleware.handler(key.trim(), value, opt);
         }
-        if (middleware._keys.indexOf(key) > -1) {
-            return middleware._handler(key.trim(), value, opt);
+        if (middleware.keys.indexOf(key) > -1) {
+            return middleware.handler(key.trim(), value, opt);
         }
-        return this.next(index + 1);
+        return this.next(index + 1, key, value, opt);
     }
     return '';
 };

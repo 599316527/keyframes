@@ -3,7 +3,7 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require("gulp-rename");
 gulp.task('concat', function() {
-    return gulp.src(['src/util.js', 'src/checker.js', 'src/pitch.js', 'src/compatible.js', 'src/compiler.js'])
+    return gulp.src(['src/Util.js', 'src/EventEmitter.js', 'src/Event.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/Compiler.js'])
         .pipe(concat('lib.js'))
         .pipe(gulp.dest('src/'));
 });

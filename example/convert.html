@@ -4,26 +4,116 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
-        #editor {
-            margin: 0;
+        html, body {
+            height: 100%;
+        }
+        .container {
+            height: 92%;
+            width: 96%;
+            margin: auto;
+            padding: 2% 0;
+        }
+        #jsEditor {
+            width: 45%;
+            height: 100%;
+            font-size: 16px;
+            float: left;
+        }
+        #cssEditor {
+            width: 45%;
+            font-size: 16px;
+            height: 100%;
+            float: right;
+        }
+        button {
+            width: 6%;
+            height: 6%;
+            font-size: 30px;
             position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            font-size: 20px;
-            right: 0;
+            top: 45%;
+            left: 47%;
         }
     </style>
 </head>
 <body>
-<div id="editor"></div>
+<div class="container">
+<pre id="jsEditor">
+compiler.defineClass('test', {
+    'border-radius': '5px 10px',
+    'transform-origin': '0',
+    'color': 'red',
+    'border': '1px solid black',
+    'width': '100px'
+});
+
+compiler.compile();
+var className = compiler.defineClass({
+    'transform': 'scale(1.2) skew(45deg)',
+    'scale3d': '.8, .8, .8',
+    'transition': 'transform 1s'
+});
+compiler.defineClass(className + ':hover', {
+    'transform': 'rotate(145deg)'
+});
+compiler.compile();
+compiler.defineKeyframe('flip', {
+    '0': {
+        'perspective': '400px',
+        'animation-timing-function': 'ease-out',
+        'transform': 'rotate3d(0, 1, 0, -360deg)',
+        'scale3d': '.8, .8, .8'
+    },
+    '40 70': {
+        'perspective': '400px',
+        'transform': 'rotate3d(0, 1, 0, -190deg) translate3d(0, 0, 150px)',
+        'animation-timing-function': 'ease-out'
+    },
+    '50': {
+        'perspective': '400px',
+        'transform': 'rotate3d(0, 1, 0, -170deg) translate3d(0, 0, 150px)',
+        'animation-timing-function': 'ease-in'
+    },
+    '80': {
+        'perspective': '400px',
+        'transform': 'scale3d(.95, .95, .95)',
+        'animation-timing-function': 'ease-in'
+    },
+    '100': {
+        'perspective': '400px',
+        'animation-timing-function': 'ease-in'
+    }
+});
+compiler.compile();
+</pre>
+<button>=></button>
+<pre id="cssEditor"></pre>
+</div>
+
 <script src="../lib/require.js"></script>
+<script src="../dist/lib.min.js"></script>
+<script src="../lib/jquery.min.js"></script>
+<script src="../lib/cssbeautify.js"></script>
 <script>
-    require.config({paths: {ace: "../ace"}})
-    require(["ace/ace", "ace/ext/emmet"], function(ace) {
-        var editor = ace.edit("editor");
-        editor.session.setMode("ace/mode/javascript");
-        editor.setTheme("ace/theme/monokai");
+    var compiler = new Compiler();
+    require.config({paths: {ace: "../ace"}});
+    require(["ace/ace"], function(ace) {
+        $('button').click(function() {
+            var code = jsEditor.getValue();
+            eval(code);
+        });
+        var jsEditor = ace.edit("jsEditor");
+        jsEditor.session.setMode("ace/mode/javascript");
+        jsEditor.setTheme("ace/theme/monokai");
+        var cssEditor = ace.edit("cssEditor");
+        cssEditor.session.setMode("ace/mode/css");
+        cssEditor.setTheme("ace/theme/monokai");
+        compiler.on(Event.style, function (eventName, id, cssText) {
+            cssEditor.insert(cssbeautify(cssText + '\n', {
+                indent: '  ',
+                openbrace: 'separate-line',
+                autosemicolon: true
+            }));
+        });
     });
 </script>
 </body>

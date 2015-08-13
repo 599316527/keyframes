@@ -3,13 +3,14 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script src="dist/lib.min.js"></script>
+    <script src="src/lib.js"></script>
     <script src="lib/jquery.min.js"></script>
 </head>
 <body>
 <div id="test">这不是演习</div>
 <script>
     var compiler = new Compiler();
+    console.dir(compiler);
     compiler.defineClass('test', {
         'border-radius': '5px 10px',
         'transform-origin': '0',
@@ -36,7 +37,7 @@
                     'transform': 'rotate3d(0, 1, 0, -360deg)',
                     'scale3d': '.8, .8, .8'
                 },
-                '40': {
+                '40 70': {
                     'perspective': '400px',
                     'transform': 'rotate3d(0, 1, 0, -190deg) translate3d(0, 0, 150px)',
                     'animation-timing-function': 'ease-out'
