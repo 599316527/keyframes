@@ -9,25 +9,30 @@
  * @param {string} keys 补丁属性集合.
  * @param {Function} handler 补丁函数.
  */
-function Pitch(keys, handler) {
-    this._keys = keys + ' ';
-    this._handler = handler;
+function Pitch(name, keys, handler) {
+    this._router = [];
+    if (new Checker('string', 'string', 'function').check(arguments)) {
+        this.use(name, keys, handler);
+    }
 }
 
-Pitch.prototype.do = function (key, value, opt) {
-    if (this._keys.trim() === '*') {
-        return this._handler(key.trim(), value);
-    }
-    if (this._keys.indexOf(key) > -1) {
-        return this._handler(key.trim(), value, opt);
-    }
-    if (this._next) {
-        return this._next.do(key, value, opt);
-    }
-    return false;
+Pitch.prototype.use = function (name, keys, handler) {
+    this._router.push({name:name, keys: keys + ' ', handler: handler});
+    return this;
 };
-
-Pitch.prototype.next = function (pitch) {
-    this._next = pitch;
-    return pitch;
+Pitch.prototype.next = function (index, key, value, opt) {
+    var middleware = this._router[index];
+    if (middleware) {
+        if (middleware._keys.trim() === '*') {
+            return middleware._handler(key.trim(), value, opt);
+        }
+        if (middleware._keys.indexOf(key) > -1) {
+            return middleware._handler(key.trim(), value, opt);
+        }
+        return this.next(index + 1);
+    }
+    return '';
+};
+Pitch.prototype.do = function (key, value, opt) {
+    return this.next(0, key, value, opt);
 };

@@ -6,16 +6,17 @@
 /* global Pitch*/
 function Compatible() {
     var me = this;
-    var prefixOnly = new Pitch('text-shadow transition transition-timing-function '
+    var pitch = new Pitch();
+    pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
         + 'animation-timing-function transform-origin',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
         });
-    var needAll = new Pitch('box-shadow border-radius',
+    pitch.use('needAll', 'box-shadow border-radius',
         function (key, value) {
             return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
         });
-    var extend = new Pitch('translateX translateY translateZ translate translate3d '
+    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
         + 'rotateX rotateY rotateZ rotate rotate3d '
         + 'skewX skewY skewZ skew '
         + 'scaleZ scaleX scaleY scale3d scale '
@@ -29,7 +30,7 @@ function Compatible() {
             }
             return '';
         });
-    var transform = new Pitch('transform',
+    pitch.use('transform', 'transform',
         function (key, value, opt) {
             if ('transform' in opt) {
                 opt['transform'] += ' ' + value;
@@ -39,21 +40,19 @@ function Compatible() {
             }
             return '';
         });
-    var special = new Pitch('background-gradient',
+    pitch.use('special', 'background-gradient',
         function (key, value) {
             return '!!!';
         });
-    var rest = new Pitch('*',
+    pitch.use('rest', '*',
         function (key, value) {
             return key + ':' + value + ';';
         });
-    var combine = new Pitch('transform',
+    this._pitch = pitch;
+    this._combine = new Pitch('combine', 'transform',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
-        });
-    prefixOnly.next(needAll).next(special).next(extend).next(transform).next(rest);
-    this._pitch = prefixOnly;
-    this._combine = combine;
+        });;
 }
 
 Compatible.prototype.prefix = (function () {
