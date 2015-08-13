@@ -45,8 +45,6 @@ compiler.defineClass('test', {
     'border': '1px solid black',
     'width': '100px'
 });
-
-compiler.compile();
 var className = compiler.defineClass({
     'transform': 'scale(1.2) skew(45deg)',
     'scale3d': '.8, .8, .8',
@@ -55,7 +53,6 @@ var className = compiler.defineClass({
 compiler.defineClass(className + ':hover', {
     'transform': 'rotate(145deg)'
 });
-compiler.compile();
 compiler.defineKeyframe('flip', {
     '0': {
         'perspective': '400px',
@@ -85,7 +82,7 @@ compiler.defineKeyframe('flip', {
 });
 compiler.compile();
 </pre>
-<button>=></button>
+<button>compile</button>
 <pre id="cssEditor"></pre>
 </div>
 
