@@ -5,11 +5,13 @@
 
 var Util = {
     inherit: function (Child, Parent) {
+        /* jshint ignore:start */
         var Clz = new Function();
         Clz.prototype = Parent.prototype;
         Child.prototype = new Clz();
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
+        /* jshint ignore:end */
     },
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);

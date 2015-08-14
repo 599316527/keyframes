@@ -1,36 +1,41 @@
 function EventEmitter() {
     this._routes = {};
-
 }
+
 EventEmitter.event = {
     once: 'once',
     all: 'all'
 };
+
 EventEmitter.prototype.on = function(eventName, fn, option) {
     if (eventName in this._routes) {
         this._routes[eventName].push({fn:fn, option:option});
     } else {
         this._routes[eventName] = [{fn:fn, option:option}];
     }
-}
+};
+
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
     }
     option.type = EventEmitter.event.once;
     this.on(eventName, fn, option);
-}
+};
+
 EventEmitter.prototype.callWithScope = function(fn, option, params) {
-    //params可能为undefined如 define([], 'classname', function(){})这种dependency为空数组的不规范写法
     params = params || [];
     if(option && ('scope' in option)) {
+        /* jshint ignore:start */
         fn.apply(option['scope'], params);
+        /* jshint ignore:end */
     }
     else
     {
         fn.apply(this, params);
     }
-}
+};
+
 EventEmitter.prototype.all = function(dependency, fn, option) {
     var record = {},
         results = [],
@@ -63,15 +68,14 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
             if (trigger) {
                 that.callWithScope(fn, option, results);
             }
-        }
-    }
-
+        };
+    };
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all})
+        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all});
     }
+};
 
-}
 EventEmitter.prototype.emit = function(eventName) {
     var fns = this._routes[eventName],
         itemFn, scope, type, fn, option,
@@ -131,4 +135,4 @@ EventEmitter.prototype.emit = function(eventName) {
             }
         }
     }
-}
+};

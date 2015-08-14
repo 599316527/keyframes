@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../src/lib.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+</head>
+<body>
+<div id="test">这不是演习</div>
+<script>
+    var compiler = new Compiler();
+    console.dir(compiler);
+    compiler.defineClass('test', {
+        'border-radius': '5px 10px',
+        'transform-origin': '0',
+        'color': 'red',
+        'border': '1px solid black',
+        'margin': '100px auto',
+        'width': '100px'
+    });
+    compiler.compile();
+    var className = compiler.defineClass({
+        'transform': 'scale(1.2) skew(45deg)',
+        'scale3d': '.8, .8, .8',
+        'transition': 'transform 1s'
+    });
+    compiler.defineClass(className + ':hover', {
+        'transform': 'rotate(145deg)'
+    });
+    compiler.compile();
+    $('#test').addClass('test').addClass(className);
+    compiler.defineKeyframe('flip',
+            {
+                '0': {
+                    'perspective': '400px',
+                    'animation-timing-function': 'ease-out',
+                    'transform': 'rotate3d(0, 1, 0, -360deg)',
+                    'scale3d': '.8, .8, .8'
+                },
+                '40 70': {
+                    'perspective': '400px',
+                    'transform': 'rotate3d(0, 1, 0, -190deg) translate3d(0, 0, 150px)',
+                    'animation-timing-function': 'ease-out'
+                },
+                '50': {
+                    'perspective': '400px',
+                    'transform': 'rotate3d(0, 1, 0, -170deg) translate3d(0, 0, 150px)',
+                    'animation-timing-function': 'ease-in'
+                },
+                '80': {
+                    'perspective': '400px',
+                    'transform': 'scale3d(.95, .95, .95)',
+                    'animation-timing-function': 'ease-in'
+                },
+                '100': {
+                    'perspective': '400px',
+                    'animation-timing-function': 'ease-in'
+                }
+            }
+    );
+    compiler.compile();
+    $('#test').css({'animation': 'flip 2s'});
+</script>
+
+</body>
+</html>

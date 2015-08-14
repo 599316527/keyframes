@@ -3,4 +3,4 @@
  */
 var Event = {
     style: '0'
-}
+};

@@ -11,7 +11,7 @@
  */
 function Pitch(name, keys, handler) {
     this._router = [];
-    if (new Checker('string', 'string', 'function').check(arguments)) {
+    if (Checker.ssFunction.check(arguments)) {
         this.use(name, keys, handler);
     }
 }

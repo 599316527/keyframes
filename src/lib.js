@@ -5,11 +5,13 @@
 
 var Util = {
     inherit: function (Child, Parent) {
+        /* jshint ignore:start */
         var Clz = new Function();
         Clz.prototype = Parent.prototype;
         Child.prototype = new Clz();
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
+        /* jshint ignore:end */
     },
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
@@ -56,37 +58,42 @@ var Util = {
 
 function EventEmitter() {
     this._routes = {};
-
 }
+
 EventEmitter.event = {
     once: 'once',
     all: 'all'
 };
+
 EventEmitter.prototype.on = function(eventName, fn, option) {
     if (eventName in this._routes) {
         this._routes[eventName].push({fn:fn, option:option});
     } else {
         this._routes[eventName] = [{fn:fn, option:option}];
     }
-}
+};
+
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
     }
     option.type = EventEmitter.event.once;
     this.on(eventName, fn, option);
-}
+};
+
 EventEmitter.prototype.callWithScope = function(fn, option, params) {
-    //params可能为undefined如 define([], 'classname', function(){})这种dependency为空数组的不规范写法
     params = params || [];
     if(option && ('scope' in option)) {
+        /* jshint ignore:start */
         fn.apply(option['scope'], params);
+        /* jshint ignore:end */
     }
     else
     {
         fn.apply(this, params);
     }
-}
+};
+
 EventEmitter.prototype.all = function(dependency, fn, option) {
     var record = {},
         results = [],
@@ -119,15 +126,14 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
             if (trigger) {
                 that.callWithScope(fn, option, results);
             }
-        }
-    }
-
+        };
+    };
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all})
+        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all});
     }
+};
 
-}
 EventEmitter.prototype.emit = function(eventName) {
     var fns = this._routes[eventName],
         itemFn, scope, type, fn, option,
@@ -187,13 +193,14 @@ EventEmitter.prototype.emit = function(eventName) {
             }
         }
     }
-}
+};
 /**
  * Created by dingguoliang01 on 2015/8/13.
  */
 var Event = {
     style: '0'
-}
+};
+
 /**
  * @file checker.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -201,22 +208,37 @@ var Event = {
 
 /* global Util */
 function Checker() {
-    this.list = Util.arg2Ary(arguments);
+    this._list = Util.arg2Ary(arguments);
 }
 
 Checker.prototype.check = function (arg) {
     var me = this;
-    if (arg.length !== me.list.length) {
+    if (arg.length !== me._list.length) {
         return false;
     }
+    var _type;
+    var _typeof;
     var match = Util.each(arg, function (item, i) {
-        if (typeof item !== me.list[i]) {
-            return false;
+        _type = me._list[i];
+        _typeof = typeof _type;
+        if (_typeof === 'string') {
+            if (typeof item !== _type) {
+                return false;
+            }
+        }
+        else if (_typeof === 'function') {
+            if (!(item instanceof _type)) {
+                return false;
+            }
         }
     });
     return match;
 };
 
+Checker.stringObject = new Checker('string', 'object');
+Checker.object = new Checker('object');
+Checker.ssFunction = new Checker('string', 'string', 'function');
+Checker.array = new Checker(Array);
 /**
  * @file pitch.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -230,7 +252,7 @@ Checker.prototype.check = function (arg) {
  */
 function Pitch(name, keys, handler) {
     this._router = [];
-    if (new Checker('string', 'string', 'function').check(arguments)) {
+    if (Checker.ssFunction.check(arguments)) {
         this.use(name, keys, handler);
     }
 }
@@ -263,17 +285,19 @@ Pitch.prototype.do = function (key, value, opt) {
 
 /* global Pitch*/
 function Compatible() {
-    var me = this;
     var pitch = new Pitch();
+    /* jshint ignore:start */
     pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
         + 'animation-timing-function transform-origin',
         function (key, value) {
-            return me.prefix + key + ':' + value + ';';
+            return Compatible.prefix + key + ':' + value + ';';
         });
+    /* jshint ignore:end */
     pitch.use('needAll', 'box-shadow border-radius',
         function (key, value) {
-            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
+            return Compatible.prefix + key + ':' + value + ';' + key + ':' + value + ';';
         });
+    /* jshint ignore:start */
     pitch.use('extend', 'translateX translateY translateZ translate translate3d '
         + 'rotateX rotateY rotateZ rotate rotate3d '
         + 'skewX skewY skewZ skew '
@@ -288,6 +312,7 @@ function Compatible() {
             }
             return '';
         });
+
     pitch.use('transform', 'transform',
         function (key, value, opt) {
             if ('transform' in opt) {
@@ -298,6 +323,7 @@ function Compatible() {
             }
             return '';
         });
+    /* jshint ignore:end */
     pitch.use('special', 'background-gradient',
         function (key, value) {
             return '!!!';
@@ -309,16 +335,18 @@ function Compatible() {
     this._pitch = pitch;
     this._combine = new Pitch('combine', 'transform',
         function (key, value) {
-            return me.prefix + key + ':' + value + ';';
-        });;
+            return Compatible.prefix + key + ':' + value + ';';
+        });
 }
 
-Compatible.prototype.prefix = (function () {
+Compatible.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
     var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
     var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
+    /* jshint ignore:start */
     var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
         || (userAgent.indexOf('Trident') > -1); // 判断是否IE
+    /* jshint ignore:end */
     var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
     var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
     var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
@@ -326,13 +354,56 @@ Compatible.prototype.prefix = (function () {
     if (isIE) {
         return '-ms-';
     }
-
     return (isWebKit || isSafari || isChrome || isMaxthon) ?
         '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
-
 })();
+Compatible._keyMap = {
+    'name': 'animationName',
+    'duration': ['animationDuration', '0s'],
+    'function': ['animationTimingFunction', 'linear'],
+    'delay': ['animationDelay', '0s'],
+    'count': ['animationIterationCount', 1],
+    'direction': ['animationDirection', 'normal'],
+    'state': ['animationPlayState', 'running'],
+    'mode': ['animationFillMode', 'forwards']
+};
+Compatible.prototype.parseAnimation = function (animations) {
+    if (!Checker.array.check(animations)) {
+        animations = [animations];
+    }
+    var css;
+    var csses = [];
+    function regReplace($0, $1) {
+        if ($1 in css) {
+            return css[$1];
+        }
+        else {
+            return Compatible._keyMap[$1][1];
+        }
+    }
+    Util.each(animations, function (animation) {
+        css = animation;
+        csses.push(this.animationTpl().replace(/<(.*?)>/g, regReplace));
+    });
+    return csses.join(',');
+};
+Compatible.prototype.animationTpl = function () {
+    if (!this._animationTpl) {
+        if (Compatible.prefix === '-moz-') {
+            this._animationTpl = '<duration> <function> <delay> ' +
+            '<direction> <mode> <count> <state> <name>';
+            this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
+        }
+        else {
+            this._animationTpl = '<name> <duration> <function> <delay> ' +
+            '<count> <direction> <mode>';
+            this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
+        }
+    }
+    return this._animationTpl;
+};
 Compatible.prototype.keyframe = function (keyframe) {
-    return '@' + this.prefix + 'keyframes ' + keyframe;
+    return '@' + Compatible.prefix + 'keyframes ' + keyframe;
 };
 Compatible.prototype.percent = function (percent) {
     percent = (percent + '').trim();
@@ -345,7 +416,73 @@ Compatible.prototype.patchCombine = function (key, value) {
 Compatible.prototype.patch = function (key, value, opt) {
     return this._pitch.do(key + ' ', value, opt);
 };
-
+Compatible.instance = function () {
+    if (!Compatible._compatible) {
+        Compatible._compatible = new Compatible();
+    }
+    return Compatible._compatible;
+};
+Compatible.prototype.parseCSS = (function () {
+    var fixer;
+    var p = Compatible.prefix.replace(/-/g, '');
+    if (p === 'moz') {
+        fixer = function (key) {
+            if (key in Compatible._keyMap) {
+                return Compatible._keyMap[key];
+            }
+            else {
+                return key;
+            }
+        };
+    }
+    else {
+        fixer = function (key) {
+            if (key in Compatible._keyMap) {
+                key = Compatible._keyMap[key];
+            }
+            return p + key[0].toUpperCase() + key.substr(1);
+        };
+    }
+    return fixer;
+})();
+Compatible.prototype.addAnimation = function (dom, css) {
+    var key = this.parseCSS('animation');
+    var current = this.css(dom, key);
+    if (current && current !== '') {
+        css = current + ',' + css;
+    }
+    this.css(dom, key, css);
+};
+Compatible.prototype.css = function (dom, key, value) {
+    if (typeof window.getComputedStyle !== 'undefined')// W3C
+    {
+        Compatible.prototype.css = function (dom, key, value) {
+            if (value !== undefined) {
+                dom.style[key] = value;
+                return value;
+            }
+            else {
+                var tmp = window.getComputedStyle(dom, null)[key];
+                if (tmp === '') throw new Error('去掉吧');
+                return tmp === '' ? base.style[key] : tmp;
+            }
+        };
+    }
+    else if (typeof dom.currentStyle !== 'undefined') {
+         Compatible.prototype.css = function (dom, key, value) {
+            if (value !== undefined) {
+                dom.style[key] = value;
+                return value;
+            }
+            else {
+                var tmp = dom.currentStyle[key];
+                if (tmp === '') throw new Error('去掉吧');
+                return tmp === '' ? dom.style[key] : tmp;
+            }
+        };
+    }
+    return this.css(dom, key, value);
+};
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -354,13 +491,11 @@ Compatible.prototype.patch = function (key, value, opt) {
 /* global Checker Compatible Util */
 function Compiler() {
     Compiler.superClass.call(this);
-    this._stringObject = new Checker('string', 'object');
-    this._object = new Checker('object');
     this._classStore = {};
     this._classMap = {};
     this._keyframeMap = {};
     this._keyframeStore = {};
-    var compatible = new Compatible();
+    var compatible = Compatible.instance();
     this._compatible = compatible;
     this._classId = function (className) {
         return 'class(' + className + ')';
@@ -378,22 +513,22 @@ function Compiler() {
 Util.inherit(Compiler, EventEmitter);
 
 Compiler.prototype.defineClass = function (className, metaData) {
-    if (this._object.check(arguments)) {
+    if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         className = Util.random.name(8);
     }
-    else if (!this._stringObject.check(arguments)) {
+    else if (!Checker.stringObject.check(arguments)) {
         throw new Error('incorrect parameter, metaData is required！');
     }
     this._classMap[className] = metaData;
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (this._object.check(arguments)) {
+    if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         keyframe = Util.random.name(8);
     }
-    else if (!this._stringObject.check(arguments)) {
+    else if (!Checker.stringObject.check(arguments)) {
         throw new Error('incorrect parameter, metaData is required！');
     }
     this._keyframeMap[keyframe] = metaData;
@@ -424,7 +559,7 @@ Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
         id = idG(key);
         cssText = textG(key, obj[key]);
         if (key in store) {
-            this._refreshStyleSheet(cssText, id);
+            this._refreshSheet(cssText, id);
         }
         else {
             frag.appendChild(this._styleSheet(cssText, id));
@@ -455,8 +590,9 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     this.emit(Event.style, id, cssText);
     return style;
 };
-Compiler.prototype._refreshStyleSheet = function (cssText, id) {
+Compiler.prototype._refreshSheet = function (cssText, id) {
     document.getElementById(id).innerHTML = cssText;
+    this.emit(Event.style, id, cssText);
 };
 Compiler.prototype._compileClass = function (metaData) {
     var body = '{';
@@ -481,4 +617,11 @@ Compiler.prototype._compileKeyframe = function (metaData) {
 };
 Compiler.prototype._compileFrame = function (percent, metaData) {
     return this._compatible.percent(percent) + this._compileClass(metaData);
+};
+
+Compiler.instance = function () {
+    if (!Compiler._compiler) {
+        Compiler._compiler = new Compiler();
+    }
+    return Compiler._compiler;
 };

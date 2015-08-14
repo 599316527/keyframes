@@ -6,13 +6,11 @@
 /* global Checker Compatible Util */
 function Compiler() {
     Compiler.superClass.call(this);
-    this._stringObject = new Checker('string', 'object');
-    this._object = new Checker('object');
     this._classStore = {};
     this._classMap = {};
     this._keyframeMap = {};
     this._keyframeStore = {};
-    var compatible = new Compatible();
+    var compatible = Compatible.instance();
     this._compatible = compatible;
     this._classId = function (className) {
         return 'class(' + className + ')';
@@ -30,22 +28,22 @@ function Compiler() {
 Util.inherit(Compiler, EventEmitter);
 
 Compiler.prototype.defineClass = function (className, metaData) {
-    if (this._object.check(arguments)) {
+    if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         className = Util.random.name(8);
     }
-    else if (!this._stringObject.check(arguments)) {
+    else if (!Checker.stringObject.check(arguments)) {
         throw new Error('incorrect parameter, metaData is required！');
     }
     this._classMap[className] = metaData;
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (this._object.check(arguments)) {
+    if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         keyframe = Util.random.name(8);
     }
-    else if (!this._stringObject.check(arguments)) {
+    else if (!Checker.stringObject.check(arguments)) {
         throw new Error('incorrect parameter, metaData is required！');
     }
     this._keyframeMap[keyframe] = metaData;
@@ -76,7 +74,7 @@ Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
         id = idG(key);
         cssText = textG(key, obj[key]);
         if (key in store) {
-            this._refreshStyleSheet(cssText, id);
+            this._refreshSheet(cssText, id);
         }
         else {
             frag.appendChild(this._styleSheet(cssText, id));
@@ -107,8 +105,9 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     this.emit(Event.style, id, cssText);
     return style;
 };
-Compiler.prototype._refreshStyleSheet = function (cssText, id) {
+Compiler.prototype._refreshSheet = function (cssText, id) {
     document.getElementById(id).innerHTML = cssText;
+    this.emit(Event.style, id, cssText);
 };
 Compiler.prototype._compileClass = function (metaData) {
     var body = '{';
@@ -133,4 +132,11 @@ Compiler.prototype._compileKeyframe = function (metaData) {
 };
 Compiler.prototype._compileFrame = function (percent, metaData) {
     return this._compatible.percent(percent) + this._compileClass(metaData);
+};
+
+Compiler.instance = function () {
+    if (!Compiler._compiler) {
+        Compiler._compiler = new Compiler();
+    }
+    return Compiler._compiler;
 };

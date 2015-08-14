@@ -2,7 +2,17 @@ var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require("gulp-rename");
-gulp.task('concat', function() {
+var jshint = require('gulp-jshint');
+
+gulp.task('lint', function() {
+    return gulp.src('src/*.js')
+        // This is available for modules like jshint-jsx, which
+        // expose the normal jshint function as JSHINT and the
+        // jsxhint function as JSXHINT
+        .pipe(jshint()).pipe(jshint.reporter('default'));
+});
+
+gulp.task('concat', ['lint'], function() {
     return gulp.src(['src/Util.js', 'src/EventEmitter.js', 'src/Event.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/Compiler.js'])
         .pipe(concat('lib.js'))
         .pipe(gulp.dest('src/'));
