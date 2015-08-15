@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../src/lib.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+    <style>
+        #demo {
+            left: 153px;
+            top: 220px;
+            position: absolute;
+            color: #f35626;
+            font: 100%/1.5 "Roboto",Verdana,sans-serif;
+            text-align: center;
+            font-size: 6rem;
+            line-height: 1;
+            font-weight: 100;
+            letter-spacing: -0.05em;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+<body>
+<div id="demo"></div>
+<script>
+    Keyframe.defineKeyframe('rot',
+            {
+                '100': {
+                    rotate: '360deg'
+                }
+            });
+    Keyframe.defineKeyframe('gw',
+            {
+                '0': {
+                    'box-shadow': '0.70711em 0.70711em 0 0.125em #2ecc71, ' +
+                    '-0.70711em 0.70711em 0 0.39017em #9b59b6, ' +
+                    '-0.70711em -0.70711em 0 0.5em #3498db, ' +
+                    '0.70711em -0.70711em 0 0.39017em #f1c40f'
+                },
+                '25': {
+                    'box-shadow': '0.70711em 0.70711em 0 0.39017em #2ecc71, ' +
+                    '-0.70711em 0.70711em 0 0.5em #9b59b6, ' +
+                    '-0.70711em -0.70711em 0 0.39017em #3498db, ' +
+                    '0.70711em -0.70711em 0 0.125em #f1c40f'
+                },
+                '50': {
+                    'box-shadow': '0.70711em 0.70711em 0 0.5em #2ecc71, ' +
+                    '-0.70711em 0.70711em 0 0.39017em #9b59b6, ' +
+                    '-0.70711em -0.70711em 0 0.125em #3498db, ' +
+                    '0.70711em -0.70711em 0 0.39017em #f1c40f'
+                },
+                '75': {
+                    'box-shadow': '0.70711em 0.70711em 0 0.39017em #2ecc71, ' +
+                    '-0.70711em 0.70711em 0 0.125em #9b59b6, ' +
+                    '-0.70711em -0.70711em 0 0.39017em #3498db, ' +
+                    '0.70711em -0.70711em 0 0.5em #f1c40f'
+                },
+                '100': {
+                    'box-shadow': '0.70711em 0.70711em 0 0.125em #2ecc71, ' +
+                    '-0.70711em 0.70711em 0 0.39017em #9b59b6, ' +
+                    '-0.70711em -0.70711em 0 0.5em #3498db, ' +
+                    '0.70711em -0.70711em 0 0.39017em #f1c40f'
+                }
+            }
+    );
+
+    Keyframe.defineClass('ec-gw:before', {
+        animation: [
+            {
+                'name': 'gw',
+                'duration': '1s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'delay': '0s',
+                'count': 'infinite',
+                'direction': 'normal', // normal alternate
+                'state': 'running', // paused
+                'mode': 'none' // none forwards backwards both,
+            },
+            {
+                'name': 'rot',
+                'duration': '2.8s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'delay': '0s',
+                'count': 'infinite',
+                'direction': 'normal', // normal alternate
+                'state': 'running', // paused
+                'mode': 'none' // none forwards backwards both,
+            }],
+        'content': '""',
+        'position': 'absolute',
+        'left': '50%',
+        'top': '50%',
+        'font-size': '0.25em',
+        'box-shadow': '0.70711em 0.70711em 0 0em #2ecc71, ' +
+        '-0.70711em 0.70711em 0 0.17678em #9b59b6, ' +
+        '-0.70711em -0.70711em 0 0.25em #3498db, ' +
+        '0.70711em -0.70711em 0 0.17678em #f1c40f'
+    });
+    Keyframe.compile();
+
+    var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}, {name:'rot', count:'infinite', duration: '3s'}]);
+    keyframe.on(Event.start, function () {
+        //this.addClass('ec-gw');
+    });
+    keyframe.start();
+</script>
+</body>
+</html>

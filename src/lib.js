@@ -198,7 +198,8 @@ EventEmitter.prototype.emit = function(eventName) {
  * Created by dingguoliang01 on 2015/8/13.
  */
 var Event = {
-    style: '0'
+    style: '0',
+    start: '1'
 };
 
 /**
@@ -286,16 +287,17 @@ Pitch.prototype.do = function (key, value, opt) {
 /* global Pitch*/
 function Compatible() {
     var pitch = new Pitch();
+    var me = this;
     /* jshint ignore:start */
     pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
         + 'animation-timing-function transform-origin',
         function (key, value) {
-            return Compatible.prefix + key + ':' + value + ';';
+            return me.prefix + key + ':' + value + ';';
         });
     /* jshint ignore:end */
     pitch.use('needAll', 'box-shadow border-radius',
         function (key, value) {
-            return Compatible.prefix + key + ':' + value + ';' + key + ':' + value + ';';
+            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
         });
     /* jshint ignore:start */
     pitch.use('extend', 'translateX translateY translateZ translate translate3d '
@@ -323,6 +325,9 @@ function Compatible() {
             }
             return '';
         });
+    pitch.use('animation', 'animation', function (key, value) {
+        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
+    });
     /* jshint ignore:end */
     pitch.use('special', 'background-gradient',
         function (key, value) {
@@ -335,11 +340,11 @@ function Compatible() {
     this._pitch = pitch;
     this._combine = new Pitch('combine', 'transform',
         function (key, value) {
-            return Compatible.prefix + key + ':' + value + ';';
+            return me.prefix + key + ':' + value + ';';
         });
 }
 
-Compatible.prefix = (function () {
+Compatible.prototype.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
     var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
     var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
@@ -359,7 +364,7 @@ Compatible.prefix = (function () {
 })();
 Compatible._keyMap = {
     'name': 'animationName',
-    'duration': ['animationDuration', '0s'],
+    'duration': ['animationDuration', '1s'],
     'function': ['animationTimingFunction', 'linear'],
     'delay': ['animationDelay', '0s'],
     'count': ['animationIterationCount', 1],
@@ -368,11 +373,12 @@ Compatible._keyMap = {
     'mode': ['animationFillMode', 'forwards']
 };
 Compatible.prototype.parseAnimation = function (animations) {
-    if (!Checker.array.check(animations)) {
+    if (!Checker.array.check(arguments)) {
         animations = [animations];
     }
     var css;
     var csses = [];
+    var tpl = this.animationTpl();
     function regReplace($0, $1) {
         if ($1 in css) {
             return css[$1];
@@ -381,15 +387,17 @@ Compatible.prototype.parseAnimation = function (animations) {
             return Compatible._keyMap[$1][1];
         }
     }
+    console.log(animations);
     Util.each(animations, function (animation) {
         css = animation;
-        csses.push(this.animationTpl().replace(/<(.*?)>/g, regReplace));
+        console.log(animation);
+        csses.push(tpl.replace(/<(.*?)>/g, regReplace));
     });
     return csses.join(',');
 };
 Compatible.prototype.animationTpl = function () {
     if (!this._animationTpl) {
-        if (Compatible.prefix === '-moz-') {
+        if (this.prefix === '-moz-') {
             this._animationTpl = '<duration> <function> <delay> ' +
             '<direction> <mode> <count> <state> <name>';
             this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
@@ -403,7 +411,7 @@ Compatible.prototype.animationTpl = function () {
     return this._animationTpl;
 };
 Compatible.prototype.keyframe = function (keyframe) {
-    return '@' + Compatible.prefix + 'keyframes ' + keyframe;
+    return '@' + this.prefix + 'keyframes ' + keyframe;
 };
 Compatible.prototype.percent = function (percent) {
     percent = (percent + '').trim();
@@ -422,11 +430,19 @@ Compatible.instance = function () {
     }
     return Compatible._compatible;
 };
-Compatible.prototype.parseCSS = (function () {
-    var fixer;
-    var p = Compatible.prefix.replace(/-/g, '');
+
+Compatible.prototype.addAnimation = function (dom, css) {
+    var key = this.parseCSS('animation');
+    var current = this.css(dom, key);
+    if (current && current !== '') {
+        css = current + ',' + css;
+    }
+    this.css(dom, key, css);
+};
+Compatible.prototype.parseCSS = function (key) {
+    var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
-        fixer = function (key) {
+        Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 return Compatible._keyMap[key];
             }
@@ -436,22 +452,14 @@ Compatible.prototype.parseCSS = (function () {
         };
     }
     else {
-        fixer = function (key) {
+        Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 key = Compatible._keyMap[key];
             }
             return p + key[0].toUpperCase() + key.substr(1);
         };
     }
-    return fixer;
-})();
-Compatible.prototype.addAnimation = function (dom, css) {
-    var key = this.parseCSS('animation');
-    var current = this.css(dom, key);
-    if (current && current !== '') {
-        css = current + ',' + css;
-    }
-    this.css(dom, key, css);
+    return this.parseCSS(key);
 };
 Compatible.prototype.css = function (dom, key, value) {
     if (typeof window.getComputedStyle !== 'undefined')// W3C
@@ -463,8 +471,7 @@ Compatible.prototype.css = function (dom, key, value) {
             }
             else {
                 var tmp = window.getComputedStyle(dom, null)[key];
-                if (tmp === '') throw new Error('去掉吧');
-                return tmp === '' ? base.style[key] : tmp;
+                return tmp === '' ? dom.style[key] : tmp;
             }
         };
     }
@@ -476,12 +483,21 @@ Compatible.prototype.css = function (dom, key, value) {
             }
             else {
                 var tmp = dom.currentStyle[key];
-                if (tmp === '') throw new Error('去掉吧');
                 return tmp === '' ? dom.style[key] : tmp;
             }
         };
     }
     return this.css(dom, key, value);
+};
+
+Compatible.prototype.addClass = function (dom, className) {
+    if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
+        dom.className = (dom.className + ' ' + className).trim();
+    }
+};
+
+Compatible.prototype.removeClass = function (dom, className) {
+    dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
 };
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
@@ -624,4 +640,58 @@ Compiler.instance = function () {
         Compiler._compiler = new Compiler();
     }
     return Compiler._compiler;
+};
+/**
+ * Created by dingguoliang01 on 2015/8/14.
+ */
+function Keyframe(dom, animations) {
+    Keyframe.superClass.call(this);
+    this._compiler = Compiler.instance();
+    this._compatible = Compatible.instance();
+    this._init(dom);
+    if (!Checker.array.check([animations])) {
+        this._animations = [animations];
+        this._animationStatus[animations['name']] = false;
+    }
+    else {
+        var me = this;
+        Util.each(animations, function (animation) {
+            me._animationStatus[animation['name']] = false;
+        });
+        this._animations = animations;
+    }
+    return this;
+}
+
+Util.inherit(Keyframe, EventEmitter);
+Keyframe.prototype._init = function (dom) {
+    this._dom = dom;
+    this._animationStatus = {};
+};
+Keyframe.prototype.start = function () {
+    var css = this._compatible.parseAnimation(this._animations);
+    this.emit(Event.start);
+    this._compatible.addAnimation(this._dom, css);
+    return this;
+};
+Keyframe.prototype.css = function (key, value) {
+    return this._compatible.css(this._dom, key, value);
+};
+Keyframe.prototype.addClass = function (className) {
+    this._compatible.addClass(this._dom, className);
+    return this;
+};
+Keyframe.prototype.removeClass = function (className) {
+    this._compatible.removeClass(this._dom, className);
+    return this;
+};
+
+Keyframe.defineKeyframe = function (keyframe, metaData) {
+    Compiler.instance().defineKeyframe(keyframe, metaData);
+};
+Keyframe.defineClass = function (className, metaData) {
+    Compiler.instance().defineClass(className, metaData);
+};
+Keyframe.compile = function () {
+    Compiler.instance().compile();
 };
