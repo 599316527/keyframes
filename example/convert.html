@@ -45,12 +45,12 @@ compiler.defineClass('test', {
     'border': '1px solid black',
     'width': '100px'
 });
-var className = compiler.defineClass({
+var class1 = Keyframe.defineClass({
     'transform': 'scale(1.2) skew(45deg)',
     'scale3d': '.8, .8, .8',
     'transition': 'transform 1s'
 });
-compiler.defineClass(className + ':hover', {
+class1.hover({
     'transform': 'rotate(145deg)'
 });
 compiler.defineKeyframe('flip', {
@@ -87,11 +87,11 @@ compiler.compile();
 </div>
 
 <script src="../lib/require.js"></script>
-<script src="../dist/lib.min.js"></script>
+<script src="../src/lib.js"></script>
 <script src="../lib/jquery.min.js"></script>
 <script src="../lib/cssbeautify.js"></script>
 <script>
-    var compiler = new Compiler();
+    var compiler = Compiler.instance();
     require.config({paths: {ace: "../ace"}});
     require(["ace/ace"], function(ace) {
         $('button').click(function() {

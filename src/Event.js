@@ -2,10 +2,13 @@
  * Created by dingguoliang01 on 2015/8/13.
  */
 var Event = {
-    style: '0',
-    beforeStart: '1',
-    start: '',
-    afterStart: '2',
-    iteration: '',
-    end: ''
+    style: 'style',
+    beforeStart: 'beforeStart',
+    start: 'Start',
+    iteration: 'Iteration',
+    end: 'End',
+    on: 'on',
+    once: 'once',
+    all: 'all',
+    emit: 'emit'
 };

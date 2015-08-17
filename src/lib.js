@@ -89,6 +89,32 @@ var Util = {
             };
         }
         return this.css(dom, key, value);
+    },
+    on: function (dom, name, fn) {
+        if ('addEventListener' in window) {
+            Util.on = function (dom, name, fn) {
+                dom.addEventListener(name, fn, false);
+            };
+        }
+        else if ('attachEvent' in window) {
+            Util.on = function (dom, name, fn) {
+                dom.attachEvent('on' + name, fn);
+            };
+        }
+        return this.on(dom, name, fn);
+    },
+    off: function (dom, name, fn) {
+        if ('removeEventListener' in window) {
+            Util.off = function (dom, name, fn) {
+                dom.removeEventListener(name, fn, false);
+            };
+        }
+        else if ('detachEvent' in window) {
+            Util.off = function (dom, name, fn) {
+                dom.detachEvent('on' + name, fn);
+            };
+        }
+        this.off(dom, name, fn);
     }
 };
 
@@ -96,7 +122,7 @@ function EventEmitter() {
     this._routes = {};
 }
 
-EventEmitter.event = {
+EventEmitter.type = {
     once: 'once',
     all: 'all'
 };
@@ -107,13 +133,15 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
     } else {
         this._routes[eventName] = [{fn:fn, option:option}];
     }
+    this.emit(Event.on, eventName, option);
 };
 
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
     }
-    option.type = EventEmitter.event.once;
+    option.type = EventEmitter.type.once;
+    this.emit(Event.once, eventName, option);
     this.on(eventName, fn, option);
 };
 
@@ -166,8 +194,9 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
     };
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all});
+        this.on(eventName, proxyCallback(index), {type:EventEmitter.type.all});
     }
+    this.emit(Event.all, dependency, option);
 };
 
 EventEmitter.prototype.emit = function(eventName) {
@@ -195,9 +224,9 @@ EventEmitter.prototype.emit = function(eventName) {
 
             if (!type) {
                 continue;
-            } else if (type === EventEmitter.event.once) {
+            } else if (type === EventEmitter.type.once) {
                 offs.push(itemFn);
-            } else if (type === EventEmitter.event.all) {
+            } else if (type === EventEmitter.type.all) {
                 offs.push(itemFn);
             }
         }
@@ -234,12 +263,15 @@ EventEmitter.prototype.emit = function(eventName) {
  * Created by dingguoliang01 on 2015/8/13.
  */
 var Event = {
-    style: '0',
-    beforeStart: '1',
-    start: '',
-    afterStart: '2',
-    iteration: '',
-    end: ''
+    style: 'style',
+    beforeStart: 'beforeStart',
+    start: 'Start',
+    iteration: 'Iteration',
+    end: 'End',
+    on: 'on',
+    once: 'once',
+    all: 'all',
+    emit: 'emit'
 };
 
 /**
@@ -277,7 +309,9 @@ Checker.prototype.check = function (arg) {
 };
 
 Checker.stringObject = new Checker('string', 'object');
+Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');
+Checker.string = new Checker('string');
 Checker.ssFunction = new Checker('string', 'string', 'function');
 Checker.array = new Checker(Array);
 /**
@@ -477,8 +511,12 @@ Compatible.prototype.addAnimation = function (dom, css) {
     if (current && current !== '') {
         css = current + ',' + css;
     }
-    Util.css(dom, key, css);
+    this.requestAnimationFrame(function() {
+        Util.css(dom, key, css);
+    });
 };
+
+//简称转全称  name --> animationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
@@ -501,6 +539,41 @@ Compatible.prototype.parseCSS = function (key) {
     }
     return this.parseCSS(key);
 };
+Compatible.prototype.parseEvent = function (key) {
+    var p = this.prefix.replace(/-/g, '');
+    if (p === 'moz') {
+        Compatible.prototype.parseEvent = function (key) {
+            return 'animation' + key.toLowerCase();
+        };
+    }
+    else {
+        Compatible.prototype.parseEvent = function (key) {
+            return p + 'Animation' + key;
+        };
+    }
+    return this.parseEvent(key);
+};
+window.requestAnimFrame = (function(){
+    return  window.requestAnimationFrame       ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
+Compatible.prototype.requestAnimationFrame = (function () {
+    window.requestAnimFrame = (function(){
+        return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
+    return function (fn) {
+        window.requestAnimationFrame(fn);
+    }
+})();
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -531,24 +604,10 @@ function Compiler() {
 Util.inherit(Compiler, EventEmitter);
 
 Compiler.prototype.defineClass = function (className, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        className = Util.random.name(8);
-    }
-    else if (!Checker.stringObject.check(arguments)) {
-        throw new Error('incorrect parameter, metaData is required！');
-    }
     this._classMap[className] = metaData;
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        keyframe = Util.random.name(8);
-    }
-    else if (!Checker.stringObject.check(arguments)) {
-        throw new Error('incorrect parameter, metaData is required！');
-    }
     this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };
@@ -644,6 +703,83 @@ Compiler.instance = function () {
     return Compiler._compiler;
 };
 /**
+ * Created by dingguoliang01 on 2015/8/17.
+ */
+function ClassProxy(className, metaData) {
+    if (metaData) {
+        this._define(className, metaData);
+    }
+    else {
+        this._className = className;
+    }
+    return this;
+}
+ClassProxy.prototype._define = function (className, metaData) {
+    this._className = Compiler.instance().defineClass(className, metaData);
+};
+ClassProxy.prototype.hover = function (metaData) {
+    return this._pseudo('hover', metaData);
+};
+ClassProxy.prototype.before = function (metaData) {
+    return this._pseudo('before', metaData);
+};
+ClassProxy.prototype.after = function (metaData) {
+    return this._pseudo('after', metaData);
+};
+ClassProxy.prototype.focus = function (metaData) {
+    return this._pseudo('focus', metaData);
+};
+ClassProxy.prototype._name = function (pseudo) {
+    return this._className + ':' + pseudo;
+};
+
+ClassProxy.prototype._pseudo = function (pseudo, metaData) {
+    if (metaData) {
+        Compiler.instance().defineClass(this._name(pseudo), metaData);
+    }
+    else {
+        throw new Error('incorrect parameter, metaData is required！');
+    }
+    return this;
+};
+ClassProxy.prototype.rewrite = function (metaData, pseudo) {
+    if (Checker.objectString.check(arguments)) {
+        this._pseudo(pseudo, metaData);
+    }
+    else if (Checker.object.check(arguments)) {
+        this._define(this._className, metaData);
+    }
+    else {
+        throw new Error('incorrect parameter！');
+    }
+    return this;
+};
+
+/**
+ * Created by dingguoliang01 on 2015/8/17.
+ */
+/**
+ * Created by dingguoliang01 on 2015/8/17.
+ */
+function FrameProxy(frame, metaData) {
+    return this._define(frame, metaData);
+}
+FrameProxy.prototype._define = function (frame, metaData) {
+    this._frame = Compiler.instance().defineKeyframe(frame, metaData);
+    return this;
+};
+FrameProxy.prototype.rewrite = function (metaData) {
+    if (Checker.object.check(arguments)) {
+        this._define(this._frame, metaData);
+    }
+    else {
+        throw new Error('incorrect parameter！');
+    }
+    return this;
+};
+
+
+/**
  * Created by dingguoliang01 on 2015/8/14.
  */
 function Keyframe(dom, animations) {
@@ -651,6 +787,7 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
+    var me = this;
     if (!Checker.array.check([animations])) {
         this._animations = [animations];
         this._animationStatus[animations['name']] = false;
@@ -662,6 +799,31 @@ function Keyframe(dom, animations) {
         });
         this._animations = animations;
     }
+    function wrap(eventName) {
+        return function () {
+            me.emit(eventName, arguments);
+        }
+    }
+    this.on(Event.on, function(on, eventName) {
+        if (eventName  === Event.start) {
+            if (!me._monitorStart) {
+                me._monitorStart = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorStart);
+            }
+        }
+        else if (eventName  === Event.end) {
+            if (!me._monitorEnd) {
+                me._monitorEnd = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorEnd);
+            }
+        }
+        else if (eventName  === Event.iteration) {
+            if (!me._monitorIteration) {
+                me._monitorIteration = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorIteration);
+            }
+        }
+    });
     return this;
 }
 
@@ -672,7 +834,7 @@ Keyframe.prototype._init = function (dom) {
 };
 Keyframe.prototype.start = function () {
     var css = this._compatible.parseAnimation(this._animations);
-    this.emit(Event.start);
+    this.emit(Event.beforeStart);
     this._compatible.addAnimation(this._dom, css);
     return this;
 };
@@ -687,12 +849,32 @@ Keyframe.prototype.removeClass = function (className) {
     Util.removeClass(this._dom, className);
     return this;
 };
-
-Keyframe.defineKeyframe = function (keyframe, metaData) {
-    Compiler.instance().defineKeyframe(keyframe, metaData);
+Keyframe.defineKeyframe = function (frame, metaData) {
+    if (Checker.object.check(arguments)) {
+        metaData = arguments[0];
+        frame = Util.random.name(8);
+    }
+    if (Checker.stringObject.check(arguments)) {
+        return new FrameProxy(frame, metaData);
+    }
+    else {
+        throw new Error('incorrect parameters!');
+    }
 };
 Keyframe.defineClass = function (className, metaData) {
-    Compiler.instance().defineClass(className, metaData);
+    if (Checker.object.check(arguments)) {
+        metaData = arguments[0];
+        className = Util.random.name(8);
+    }
+    if (Checker.stringObject.check(arguments)) {
+        return new ClassProxy(className, metaData);
+    }
+    else if (Checker.string.check(arguments)) {
+        return new ClassProxy(className);
+    }
+    else {
+        throw new Error('incorrect parameters!');
+    }
 };
 Keyframe.compile = function () {
     Compiler.instance().compile();

@@ -6,6 +6,7 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
+    var me = this;
     if (!Checker.array.check([animations])) {
         this._animations = [animations];
         this._animationStatus[animations['name']] = false;
@@ -17,6 +18,31 @@ function Keyframe(dom, animations) {
         });
         this._animations = animations;
     }
+    function wrap(eventName) {
+        return function () {
+            me.emit(eventName, arguments);
+        }
+    }
+    this.on(Event.on, function(on, eventName) {
+        if (eventName  === Event.start) {
+            if (!me._monitorStart) {
+                me._monitorStart = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorStart);
+            }
+        }
+        else if (eventName  === Event.end) {
+            if (!me._monitorEnd) {
+                me._monitorEnd = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorEnd);
+            }
+        }
+        else if (eventName  === Event.iteration) {
+            if (!me._monitorIteration) {
+                me._monitorIteration = wrap(eventName);
+                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorIteration);
+            }
+        }
+    });
     return this;
 }
 
@@ -27,7 +53,7 @@ Keyframe.prototype._init = function (dom) {
 };
 Keyframe.prototype.start = function () {
     var css = this._compatible.parseAnimation(this._animations);
-    this.emit(Event.start);
+    this.emit(Event.beforeStart);
     this._compatible.addAnimation(this._dom, css);
     return this;
 };
@@ -42,12 +68,32 @@ Keyframe.prototype.removeClass = function (className) {
     Util.removeClass(this._dom, className);
     return this;
 };
-
-Keyframe.defineKeyframe = function (keyframe, metaData) {
-    Compiler.instance().defineKeyframe(keyframe, metaData);
+Keyframe.defineKeyframe = function (frame, metaData) {
+    if (Checker.object.check(arguments)) {
+        metaData = arguments[0];
+        frame = Util.random.name(8);
+    }
+    if (Checker.stringObject.check(arguments)) {
+        return new FrameProxy(frame, metaData);
+    }
+    else {
+        throw new Error('incorrect parameters!');
+    }
 };
 Keyframe.defineClass = function (className, metaData) {
-    Compiler.instance().defineClass(className, metaData);
+    if (Checker.object.check(arguments)) {
+        metaData = arguments[0];
+        className = Util.random.name(8);
+    }
+    if (Checker.stringObject.check(arguments)) {
+        return new ClassProxy(className, metaData);
+    }
+    else if (Checker.string.check(arguments)) {
+        return new ClassProxy(className);
+    }
+    else {
+        throw new Error('incorrect parameters!');
+    }
 };
 Keyframe.compile = function () {
     Compiler.instance().compile();

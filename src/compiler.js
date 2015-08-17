@@ -28,24 +28,10 @@ function Compiler() {
 Util.inherit(Compiler, EventEmitter);
 
 Compiler.prototype.defineClass = function (className, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        className = Util.random.name(8);
-    }
-    else if (!Checker.stringObject.check(arguments)) {
-        throw new Error('incorrect parameter, metaData is required！');
-    }
     this._classMap[className] = metaData;
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        keyframe = Util.random.name(8);
-    }
-    else if (!Checker.stringObject.check(arguments)) {
-        throw new Error('incorrect parameter, metaData is required！');
-    }
     this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };

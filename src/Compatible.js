@@ -156,8 +156,12 @@ Compatible.prototype.addAnimation = function (dom, css) {
     if (current && current !== '') {
         css = current + ',' + css;
     }
-    Util.css(dom, key, css);
+    this.requestAnimationFrame(function() {
+        Util.css(dom, key, css);
+    });
 };
+
+//简称转全称  name --> animationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
@@ -180,3 +184,38 @@ Compatible.prototype.parseCSS = function (key) {
     }
     return this.parseCSS(key);
 };
+Compatible.prototype.parseEvent = function (key) {
+    var p = this.prefix.replace(/-/g, '');
+    if (p === 'moz') {
+        Compatible.prototype.parseEvent = function (key) {
+            return 'animation' + key.toLowerCase();
+        };
+    }
+    else {
+        Compatible.prototype.parseEvent = function (key) {
+            return p + 'Animation' + key;
+        };
+    }
+    return this.parseEvent(key);
+};
+window.requestAnimFrame = (function(){
+    return  window.requestAnimationFrame       ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
+Compatible.prototype.requestAnimationFrame = (function () {
+    window.requestAnimFrame = (function(){
+        return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
+    return function (fn) {
+        window.requestAnimationFrame(fn);
+    }
+})();

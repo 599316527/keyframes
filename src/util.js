@@ -89,5 +89,31 @@ var Util = {
             };
         }
         return this.css(dom, key, value);
+    },
+    on: function (dom, name, fn) {
+        if ('addEventListener' in window) {
+            Util.on = function (dom, name, fn) {
+                dom.addEventListener(name, fn, false);
+            };
+        }
+        else if ('attachEvent' in window) {
+            Util.on = function (dom, name, fn) {
+                dom.attachEvent('on' + name, fn);
+            };
+        }
+        return this.on(dom, name, fn);
+    },
+    off: function (dom, name, fn) {
+        if ('removeEventListener' in window) {
+            Util.off = function (dom, name, fn) {
+                dom.removeEventListener(name, fn, false);
+            };
+        }
+        else if ('detachEvent' in window) {
+            Util.off = function (dom, name, fn) {
+                dom.detachEvent('on' + name, fn);
+            };
+        }
+        this.off(dom, name, fn);
     }
 };

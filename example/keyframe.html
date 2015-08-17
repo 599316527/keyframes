@@ -65,7 +65,8 @@
             }
     );
 
-    Keyframe.defineClass('ec-gw:before', {
+    var gw = Keyframe.defineClass('ec-gw');
+    gw.before({
         animation: [
             {
                 'name': 'gw',
@@ -100,9 +101,18 @@
     Keyframe.compile();
 
     var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}, {name:'rot', count:'infinite', duration: '3s'}]);
-    keyframe.on(Event.start, function () {
+    keyframe.on(Event.beforeStart, function () {
         this.addClass('ec-gw');
     });
+    keyframe.on(Event.start, function() {
+        console.log('start1');
+    });
+    keyframe.on(Event.start, function() {
+        console.log('start2', arguments);
+    });
+ /*   keyframe.on(Event.iteration, function() {
+        console.log('iteration', arguments);
+    })*/
     keyframe.start();
 </script>
 </body>

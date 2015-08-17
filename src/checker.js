@@ -33,6 +33,8 @@ Checker.prototype.check = function (arg) {
 };
 
 Checker.stringObject = new Checker('string', 'object');
+Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');
+Checker.string = new Checker('string');
 Checker.ssFunction = new Checker('string', 'string', 'function');
 Checker.array = new Checker(Array);

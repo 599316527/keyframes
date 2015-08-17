@@ -2,7 +2,7 @@ function EventEmitter() {
     this._routes = {};
 }
 
-EventEmitter.event = {
+EventEmitter.type = {
     once: 'once',
     all: 'all'
 };
@@ -13,13 +13,15 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
     } else {
         this._routes[eventName] = [{fn:fn, option:option}];
     }
+    this.emit(Event.on, eventName, option);
 };
 
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
     }
-    option.type = EventEmitter.event.once;
+    option.type = EventEmitter.type.once;
+    this.emit(Event.once, eventName, option);
     this.on(eventName, fn, option);
 };
 
@@ -72,8 +74,9 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
     };
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.event.all});
+        this.on(eventName, proxyCallback(index), {type:EventEmitter.type.all});
     }
+    this.emit(Event.all, dependency, option);
 };
 
 EventEmitter.prototype.emit = function(eventName) {
@@ -101,9 +104,9 @@ EventEmitter.prototype.emit = function(eventName) {
 
             if (!type) {
                 continue;
-            } else if (type === EventEmitter.event.once) {
+            } else if (type === EventEmitter.type.once) {
                 offs.push(itemFn);
-            } else if (type === EventEmitter.event.all) {
+            } else if (type === EventEmitter.type.all) {
                 offs.push(itemFn);
             }
         }
