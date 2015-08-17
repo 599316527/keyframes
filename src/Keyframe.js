@@ -32,14 +32,14 @@ Keyframe.prototype.start = function () {
     return this;
 };
 Keyframe.prototype.css = function (key, value) {
-    return this._compatible.css(this._dom, key, value);
+    return Util.css(this._dom, key, value);
 };
 Keyframe.prototype.addClass = function (className) {
-    this._compatible.addClass(this._dom, className);
+    Util.addClass(this._dom, className);
     return this;
 };
 Keyframe.prototype.removeClass = function (className) {
-    this._compatible.removeClass(this._dom, className);
+    Util.removeClass(this._dom, className);
     return this;
 };
 

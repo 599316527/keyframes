@@ -53,5 +53,41 @@ var Util = {
             }
             return name;
         }
+    },
+    addClass: function (dom, className) {
+        if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
+            dom.className = (dom.className + ' ' + className).trim();
+        }
+    },
+    removeClass: function (dom, className) {
+        dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
+    },
+    css: function (dom, key, value) {
+        if (typeof window.getComputedStyle !== 'undefined')// W3C
+        {
+            Util.css = function (dom, key, value) {
+                if (value !== undefined) {
+                    dom.style[key] = value;
+                    return value;
+                }
+                else {
+                    var tmp = window.getComputedStyle(dom, null)[key];
+                    return tmp === '' ? dom.style[key] : tmp;
+                }
+            };
+        }
+        else if (typeof dom.currentStyle !== 'undefined') {
+            Util.css = function (dom, key, value) {
+                if (value !== undefined) {
+                    dom.style[key] = value;
+                    return value;
+                }
+                else {
+                    var tmp = dom.currentStyle[key];
+                    return tmp === '' ? dom.style[key] : tmp;
+                }
+            };
+        }
+        return this.css(dom, key, value);
     }
 };

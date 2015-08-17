@@ -101,7 +101,7 @@
 
     var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}, {name:'rot', count:'infinite', duration: '3s'}]);
     keyframe.on(Event.start, function () {
-        //this.addClass('ec-gw');
+        this.addClass('ec-gw');
     });
     keyframe.start();
 </script>

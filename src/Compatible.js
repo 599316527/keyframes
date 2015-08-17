@@ -152,11 +152,11 @@ Compatible.instance = function () {
 
 Compatible.prototype.addAnimation = function (dom, css) {
     var key = this.parseCSS('animation');
-    var current = this.css(dom, key);
+    var current = Util.css(dom, key);
     if (current && current !== '') {
         css = current + ',' + css;
     }
-    this.css(dom, key, css);
+    Util.css(dom, key, css);
 };
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
@@ -179,42 +179,4 @@ Compatible.prototype.parseCSS = function (key) {
         };
     }
     return this.parseCSS(key);
-};
-Compatible.prototype.css = function (dom, key, value) {
-    if (typeof window.getComputedStyle !== 'undefined')// W3C
-    {
-        Compatible.prototype.css = function (dom, key, value) {
-            if (value !== undefined) {
-                dom.style[key] = value;
-                return value;
-            }
-            else {
-                var tmp = window.getComputedStyle(dom, null)[key];
-                return tmp === '' ? dom.style[key] : tmp;
-            }
-        };
-    }
-    else if (typeof dom.currentStyle !== 'undefined') {
-         Compatible.prototype.css = function (dom, key, value) {
-            if (value !== undefined) {
-                dom.style[key] = value;
-                return value;
-            }
-            else {
-                var tmp = dom.currentStyle[key];
-                return tmp === '' ? dom.style[key] : tmp;
-            }
-        };
-    }
-    return this.css(dom, key, value);
-};
-
-Compatible.prototype.addClass = function (dom, className) {
-    if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
-        dom.className = (dom.className + ' ' + className).trim();
-    }
-};
-
-Compatible.prototype.removeClass = function (dom, className) {
-    dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
 };

@@ -3,5 +3,9 @@
  */
 var Event = {
     style: '0',
-    start: '1'
+    beforeStart: '1',
+    start: '',
+    afterStart: '2',
+    iteration: '',
+    end: ''
 };
