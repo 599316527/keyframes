@@ -95,6 +95,7 @@ compiler.compile();
     require.config({paths: {ace: "../ace"}});
     require(["ace/ace"], function(ace) {
         $('button').click(function() {
+            cssEditor.setValue('');
             var code = jsEditor.getValue();
             eval(code);
         });
