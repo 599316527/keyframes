@@ -45,10 +45,10 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
         index,
         length = dependency.length;
     if (length === 0) {
-
         this.callWithScope(fn, option);
         return;
     }
+
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
         record[eventName] = false;

@@ -13,6 +13,16 @@ var Util = {
         Child.superClass = Parent;
         /* jshint ignore:end */
     },
+    xInA: function (val, ary) {
+        var index = -1;
+        Util.each(ary, function (item, i) {
+            if (item === val) {
+                index = i;
+                return false;
+            }
+        });
+        return index;
+    },
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },

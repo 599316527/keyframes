@@ -22,7 +22,19 @@
     </style>
 </head>
 <body>
+<button onclick="pause()">pauseAll</button>
+<button onclick="pause('rot')">pauseRot</button>
+<button onclick="goon()">goonAll</button>
+<button onclick="goon('rot')">goonRot</button>
 <div id="demo"></div>
+<script>
+    function pause(name) {
+        keyframe.pause(name);
+    }
+    function goon(name) {
+        keyframe.goon(name);
+    }
+</script>
 <script>
     Keyframe.defineKeyframe('rot',
             {

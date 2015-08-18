@@ -6,7 +6,6 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
-    var me = this;
     if (!Checker.array.check([animations])) {
         this._animations = [animations];
         this._animationStatus[animations['name']] = false;
@@ -21,7 +20,7 @@ function Keyframe(dom, animations) {
     function wrap(eventName) {
         return function () {
             me.emit(eventName, arguments);
-        }
+        };
     }
     this.on(Event.on, function(on, eventName) {
         if (eventName  === Event.start) {
@@ -57,8 +56,42 @@ Keyframe.prototype.start = function () {
     this._compatible.addAnimation(this._dom, css);
     return this;
 };
-Keyframe.prototype.css = function (key, value) {
-    return Util.css(this._dom, key, value);
+Keyframe.prototype.pause = function (opt_name) {
+    this._playState('paused', opt_name);
+    return this;
+};
+Keyframe.prototype.goon = function (opt_name) {
+    this._playState('running', opt_name);
+    return this;
+};
+Keyframe.prototype._c2A = function (key) {
+    var vals = Util.css(this._dom, this._compatible.parseCSS(key));
+    return vals.split(/,\s?/);
+};
+
+Keyframe.prototype._playState = function (state, opt_name) {
+    var namesAry = this._c2A('name');
+    var statesAry = this._c2A('state');
+    var index;
+    if (opt_name) {
+        index = Util.xInA(opt_name, namesAry);
+        if (index > -1) {
+            statesAry[index] = state;
+        }
+    }
+    else {
+        var aniName;
+        Util.each(this._animations, function (animation) {
+            aniName = animation['name'];
+            index = Util.xInA(aniName, namesAry);
+            if (index > -1) {
+                statesAry[index] = state;
+            }
+        });
+    }
+
+    this._compatible.css(this._dom, 'state', statesAry.join(', '));
+    return this;
 };
 Keyframe.prototype.addClass = function (className) {
     Util.addClass(this._dom, className);

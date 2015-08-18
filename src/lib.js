@@ -13,6 +13,16 @@ var Util = {
         Child.superClass = Parent;
         /* jshint ignore:end */
     },
+    xInA: function (val, ary) {
+        var index = -1;
+        Util.each(ary, function (item, i) {
+            if (item === val) {
+                index = i;
+                return false;
+            }
+        });
+        return index;
+    },
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },
@@ -165,10 +175,10 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
         index,
         length = dependency.length;
     if (length === 0) {
-
         this.callWithScope(fn, option);
         return;
     }
+
     for (index = 0; index < length ; index++) {
         eventName = dependency[index];
         record[eventName] = false;
@@ -263,15 +273,16 @@ EventEmitter.prototype.emit = function(eventName) {
  * Created by dingguoliang01 on 2015/8/13.
  */
 var Event = {
-    style: 'style',
-    beforeStart: 'beforeStart',
+    style: 'Style',
+    beforeStart: 'BeforeStart',
+    pause: 'Pause',
     start: 'Start',
     iteration: 'Iteration',
     end: 'End',
-    on: 'on',
-    once: 'once',
-    all: 'all',
-    emit: 'emit'
+    on: 'On',
+    once: 'Once',
+    all: 'All',
+    emit: 'Emit'
 };
 
 /**
@@ -437,7 +448,7 @@ Compatible.prototype.prefix = (function () {
         '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 })();
 Compatible._keyMap = {
-    'name': 'animationName',
+    'name': ['animationName'],
     'duration': ['animationDuration', '1s'],
     'function': ['animationTimingFunction', 'linear'],
     'delay': ['animationDelay', '0s'],
@@ -504,11 +515,17 @@ Compatible.instance = function () {
     }
     return Compatible._compatible;
 };
-
+Compatible.prototype.css = function (dom, key, css) {
+    key = this.parseCSS(key);
+    this.requestAnimationFrame(function() {
+        Util.css(dom, key, css);
+    });
+};
 Compatible.prototype.addAnimation = function (dom, css) {
     var key = this.parseCSS('animation');
     var current = Util.css(dom, key);
-    if (current && current !== '') {
+    // chrome下存在none 0s ease 0s 1 normal none running,过滤掉
+    if (current && current !== '' && current.indexOf('none') !== 0) {
         css = current + ',' + css;
     }
     this.requestAnimationFrame(function() {
@@ -516,13 +533,13 @@ Compatible.prototype.addAnimation = function (dom, css) {
     });
 };
 
-//简称转全称  name --> animationName
+//简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
-                return Compatible._keyMap[key];
+                return Compatible._keyMap[key][0];
             }
             else {
                 return key;
@@ -532,7 +549,7 @@ Compatible.prototype.parseCSS = function (key) {
     else {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
-                key = Compatible._keyMap[key];
+                key = Compatible._keyMap[key][0];
             }
             return p + key[0].toUpperCase() + key.substr(1);
         };
@@ -553,14 +570,6 @@ Compatible.prototype.parseEvent = function (key) {
     }
     return this.parseEvent(key);
 };
-window.requestAnimFrame = (function(){
-    return  window.requestAnimationFrame       ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
 Compatible.prototype.requestAnimationFrame = (function () {
     window.requestAnimFrame = (function(){
         return  window.requestAnimationFrame       ||
@@ -572,7 +581,7 @@ Compatible.prototype.requestAnimationFrame = (function () {
     })();
     return function (fn) {
         window.requestAnimationFrame(fn);
-    }
+    };
 })();
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
@@ -787,7 +796,6 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
-    var me = this;
     if (!Checker.array.check([animations])) {
         this._animations = [animations];
         this._animationStatus[animations['name']] = false;
@@ -802,7 +810,7 @@ function Keyframe(dom, animations) {
     function wrap(eventName) {
         return function () {
             me.emit(eventName, arguments);
-        }
+        };
     }
     this.on(Event.on, function(on, eventName) {
         if (eventName  === Event.start) {
@@ -838,8 +846,42 @@ Keyframe.prototype.start = function () {
     this._compatible.addAnimation(this._dom, css);
     return this;
 };
-Keyframe.prototype.css = function (key, value) {
-    return Util.css(this._dom, key, value);
+Keyframe.prototype.pause = function (opt_name) {
+    this._playState('paused', opt_name);
+    return this;
+};
+Keyframe.prototype.goon = function (opt_name) {
+    this._playState('running', opt_name);
+    return this;
+};
+Keyframe.prototype._c2A = function (key) {
+    var vals = Util.css(this._dom, this._compatible.parseCSS(key));
+    return vals.split(/,\s?/);
+};
+
+Keyframe.prototype._playState = function (state, opt_name) {
+    var namesAry = this._c2A('name');
+    var statesAry = this._c2A('state');
+    var index;
+    if (opt_name) {
+        index = Util.xInA(opt_name, namesAry);
+        if (index > -1) {
+            statesAry[index] = state;
+        }
+    }
+    else {
+        var aniName;
+        Util.each(this._animations, function (animation) {
+            aniName = animation['name'];
+            index = Util.xInA(aniName, namesAry);
+            if (index > -1) {
+                statesAry[index] = state;
+            }
+        });
+    }
+
+    this._compatible.css(this._dom, 'state', statesAry.join(', '));
+    return this;
 };
 Keyframe.prototype.addClass = function (className) {
     Util.addClass(this._dom, className);

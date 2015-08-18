@@ -82,7 +82,7 @@ Compatible.prototype.prefix = (function () {
         '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 })();
 Compatible._keyMap = {
-    'name': 'animationName',
+    'name': ['animationName'],
     'duration': ['animationDuration', '1s'],
     'function': ['animationTimingFunction', 'linear'],
     'delay': ['animationDelay', '0s'],
@@ -149,11 +149,17 @@ Compatible.instance = function () {
     }
     return Compatible._compatible;
 };
-
+Compatible.prototype.css = function (dom, key, css) {
+    key = this.parseCSS(key);
+    this.requestAnimationFrame(function() {
+        Util.css(dom, key, css);
+    });
+};
 Compatible.prototype.addAnimation = function (dom, css) {
     var key = this.parseCSS('animation');
     var current = Util.css(dom, key);
-    if (current && current !== '') {
+    // chrome下存在none 0s ease 0s 1 normal none running,过滤掉
+    if (current && current !== '' && current.indexOf('none') !== 0) {
         css = current + ',' + css;
     }
     this.requestAnimationFrame(function() {
@@ -161,13 +167,13 @@ Compatible.prototype.addAnimation = function (dom, css) {
     });
 };
 
-//简称转全称  name --> animationName
+//简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
-                return Compatible._keyMap[key];
+                return Compatible._keyMap[key][0];
             }
             else {
                 return key;
@@ -177,7 +183,7 @@ Compatible.prototype.parseCSS = function (key) {
     else {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
-                key = Compatible._keyMap[key];
+                key = Compatible._keyMap[key][0];
             }
             return p + key[0].toUpperCase() + key.substr(1);
         };
@@ -198,14 +204,6 @@ Compatible.prototype.parseEvent = function (key) {
     }
     return this.parseEvent(key);
 };
-window.requestAnimFrame = (function(){
-    return  window.requestAnimationFrame       ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
 Compatible.prototype.requestAnimationFrame = (function () {
     window.requestAnimFrame = (function(){
         return  window.requestAnimationFrame       ||
@@ -217,5 +215,5 @@ Compatible.prototype.requestAnimationFrame = (function () {
     })();
     return function (fn) {
         window.requestAnimationFrame(fn);
-    }
+    };
 })();
