@@ -27,7 +27,7 @@ var Util = {
         return Array.prototype.slice.call(arg, 0);
     },
     each: function (ary, iterator) {
-        for (var i = 0; i < ary.length; i++) {
+        for (var i = 0, l = ary.length; i < l; i++) {
             if (iterator(ary[i], i, ary) === false) {
                 break;
             }
@@ -145,7 +145,32 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
     }
     this.emit(Event.on, eventName, option);
 };
-
+EventEmitter.prototype.off = function(eventName, fn) {
+    if (Checker.string.check(arguments)) {
+        if (eventName in this._routes) {
+            this._routes[eventName] = [];
+            this.emit(Event.off, eventName);
+        }
+    }
+    else if (Checker.sFunction.check(arguments)) {
+        if (eventName in this._routes) {
+            var index = -1;
+            Util.each(this._routes[eventName], function (item, i) {
+                if (item.fn === fn) {
+                    index = i;
+                    return false;
+                }
+            });
+            if (index > -1) {
+                this._routes[eventName].splice(index, 1);
+                this.emit(Event.off, eventName);
+            }
+        }
+    }
+    else {
+        throw new Error('incorrect parameter!');
+    }
+};
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
@@ -170,20 +195,12 @@ EventEmitter.prototype.callWithScope = function(fn, option, params) {
 
 EventEmitter.prototype.all = function(dependency, fn, option) {
     var record = {},
-        results = [],
-        eventName,
-        index,
-        length = dependency.length;
-    if (length === 0) {
+        results = [];
+    if (dependency.length === 0) {
         this.callWithScope(fn, option);
         return;
     }
-
-    for (index = 0; index < length ; index++) {
-        eventName = dependency[index];
-        record[eventName] = false;
-    }
-    var that = this;
+    var me = this;
     var proxyCallback = function(index) {
         return  function(eventName, result) {
             if (eventName in record) {
@@ -198,14 +215,14 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
                 }
             }
             if (trigger) {
-                that.callWithScope(fn, option, results);
+                me.callWithScope(fn, option, results);
             }
         };
     };
-    for (index = 0; index < length ; index++) {
-        eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.type.all});
-    }
+    Util.each(dependency, function (eventName, i) {
+        record[eventName] = false;
+        this.on(eventName, proxyCallback(i), {type:EventEmitter.type.all});
+    });
     this.emit(Event.all, dependency, option);
 };
 
@@ -213,9 +230,10 @@ EventEmitter.prototype.emit = function(eventName) {
     var fns = this._routes[eventName],
         itemFn, scope, type, fn, option,
         offs = [], itemOff;
+    var args = arguments;
     if (fns) {
-        for (var i = 0, l = fns.length; i < l; i++) {
-            itemFn = fns[i];
+        var me = this;
+        Util.each(fns, function(itemFn) {
             fn = itemFn.fn;
             option = itemFn.option;
             if (option) {
@@ -227,20 +245,16 @@ EventEmitter.prototype.emit = function(eventName) {
             }
 
             if (scope) {
-                fn.apply(scope, Util.arg2Ary(arguments));
+                fn.apply(scope, Util.arg2Ary(args));
             } else {
-                fn.apply(this, Util.arg2Ary(arguments));
+                fn.apply(me, Util.arg2Ary(args));
             }
 
-            if (!type) {
-                continue;
-            } else if (type === EventEmitter.type.once) {
-                offs.push(itemFn);
-            } else if (type === EventEmitter.type.all) {
+            if (type) {
+                //type === EventEmitter.type.once or type === EventEmitter.type.all
                 offs.push(itemFn);
             }
-        }
-
+        });
         if (offs.length > 0) {
             var newFns = [];
             var fnsIndex = 0, offIndex = 0,
@@ -280,6 +294,7 @@ var Event = {
     iteration: 'Iteration',
     end: 'End',
     on: 'On',
+    off: 'Off',
     once: 'Once',
     all: 'All',
     emit: 'Emit'
@@ -324,6 +339,7 @@ Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');
 Checker.string = new Checker('string');
 Checker.ssFunction = new Checker('string', 'string', 'function');
+Checker.sFunction = new Checker('string', 'function');
 Checker.array = new Checker(Array);
 /**
  * @file pitch.js ~ 2015/08/13 11:47:13
@@ -495,6 +511,9 @@ Compatible.prototype.animationTpl = function () {
     }
     return this._animationTpl;
 };
+Compatible.prototype.regExp = function (middle) {
+    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
+};
 Compatible.prototype.keyframe = function (keyframe) {
     return '@' + this.prefix + 'keyframes ' + keyframe;
 };
@@ -517,20 +536,14 @@ Compatible.instance = function () {
 };
 Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
-    this.requestAnimationFrame(function() {
-        Util.css(dom, key, css);
-    });
-};
-Compatible.prototype.addAnimation = function (dom, css) {
-    var key = this.parseCSS('animation');
-    var current = Util.css(dom, key);
-    // chrome下存在none 0s ease 0s 1 normal none running,过滤掉
-    if (current && current !== '' && current.indexOf('none') !== 0) {
-        css = current + ',' + css;
+    if (css || css === '') {
+        this.requestAnimationFrame(function() {
+            Util.css(dom, key, css);
+        });
     }
-    this.requestAnimationFrame(function() {
-        Util.css(dom, key, css);
-    });
+    else {
+        return Util.css(dom, key);
+    }
 };
 
 //简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName
@@ -841,22 +854,80 @@ Keyframe.prototype._init = function (dom) {
     this._animationStatus = {};
 };
 Keyframe.prototype.start = function () {
-    var css = this._compatible.parseAnimation(this._animations);
-    this.emit(Event.beforeStart);
-    this._compatible.addAnimation(this._dom, css);
+    var cpt = this._compatible;
+    var css = cpt.parseAnimation(this._animations);
+    var old = this._filter();
+    if (old !== '') {
+        if (css.trim() !== '') {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', old + ', ' + css);
+        }
+        else {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', css);
+        }
+    }
+    else {
+        if (css.trim() !== '') {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', css);
+        }
+    }
     return this;
 };
 Keyframe.prototype.pause = function (opt_name) {
     this._playState('paused', opt_name);
+    this.emit(Event.pause);
+    return this;
+};
+Keyframe.prototype._filter = function () {
+    var animation = this._compatible.css(this._dom, 'animation');
+    var _animation = [];
+    if (animation) {
+        animation = animation.split(',');
+        var tmp = ['(?:none)'];
+        Util.each(this._animations, function (animation) {
+            tmp.push('(?:' + animation['name'] + ')');
+        });
+        var reg = this._compatible.regExp(tmp.join('|'));
+        Util.each(animation, function (ceil) {
+            if (!reg.test(ceil)) {
+                _animation.push(ceil);
+            }
+        });
+    }
+    return _animation.join(',').trim();
+};
+Keyframe.prototype.stop = function () {
+    var cpt = this._compatible;
+    cpt.css(this._dom, 'animation', this._filter());
+    /* jshint ignore:start */
+    for (var key in this._animationStatus) {
+        this._animationStatus[key] = false;
+    }
+    /* jshint ignore:end */
+    if (this._monitorStart) {
+        Util.off(this._dom, cpt.parseEvent(Event.start), this._monitorStart);
+        this._monitorStart = false;
+    }
+    if (this._monitorEnd) {
+        Util.off(this._dom, cpt.parseEvent(Event.end), this._monitorEnd);
+        this._monitorEnd = false;
+    }
+    if (this._monitorIteration) {
+        Util.off(this._dom, cpt.parseEvent(Event.iteration), this._monitorIteration);
+        this._monitorIteration = false;
+    }
     return this;
 };
 Keyframe.prototype.goon = function (opt_name) {
     this._playState('running', opt_name);
+    this.emit(Event.goon);
     return this;
 };
 Keyframe.prototype._c2A = function (key) {
-    var vals = Util.css(this._dom, this._compatible.parseCSS(key));
-    return vals.split(/,\s?/);
+    var css = Util.css(this._dom, this._compatible.parseCSS(key));
+    return css.split(/,\s?/);
 };
 
 Keyframe.prototype._playState = function (state, opt_name) {

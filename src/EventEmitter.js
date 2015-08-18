@@ -15,7 +15,32 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
     }
     this.emit(Event.on, eventName, option);
 };
-
+EventEmitter.prototype.off = function(eventName, fn) {
+    if (Checker.string.check(arguments)) {
+        if (eventName in this._routes) {
+            this._routes[eventName] = [];
+            this.emit(Event.off, eventName);
+        }
+    }
+    else if (Checker.sFunction.check(arguments)) {
+        if (eventName in this._routes) {
+            var index = -1;
+            Util.each(this._routes[eventName], function (item, i) {
+                if (item.fn === fn) {
+                    index = i;
+                    return false;
+                }
+            });
+            if (index > -1) {
+                this._routes[eventName].splice(index, 1);
+                this.emit(Event.off, eventName);
+            }
+        }
+    }
+    else {
+        throw new Error('incorrect parameter!');
+    }
+};
 EventEmitter.prototype.once = function(eventName, fn, option) {
     if (!option) {
         option = {};
@@ -40,20 +65,12 @@ EventEmitter.prototype.callWithScope = function(fn, option, params) {
 
 EventEmitter.prototype.all = function(dependency, fn, option) {
     var record = {},
-        results = [],
-        eventName,
-        index,
-        length = dependency.length;
-    if (length === 0) {
+        results = [];
+    if (dependency.length === 0) {
         this.callWithScope(fn, option);
         return;
     }
-
-    for (index = 0; index < length ; index++) {
-        eventName = dependency[index];
-        record[eventName] = false;
-    }
-    var that = this;
+    var me = this;
     var proxyCallback = function(index) {
         return  function(eventName, result) {
             if (eventName in record) {
@@ -68,14 +85,14 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
                 }
             }
             if (trigger) {
-                that.callWithScope(fn, option, results);
+                me.callWithScope(fn, option, results);
             }
         };
     };
-    for (index = 0; index < length ; index++) {
-        eventName = dependency[index];
-        this.on(eventName, proxyCallback(index), {type:EventEmitter.type.all});
-    }
+    Util.each(dependency, function (eventName, i) {
+        record[eventName] = false;
+        this.on(eventName, proxyCallback(i), {type:EventEmitter.type.all});
+    });
     this.emit(Event.all, dependency, option);
 };
 
@@ -83,9 +100,10 @@ EventEmitter.prototype.emit = function(eventName) {
     var fns = this._routes[eventName],
         itemFn, scope, type, fn, option,
         offs = [], itemOff;
+    var args = arguments;
     if (fns) {
-        for (var i = 0, l = fns.length; i < l; i++) {
-            itemFn = fns[i];
+        var me = this;
+        Util.each(fns, function(itemFn) {
             fn = itemFn.fn;
             option = itemFn.option;
             if (option) {
@@ -97,20 +115,16 @@ EventEmitter.prototype.emit = function(eventName) {
             }
 
             if (scope) {
-                fn.apply(scope, Util.arg2Ary(arguments));
+                fn.apply(scope, Util.arg2Ary(args));
             } else {
-                fn.apply(this, Util.arg2Ary(arguments));
+                fn.apply(me, Util.arg2Ary(args));
             }
 
-            if (!type) {
-                continue;
-            } else if (type === EventEmitter.type.once) {
-                offs.push(itemFn);
-            } else if (type === EventEmitter.type.all) {
+            if (type) {
+                //type === EventEmitter.type.once or type === EventEmitter.type.all
                 offs.push(itemFn);
             }
-        }
-
+        });
         if (offs.length > 0) {
             var newFns = [];
             var fnsIndex = 0, offIndex = 0,

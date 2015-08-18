@@ -27,7 +27,7 @@ var Util = {
         return Array.prototype.slice.call(arg, 0);
     },
     each: function (ary, iterator) {
-        for (var i = 0; i < ary.length; i++) {
+        for (var i = 0, l = ary.length; i < l; i++) {
             if (iterator(ary[i], i, ary) === false) {
                 break;
             }

@@ -51,24 +51,82 @@ Keyframe.prototype._init = function (dom) {
     this._animationStatus = {};
 };
 Keyframe.prototype.start = function () {
-    var css = this._compatible.parseAnimation(this._animations);
-    this.emit(Event.beforeStart);
-    this._compatible.addAnimation(this._dom, css);
+    var cpt = this._compatible;
+    var css = cpt.parseAnimation(this._animations);
+    var old = this._filter();
+    if (old !== '') {
+        if (css.trim() !== '') {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', old + ', ' + css);
+        }
+        else {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', css);
+        }
+    }
+    else {
+        if (css.trim() !== '') {
+            this.emit(Event.beforeStart);
+            cpt.css(this._dom, 'animation', css);
+        }
+    }
     return this;
 };
 Keyframe.prototype.pause = function (opt_name) {
     this._playState('paused', opt_name);
+    this.emit(Event.pause);
+    return this;
+};
+Keyframe.prototype._filter = function () {
+    var animation = this._compatible.css(this._dom, 'animation');
+    var _animation = [];
+    if (animation) {
+        animation = animation.split(',');
+        var tmp = ['(?:none)'];
+        Util.each(this._animations, function (animation) {
+            tmp.push('(?:' + animation['name'] + ')');
+        });
+        var reg = this._compatible.regExp(tmp.join('|'));
+        Util.each(animation, function (ceil) {
+            if (!reg.test(ceil)) {
+                _animation.push(ceil);
+            }
+        });
+    }
+    return _animation.join(',').trim();
+};
+Keyframe.prototype.stop = function () {
+    var cpt = this._compatible;
+    cpt.css(this._dom, 'animation', this._filter());
+    /* jshint ignore:start */
+    for (var key in this._animationStatus) {
+        this._animationStatus[key] = false;
+    }
+    /* jshint ignore:end */
+    if (this._monitorStart) {
+        Util.off(this._dom, cpt.parseEvent(Event.start), this._monitorStart);
+        this._monitorStart = false;
+    }
+    if (this._monitorEnd) {
+        Util.off(this._dom, cpt.parseEvent(Event.end), this._monitorEnd);
+        this._monitorEnd = false;
+    }
+    if (this._monitorIteration) {
+        Util.off(this._dom, cpt.parseEvent(Event.iteration), this._monitorIteration);
+        this._monitorIteration = false;
+    }
     return this;
 };
 Keyframe.prototype.goon = function (opt_name) {
     this._playState('running', opt_name);
+    this.emit(Event.goon);
     return this;
 };
 Keyframe.prototype._c2A = function (key) {
-    var vals = Util.css(this._dom, this._compatible.parseCSS(key));
-    return vals.split(/,\s?/);
+    var css = Util.css(this._dom, this._compatible.parseCSS(key));
+    return css.split(/,\s?/);
 };
-
+// 根据animationName 和 animationState 来过滤,避免破坏当前状态
 Keyframe.prototype._playState = function (state, opt_name) {
     var namesAry = this._c2A('name');
     var statesAry = this._c2A('state');
@@ -89,7 +147,6 @@ Keyframe.prototype._playState = function (state, opt_name) {
             }
         });
     }
-
     this._compatible.css(this._dom, 'state', statesAry.join(', '));
     return this;
 };

@@ -37,4 +37,5 @@ Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');
 Checker.string = new Checker('string');
 Checker.ssFunction = new Checker('string', 'string', 'function');
+Checker.sFunction = new Checker('string', 'function');
 Checker.array = new Checker(Array);

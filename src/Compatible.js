@@ -129,6 +129,9 @@ Compatible.prototype.animationTpl = function () {
     }
     return this._animationTpl;
 };
+Compatible.prototype.regExp = function (middle) {
+    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
+};
 Compatible.prototype.keyframe = function (keyframe) {
     return '@' + this.prefix + 'keyframes ' + keyframe;
 };
@@ -151,20 +154,14 @@ Compatible.instance = function () {
 };
 Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
-    this.requestAnimationFrame(function() {
-        Util.css(dom, key, css);
-    });
-};
-Compatible.prototype.addAnimation = function (dom, css) {
-    var key = this.parseCSS('animation');
-    var current = Util.css(dom, key);
-    // chrome下存在none 0s ease 0s 1 normal none running,过滤掉
-    if (current && current !== '' && current.indexOf('none') !== 0) {
-        css = current + ',' + css;
+    if (css || css === '') {
+        this.requestAnimationFrame(function() {
+            Util.css(dom, key, css);
+        });
     }
-    this.requestAnimationFrame(function() {
-        Util.css(dom, key, css);
-    });
+    else {
+        return Util.css(dom, key);
+    }
 };
 
 //简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName

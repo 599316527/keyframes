@@ -26,6 +26,8 @@
 <button onclick="pause('rot')">pauseRot</button>
 <button onclick="goon()">goonAll</button>
 <button onclick="goon('rot')">goonRot</button>
+<button onclick="start()">start</button>
+<button onclick="stop()">stop</button>
 <div id="demo"></div>
 <script>
     function pause(name) {
@@ -33,6 +35,12 @@
     }
     function goon(name) {
         keyframe.goon(name);
+    }
+    function stop() {
+        keyframe.stop();
+    }
+    function start() {
+        keyframe.start();
     }
 </script>
 <script>
@@ -111,8 +119,8 @@
         '0.70711em -0.70711em 0 0.17678em #f1c40f'
     });
     Keyframe.compile();
-
-    var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}, {name:'rot', count:'infinite', duration: '3s'}]);
+    new Keyframe(document.getElementById('demo'), [{name:'rot', count:'infinite', duration: '3s'}]).start();
+    var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}]);
     keyframe.on(Event.beforeStart, function () {
         this.addClass('ec-gw');
     });
@@ -125,7 +133,7 @@
  /*   keyframe.on(Event.iteration, function() {
         console.log('iteration', arguments);
     })*/
-    keyframe.start();
+
 </script>
 </body>
 </html>
