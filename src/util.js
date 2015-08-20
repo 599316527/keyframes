@@ -82,7 +82,7 @@ var Util = {
                 }
                 else {
                     var tmp = window.getComputedStyle(dom, null)[key];
-                    return tmp === '' ? dom.style[key] : tmp;
+                    return !tmp ? dom.style[key] : tmp;
                 }
             };
         }
@@ -94,7 +94,7 @@ var Util = {
                 }
                 else {
                     var tmp = dom.currentStyle[key];
-                    return tmp === '' ? dom.style[key] : tmp;
+                    return !tmp ? dom.style[key] : tmp;
                 }
             };
         }

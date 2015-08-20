@@ -82,7 +82,7 @@ var Util = {
                 }
                 else {
                     var tmp = window.getComputedStyle(dom, null)[key];
-                    return tmp === '' ? dom.style[key] : tmp;
+                    return !tmp ? dom.style[key] : tmp;
                 }
             };
         }
@@ -94,7 +94,7 @@ var Util = {
                 }
                 else {
                     var tmp = dom.currentStyle[key];
-                    return tmp === '' ? dom.style[key] : tmp;
+                    return !tmp ? dom.style[key] : tmp;
                 }
             };
         }
@@ -300,6 +300,71 @@ var Event = {
     emit: 'Emit'
 };
 
+function Promise() {
+    Promise.superClass.call(this);
+}
+Promise.event = {
+    success: 'success',
+    error: 'error',
+    progress: 'progress'
+};
+Util.inherit(Promise, EventEmitter);
+Promise.prototype.then = function (fulfilledHandler, errorHandler, progressHandler) {
+    if (fulfilledHandler) {
+        this.on(Promise.event.success, fulfilledHandler);
+    }
+    if (errorHandler) {
+        this.on(Promise.event.error, errorHandler);
+    }
+    if (progressHandler) {
+        this.on(Promise.event.progress, progressHandler);
+    }
+    return this;
+};
+function Deferred() {
+    this.state = Deferred.state.unfulfilled;
+    this.promise = new Promise();
+}
+Deferred.state = {
+    unfulfilled: 'unfulfilled',
+    fulfilled: 'fulfilled',
+    failed: 'failed'
+};
+Deferred.prototype.resolve = function() {
+    //console.log("resolve", arguments);
+    this.state = Deferred.state.fulfilled;
+    var args =  Util.arg2Ary(arguments);
+    args.splice(0, 0, Promise.event.success);
+    this.promise.emit.apply(this.promise, args);
+};
+Deferred.prototype.reject = function() {
+    this.state = Deferred.state.failed;
+    var args =  Util.arg2Ary(arguments);
+    args.splice(0, 0, Promise.event.error);
+    this.promise.emit.apply(this.promise, args);
+};
+Deferred.prototype.progress = function() {
+    var args =  Util.arg2Ary(arguments);
+    args.splice(0, 0, Promise.event.progress);
+    this.promise.emit.apply(this.promise, args);
+};
+Deferred.prototype.all = function(promises) {
+    var count = promises.length;
+    var that = this;
+    var results = [];
+    Util.each(promises,function(promise, index) {
+        promise.then(function(data) {
+            count --;
+            results[index] = data;
+            if (count === 0) {
+                that.resolve(results);
+            }
+        }, function(err) {
+            that.reject(err);
+        });
+    });
+    return this.promise;
+};
 /**
  * @file checker.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -430,9 +495,9 @@ function Compatible() {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
     /* jshint ignore:end */
-    pitch.use('special', 'background-gradient',
+    pitch.use('special', 'background',
         function (key, value) {
-            return '!!!';
+            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
         });
     pitch.use('rest', '*',
         function (key, value) {
@@ -464,6 +529,7 @@ Compatible.prototype.prefix = (function () {
         '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 })();
 Compatible._keyMap = {
+    'animation': ['animation'],
     'name': ['animationName'],
     'duration': ['animationDuration', '1s'],
     'function': ['animationTimingFunction', 'linear'],
@@ -488,10 +554,8 @@ Compatible.prototype.parseAnimation = function (animations) {
             return Compatible._keyMap[$1][1];
         }
     }
-    console.log(animations);
     Util.each(animations, function (animation) {
         css = animation;
-        console.log(animation);
         csses.push(tpl.replace(/<(.*?)>/g, regReplace));
     });
     return csses.join(',');
@@ -563,8 +627,9 @@ Compatible.prototype.parseCSS = function (key) {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 key = Compatible._keyMap[key][0];
+                return p + key[0].toUpperCase() + key.substr(1);
             }
-            return p + key[0].toUpperCase() + key.substr(1);
+            return key;
         };
     }
     return this.parseCSS(key);
@@ -809,17 +874,23 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
-    if (!Checker.array.check([animations])) {
-        this._animations = [animations];
-        this._animationStatus[animations['name']] = false;
+    if (!animations) {
+        this._animations = [];
     }
     else {
-        var me = this;
-        Util.each(animations, function (animation) {
-            me._animationStatus[animation['name']] = false;
-        });
-        this._animations = animations;
+        if (!Checker.array.check([animations])) {
+            this._animations = [animations];
+            this._animationStatus[animations['name']] = false;
+        }
+        else {
+            var me = this;
+            Util.each(animations, function (animation) {
+                me._animationStatus[animation['name']] = false;
+            });
+            this._animations = animations;
+        }
     }
+
     function wrap(eventName) {
         return function () {
             me.emit(eventName, arguments);
@@ -857,19 +928,17 @@ Keyframe.prototype.start = function () {
     var cpt = this._compatible;
     var css = cpt.parseAnimation(this._animations);
     var old = this._filter();
+    this.emit(Event.beforeStart);
     if (old !== '') {
         if (css.trim() !== '') {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', old + ', ' + css);
         }
         else {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', css);
         }
     }
     else {
         if (css.trim() !== '') {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', css);
         }
     }
@@ -898,6 +967,25 @@ Keyframe.prototype._filter = function () {
     }
     return _animation.join(',').trim();
 };
+Keyframe.prototype.reflow = function () {
+    // -> triggering reflow /* The actual magic */
+    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+    var dom = this._dom;
+    this._compatible.requestAnimationFrame(function() {
+        dom.offsetWidth = dom.offsetWidth;
+    });
+    return this;
+};
+Keyframe.prototype.restart = function () {
+    var cpt = this._compatible;
+    cpt.css(this._dom, 'animation', this._filter());
+    /* jshint ignore:start */
+    for (var key in this._animationStatus) {
+        this._animationStatus[key] = false;
+    }
+    this.reflow();
+    this.start();
+};
 Keyframe.prototype.stop = function () {
     var cpt = this._compatible;
     cpt.css(this._dom, 'animation', this._filter());
@@ -918,6 +1006,7 @@ Keyframe.prototype.stop = function () {
         Util.off(this._dom, cpt.parseEvent(Event.iteration), this._monitorIteration);
         this._monitorIteration = false;
     }
+    this.emit(Event.stop);
     return this;
 };
 Keyframe.prototype.goon = function (opt_name) {
@@ -929,7 +1018,7 @@ Keyframe.prototype._c2A = function (key) {
     var css = Util.css(this._dom, this._compatible.parseCSS(key));
     return css.split(/,\s?/);
 };
-
+// 根据animationName 和 animationState 来过滤,避免破坏当前状态
 Keyframe.prototype._playState = function (state, opt_name) {
     var namesAry = this._c2A('name');
     var statesAry = this._c2A('state');
@@ -950,7 +1039,6 @@ Keyframe.prototype._playState = function (state, opt_name) {
             }
         });
     }
-
     this._compatible.css(this._dom, 'state', statesAry.join(', '));
     return this;
 };

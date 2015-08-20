@@ -48,9 +48,9 @@ function Compatible() {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
     /* jshint ignore:end */
-    pitch.use('special', 'background-gradient',
+    pitch.use('special', 'background',
         function (key, value) {
-            return '!!!';
+            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
         });
     pitch.use('rest', '*',
         function (key, value) {
@@ -82,6 +82,7 @@ Compatible.prototype.prefix = (function () {
         '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 })();
 Compatible._keyMap = {
+    'animation': ['animation'],
     'name': ['animationName'],
     'duration': ['animationDuration', '1s'],
     'function': ['animationTimingFunction', 'linear'],
@@ -106,10 +107,8 @@ Compatible.prototype.parseAnimation = function (animations) {
             return Compatible._keyMap[$1][1];
         }
     }
-    console.log(animations);
     Util.each(animations, function (animation) {
         css = animation;
-        console.log(animation);
         csses.push(tpl.replace(/<(.*?)>/g, regReplace));
     });
     return csses.join(',');
@@ -181,8 +180,9 @@ Compatible.prototype.parseCSS = function (key) {
         Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 key = Compatible._keyMap[key][0];
+                return p + key[0].toUpperCase() + key.substr(1);
             }
-            return p + key[0].toUpperCase() + key.substr(1);
+            return key;
         };
     }
     return this.parseCSS(key);

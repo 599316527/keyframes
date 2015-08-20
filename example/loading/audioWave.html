@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../../src/lib.js"></script>
+    <script src="../../lib/jquery.min.js"></script>
+    <script src="../../src/loading/audioWave.js"></script>
+</head>
+<body>
+<div id="demo">audioWave</div>
+<input type="button" value="start" id="start">
+<input type="button" value="pause" id="pause">
+<input type="button" value="continue" id="continue">
+<!--<input type="button" value="_pause" id="_pause">
+不兼容
+<input type="button" value="_continue" id="_continue">-->
+<input type="button" value="stop" id="stop">
+<input type="button" value="restart" id="restart">
+<script>
+    var demo = new AudioWave(document.getElementById('demo'));
+    Keyframe.compile();
+    document.getElementById('start').onclick = function () {
+        demo.start();
+    }
+    document.getElementById('continue').onclick = function () {
+        demo.goon();
+    }
+    document.getElementById('pause').onclick = function () {
+        demo.pause();
+    }
+    document.getElementById('stop').onclick = function () {
+        demo.stop();
+    }
+    document.getElementById('restart').onclick = function () {
+        demo.restart();
+    }
+</script>
+</body>
+</html>

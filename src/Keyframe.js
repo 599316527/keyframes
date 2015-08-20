@@ -6,17 +6,23 @@ function Keyframe(dom, animations) {
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
-    if (!Checker.array.check([animations])) {
-        this._animations = [animations];
-        this._animationStatus[animations['name']] = false;
+    if (!animations) {
+        this._animations = [];
     }
     else {
-        var me = this;
-        Util.each(animations, function (animation) {
-            me._animationStatus[animation['name']] = false;
-        });
-        this._animations = animations;
+        if (!Checker.array.check([animations])) {
+            this._animations = [animations];
+            this._animationStatus[animations['name']] = false;
+        }
+        else {
+            var me = this;
+            Util.each(animations, function (animation) {
+                me._animationStatus[animation['name']] = false;
+            });
+            this._animations = animations;
+        }
     }
+
     function wrap(eventName) {
         return function () {
             me.emit(eventName, arguments);
@@ -54,19 +60,17 @@ Keyframe.prototype.start = function () {
     var cpt = this._compatible;
     var css = cpt.parseAnimation(this._animations);
     var old = this._filter();
+    this.emit(Event.beforeStart);
     if (old !== '') {
         if (css.trim() !== '') {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', old + ', ' + css);
         }
         else {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', css);
         }
     }
     else {
         if (css.trim() !== '') {
-            this.emit(Event.beforeStart);
             cpt.css(this._dom, 'animation', css);
         }
     }
@@ -95,6 +99,25 @@ Keyframe.prototype._filter = function () {
     }
     return _animation.join(',').trim();
 };
+Keyframe.prototype.reflow = function () {
+    // -> triggering reflow /* The actual magic */
+    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+    var dom = this._dom;
+    this._compatible.requestAnimationFrame(function() {
+        dom.offsetWidth = dom.offsetWidth;
+    });
+    return this;
+};
+Keyframe.prototype.restart = function () {
+    var cpt = this._compatible;
+    cpt.css(this._dom, 'animation', this._filter());
+    /* jshint ignore:start */
+    for (var key in this._animationStatus) {
+        this._animationStatus[key] = false;
+    }
+    this.reflow();
+    this.start();
+};
 Keyframe.prototype.stop = function () {
     var cpt = this._compatible;
     cpt.css(this._dom, 'animation', this._filter());
@@ -115,6 +138,7 @@ Keyframe.prototype.stop = function () {
         Util.off(this._dom, cpt.parseEvent(Event.iteration), this._monitorIteration);
         this._monitorIteration = false;
     }
+    this.emit(Event.stop);
     return this;
 };
 Keyframe.prototype.goon = function (opt_name) {

@@ -28,6 +28,7 @@
 <button onclick="goon('rot')">goonRot</button>
 <button onclick="start()">start</button>
 <button onclick="stop()">stop</button>
+<button onclick="restart()">restart</button>
 <div id="demo"></div>
 <script>
     function pause(name) {
@@ -41,6 +42,9 @@
     }
     function start() {
         keyframe.start();
+    }
+    function restart() {
+        keyframe.restart();
     }
 </script>
 <script>
@@ -123,6 +127,12 @@
     var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}]);
     keyframe.on(Event.beforeStart, function () {
         this.addClass('ec-gw');
+    });
+    keyframe.on(Event.stop, function () {
+        this.removeClass('ec-gw');
+    });
+    keyframe.on(Event.stop, function() {
+        console.log('stop', arguments);
     });
     keyframe.on(Event.start, function() {
         console.log('start1');
