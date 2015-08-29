@@ -10,6 +10,8 @@ var Event = {
     end: 'End',
     on: 'On',
     off: 'Off',
+    stop: 'stop',
+    goon: 'goon',
     once: 'Once',
     all: 'All',
     emit: 'Emit'

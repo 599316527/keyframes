@@ -3,10 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
-    <title>loading audioWave</title>
-    <script src="../../src/lib.js"></script>
-    <script src="../../lib/jquery.min.js"></script>
-    <script src="../../src/loading/audioWave.js"></script>
+    <title>{%domain%}</title>
+    <script src="{%depth%}src/lib.js"></script>
+    <script src="{%depth%}lib/jquery.min.js"></script>
+    <script src="{%src%}"></script>
     <script>
         var btn = Keyframe.defineClass('btn', {
             'background-color': '#000000',
@@ -53,9 +53,9 @@
 <button id="goon" class="btn">goon</button>
 <button id="stop" class="btn">stop</button>
 <button id="restart" class="btn">restart</button>
-<div id="demo" class="mask">AudioWave</div>
+<div id="demo" class="mask">{%name%}</div>
 <script>
-    var demo = new loading.AudioWave(document.getElementById('demo'));
+    var demo = new {%domain%}(document.getElementById('demo'));
     Keyframe.compile();
     document.getElementById('start').onclick = function () {
         demo.start();

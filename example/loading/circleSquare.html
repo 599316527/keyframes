@@ -3,10 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
-    <title>loading audioWave</title>
+    <title>loading circleSquare</title>
     <script src="../../src/lib.js"></script>
     <script src="../../lib/jquery.min.js"></script>
-    <script src="../../src/loading/audioWave.js"></script>
+    <script src="../../src/loading/circleSquare.js"></script>
     <script>
         var btn = Keyframe.defineClass('btn', {
             'background-color': '#000000',
@@ -27,8 +27,7 @@
             'overflow': 'hidden'
         });
         Keyframe.defineClass('mask', {
-            'color': '#d12',
-            'mask-image': 'linear-gradient(45deg, rgba(0,0,0,1) 10%, rgba(0,0,0,0.7) 90%)'
+            'color': '#d12'
         });
     </script>
     <style>
@@ -36,14 +35,12 @@
             height: 100%;
         }
         #demo {
-            width: 6em;
-            height: 3em;
             position: absolute;
             left: 50%;
             top: 50%;
-            margin-left: -2em;
-            margin-top: -1.5em;
             font-size: 22px;
+            width: 0;
+            height: 0;
         }
     </style>
 </head>
@@ -53,9 +50,10 @@
 <button id="goon" class="btn">goon</button>
 <button id="stop" class="btn">stop</button>
 <button id="restart" class="btn">restart</button>
-<div id="demo" class="mask">AudioWave</div>
+<div id="demo" class="mask">CircleSquare</div>
 <script>
-    var demo = new loading.AudioWave(document.getElementById('demo'));
+    loading.CircleSquare.rewriteClass('ec-circleSquare', {'color': 'black!important'});
+    var demo = new loading.CircleSquare(document.getElementById('demo'));
     Keyframe.compile();
     document.getElementById('start').onclick = function () {
         demo.start();
@@ -64,6 +62,7 @@
         demo.goon();
     };
     document.getElementById('pause').onclick = function () {
+
         demo.pause();
     };
     document.getElementById('stop').onclick = function () {

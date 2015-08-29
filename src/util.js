@@ -4,6 +4,37 @@
  **/
 
 var Util = {
+    rewrite: function (init, replace) {
+        if(!replace) {
+            return init;
+        }
+        for (var key in replace) {
+            init[key] = replace[key];
+        }
+        return init;
+    },
+    define: function (namespace) {
+        namespace = namespace.split('.');
+        var domain;
+        var module = window;
+        while (domain = namespace.shift()) {
+            if (!(domain in module)) {
+                module[domain] = {};
+            }
+            module = module[domain];
+        }
+    },
+    extend: function (src, init) {
+        if(!src) {
+            return init;
+        }
+        for (var key in init) {
+            if (!(key in src)) {
+                src[key] = init[key];
+            }
+        }
+        return src;
+    },
     inherit: function (Child, Parent) {
         /* jshint ignore:start */
         var Clz = new Function();

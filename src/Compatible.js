@@ -48,9 +48,13 @@ function Compatible() {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
     /* jshint ignore:end */
-    pitch.use('special', 'background',
+    pitch.use('specialA', 'background',
         function (key, value) {
             return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+        });
+    pitch.use('specialB', 'mask-image',
+        function (key, value) {
+            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
         });
     pitch.use('rest', '*',
         function (key, value) {

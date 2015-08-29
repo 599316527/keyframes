@@ -8,12 +8,17 @@ EventEmitter.type = {
 };
 
 EventEmitter.prototype.on = function(eventName, fn, option) {
-    if (eventName in this._routes) {
-        this._routes[eventName].push({fn:fn, option:option});
-    } else {
-        this._routes[eventName] = [{fn:fn, option:option}];
+    if (eventName) {
+        if (eventName in this._routes) {
+            this._routes[eventName].push({fn:fn, option:option});
+        } else {
+            this._routes[eventName] = [{fn:fn, option:option}];
+        }
+        this.emit(Event.on, eventName, option);
     }
-    this.emit(Event.on, eventName, option);
+    else {
+        throw new Error('undefined event！');
+    }
 };
 EventEmitter.prototype.off = function(eventName, fn) {
     if (Checker.string.check(arguments)) {

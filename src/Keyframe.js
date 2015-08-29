@@ -209,6 +209,39 @@ Keyframe.defineClass = function (className, metaData) {
         throw new Error('incorrect parameters!');
     }
 };
+Keyframe.pack = function (clz) {
+    Util.inherit(clz, Keyframe);
+    var clazz = clz.cf.class;
+    var frame = clz.cf.frame;
+    for (var className in clazz) {
+        Keyframe.defineClass(className, clazz[className]);
+    }
+    for (var frameName in frame) {
+        Keyframe.defineKeyframe(frameName, frame[frameName]);
+    }
+    clz.rewriteClass = function (part, config) {
+        if (!clazz) {
+            clazz = clz.cf.class = {};
+        }
+        if (part in clazz) {
+            Util.rewrite(clazz[part], config);
+        }
+        else {
+            clazz[part] = config;
+        }
+    };
+    clz.rewriteFrame = function (part, config) {
+        if (!frame) {
+            frame = clz.cf.frame = {};
+        }
+        if (part in frame) {
+            Util.rewrite(frame[part], config);
+        }
+        else {
+            frame[part] = config;
+        }
+    };
+};
 Keyframe.compile = function () {
     Compiler.instance().compile();
 };

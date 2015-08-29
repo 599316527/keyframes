@@ -4,6 +4,37 @@
  **/
 
 var Util = {
+    rewrite: function (init, replace) {
+        if(!replace) {
+            return init;
+        }
+        for (var key in replace) {
+            init[key] = replace[key];
+        }
+        return init;
+    },
+    define: function (namespace) {
+        namespace = namespace.split('.');
+        var domain;
+        var module = window;
+        while (domain = namespace.shift()) {
+            if (!(domain in module)) {
+                module[domain] = {};
+            }
+            module = module[domain];
+        }
+    },
+    extend: function (src, init) {
+        if(!src) {
+            return init;
+        }
+        for (var key in init) {
+            if (!(key in src)) {
+                src[key] = init[key];
+            }
+        }
+        return src;
+    },
     inherit: function (Child, Parent) {
         /* jshint ignore:start */
         var Clz = new Function();
@@ -138,12 +169,17 @@ EventEmitter.type = {
 };
 
 EventEmitter.prototype.on = function(eventName, fn, option) {
-    if (eventName in this._routes) {
-        this._routes[eventName].push({fn:fn, option:option});
-    } else {
-        this._routes[eventName] = [{fn:fn, option:option}];
+    if (eventName) {
+        if (eventName in this._routes) {
+            this._routes[eventName].push({fn:fn, option:option});
+        } else {
+            this._routes[eventName] = [{fn:fn, option:option}];
+        }
+        this.emit(Event.on, eventName, option);
     }
-    this.emit(Event.on, eventName, option);
+    else {
+        throw new Error('undefined event！');
+    }
 };
 EventEmitter.prototype.off = function(eventName, fn) {
     if (Checker.string.check(arguments)) {
@@ -295,6 +331,8 @@ var Event = {
     end: 'End',
     on: 'On',
     off: 'Off',
+    stop: 'stop',
+    goon: 'goon',
     once: 'Once',
     all: 'All',
     emit: 'Emit'
@@ -495,9 +533,13 @@ function Compatible() {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
     /* jshint ignore:end */
-    pitch.use('special', 'background',
+    pitch.use('specialA', 'background',
         function (key, value) {
             return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+        });
+    pitch.use('specialB', 'mask-image',
+        function (key, value) {
+            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
         });
     pitch.use('rest', '*',
         function (key, value) {
@@ -1076,6 +1118,39 @@ Keyframe.defineClass = function (className, metaData) {
     else {
         throw new Error('incorrect parameters!');
     }
+};
+Keyframe.pack = function (clz) {
+    Util.inherit(clz, Keyframe);
+    var clazz = clz.cf.class;
+    var frame = clz.cf.frame;
+    for (var className in clazz) {
+        Keyframe.defineClass(className, clazz[className]);
+    }
+    for (var frameName in frame) {
+        Keyframe.defineKeyframe(frameName, frame[frameName]);
+    }
+    clz.rewriteClass = function (part, config) {
+        if (!clazz) {
+            clazz = clz.cf.class = {};
+        }
+        if (part in clazz) {
+            Util.rewrite(clazz[part], config);
+        }
+        else {
+            clazz[part] = config;
+        }
+    };
+    clz.rewriteFrame = function (part, config) {
+        if (!frame) {
+            frame = clz.cf.frame = {};
+        }
+        if (part in frame) {
+            Util.rewrite(frame[part], config);
+        }
+        else {
+            frame[part] = config;
+        }
+    };
 };
 Keyframe.compile = function () {
     Compiler.instance().compile();
