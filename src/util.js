@@ -28,9 +28,11 @@ var Util = {
         if(!src) {
             return init;
         }
-        for (var key in init) {
-            if (!(key in src)) {
-                src[key] = init[key];
+        if (init) {
+            for (var key in init) {
+                if (!(key in src)) {
+                    src[key] = init[key];
+                }
             }
         }
         return src;

@@ -1,9 +1,9 @@
 /**
  * Created by dingguoliang01 on 2014/11/24.
  */
-Util.define('{%domain%}');
-{%domain%} = function (dom, config) {
-    {%domain%}.superClass.call(this, dom, config, {%domain%}.cf.init);
+Util.define('attention.Bounce');
+attention.Bounce = function (dom, config) {
+    attention.Bounce.superClass.call(this, dom, config, attention.Bounce.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('');
     });
@@ -12,14 +12,14 @@ Util.define('{%domain%}');
     });
 };
 
-{%domain%}.cf = {
+attention.Bounce.cf = {
     init: {
-        'name': '{%camelCase%}',
+        'name': 'bounce',
         'duration': '2.8s',
         'function': 'ease-in-out' // ease,linear,ease-in,ease-out,ease-in-out cub
     },
     class: {
-        'ec-{%camelCase%}': {
+        'ec-bounce': {
             'box-shadow': '-0.625em -0.625em 0 0.625em #9b59b6, ' +
             '0.625em -0.625em 0 0.625em #9b59b6, ' +
             '-0.625em 0.625em 0 0.625em #9b59b6, ' +
@@ -27,7 +27,7 @@ Util.define('{%domain%}');
         }
     },
     frame: {
-        '{%camelCase%}': {
+        'bounce': {
             '50': {
                 'border-radius': '50%',
                 'rotate': '0.5turn',
@@ -44,5 +44,5 @@ Util.define('{%domain%}');
         }
     }
 };
-Keyframe.pack({%domain%});
+Keyframe.pack(attention.Bounce);
 

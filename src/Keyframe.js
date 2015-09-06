@@ -1,11 +1,12 @@
 /**
  * Created by dingguoliang01 on 2015/8/14.
  */
-function Keyframe(dom, animations) {
+function Keyframe(dom, animations, cf) {
     Keyframe.superClass.call(this);
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
+    animations = Util.extend(animations, cf);
     if (!animations) {
         this._animations = [];
     }

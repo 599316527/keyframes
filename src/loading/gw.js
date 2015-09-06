@@ -3,7 +3,7 @@
  */
 Util.define("loading.GW");
 loading.GW = function (dom, config) {
-    loading.GW.superClass.call(this, dom, Util.extend(config, loading.GW.cf.init));
+    loading.GW.superClass.call(this, dom, config, loading.GW.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('ec-gW');
     });
@@ -16,23 +16,14 @@ loading.GW.cf = {
     init: [
         {
             'name': 'gW',
-            'duration': '1s',
             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'delay': '0s',
-            'count': 'infinite',
-            'direction': 'normal', // normal alternate
-            'state': 'running', // paused
-            'mode': 'none' // none forwards backwards both,
+            'count': 'infinite'
         },
         {
             'name': 'rot',
             'duration': '2.8s',
             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'delay': '0s',
-            'count': 'infinite',
-            'direction': 'normal', // normal alternate
-            'state': 'running', // paused
-            'mode': 'none' // none forwards backwards both,
+            'count': 'infinite'
         }],
     class: {
         'ec-gW': {

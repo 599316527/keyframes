@@ -3,7 +3,7 @@
  */
 Util.define('loading.SpinDisc');
 loading.SpinDisc = function (dom, config) {
-    loading.SpinDisc.superClass.call(this, dom, Util.extend(config, loading.SpinDisc.cf.init));
+    loading.SpinDisc.superClass.call(this, dom, config, loading.SpinDisc.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('ec-spinDisc');
     });
@@ -17,11 +17,7 @@ loading.SpinDisc.cf = {
         'name': 'spinDisc',
         'duration': '2.8s',
         'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0s',
-        'count': 'infinite',
-        'direction': 'normal', // normal alternate
-        'state': 'running', // paused
-        'mode': 'none' // none forwards backwards both,
+        'count': 'infinite'
     },
     class: {
         'ec-spinDisc': {

@@ -3,7 +3,7 @@
  */
 Util.define('loading.CircleSquare');
 loading.CircleSquare = function (dom, config) {
-    loading.CircleSquare.superClass.call(this, dom, Util.extend(config, loading.CircleSquare.cf.init));
+    loading.CircleSquare.superClass.call(this, dom, config, loading.CircleSquare.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('ec-circleSquare');
     });
@@ -16,12 +16,7 @@ loading.CircleSquare.cf = {
     init: {
         'name': 'circleSquare',
         'duration': '2.8s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0s',
-        'count': 'infinite',
-        'direction': 'normal', // normal alternate
-        'state': 'running', // paused
-        'mode': 'none' // none forwards backwards both,
+        'function': 'ease-in-out' // ease,linear,ease-in,ease-out,ease-in-out cub
     },
     class: {
         'ec-circleSquare': {

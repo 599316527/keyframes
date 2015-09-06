@@ -3,18 +3,14 @@
  */
 Util.define('special.Hinge');
 special.Hinge = function (dom, config) {
-    special.Hinge.superClass.call(this, dom, Util.extend(config, special.Hinge.cf.init));
+    special.Hinge.superClass.call(this, dom, config, special.Hinge.cf.init);
 };
 
 special.Hinge.cf = {
     init: {
         'name': 'hinge',
         'duration': '2.8s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0s',
-        'direction': 'normal', // normal alternate
-        'state': 'running', // paused
-        'mode': 'forwards' // none forwards backwards both,
+        'function': 'ease-in-out' // ease,linear,ease-in,ease-out,ease-in-out cub
     },
     frame: {
         'hinge': {

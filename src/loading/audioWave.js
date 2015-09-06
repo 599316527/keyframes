@@ -3,7 +3,7 @@
  */
 Util.define('loading.AudioWave');
 loading.AudioWave = function (dom, config) {
-    loading.AudioWave.superClass.call(this, dom, Util.extend(config, loading.AudioWave.cf.init));
+    loading.AudioWave.superClass.call(this, dom, config, loading.AudioWave.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('ec-audioWave');
     });
@@ -16,12 +16,7 @@ loading.AudioWave.cf = {
     init: {
         'name': 'audioWave',
         'duration': '2s',
-        // 'animationTimingFunction': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0s',
         'count': 'infinite',
-        'direction': 'normal', // normal alternate
-        'state': 'running', // paused
-        'mode': 'forwards' // forwards backwards both,
     },
     class: {
         'ec-audioWave': {

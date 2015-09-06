@@ -3,7 +3,7 @@
  */
 Util.define('loading.Snake');
 loading.Snake = function (dom, config) {
-    loading.Snake.superClass.call(this, dom, Util.extend(config, loading.Snake.cf.init));
+    loading.Snake.superClass.call(this, dom, config, loading.Snake.cf.init);
     this.on(Event.beforeStart, function () {
         this.addClass('ec-snake');
     });
@@ -17,11 +17,7 @@ loading.Snake.cf = {
         'name': 'snake',
         'duration': '2.8s',
         'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0s',
-        'count': 'infinite',
-        'direction': 'normal', // normal alternate
-        'state': 'running', // paused
-        'mode': 'none' // none forwards backwards both,
+        'count': 'infinite'
     },
     class: {
         'ec-snake': {

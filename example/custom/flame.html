@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
+    <title>custom.Flame</title>
+    <script src="../../src/lib.js"></script>
+    <script src="../../lib/jquery.min.js"></script>
+    <script src="../../src/custom/flame.js"></script>
+    <script>
+        var btn = Keyframe.defineClass('btn', {
+            'background-color': '#000000',
+            'color': '#ffffff',
+            'border': '2px solid #808080',
+            'padding': '2px',
+            'width': '80px',
+            'margin-top': '10px',
+            'opacity': 0.5,
+            'font-size': '15px',
+            'transition': 'all 1s'
+        });
+        btn.hover({
+            'opacity': 0.7
+        });
+        Keyframe.defineClass('bg', {
+            'background': 'linear-gradient(90deg, #1d2b64 10%, #f8cdda 90%) repeat scroll 0 0 rgba(0, 0, 0, 0)',
+            'overflow': 'hidden'
+        });
+        Keyframe.defineClass('mask', {
+            'color': '#d12'
+        });
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        #demo {
+            width: 3em;
+            height: 3em;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -2em;
+            margin-top: -1.5em;
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body class="bg">
+<button id="start" class="btn">start</button>
+<button id="pause" class="btn">pause</button>
+<button id="goon" class="btn">goon</button>
+<button id="stop" class="btn">stop</button>
+<button id="restart" class="btn">restart</button>
+<div id="demo" class="mask">Flame</div>
+<script>
+    var demo = new custom.Flame(document.getElementById('demo'));
+    Keyframe.compile();
+    document.getElementById('start').onclick = function () {
+        demo.start();
+    };
+    document.getElementById('goon').onclick = function () {
+        demo.goon();
+    };
+    document.getElementById('pause').onclick = function () {
+        demo.pause();
+    };
+    document.getElementById('stop').onclick = function () {
+        demo.stop();
+    };
+    document.getElementById('restart').onclick = function () {
+        demo.restart();
+    };
+</script>
+</body>
+</html>
