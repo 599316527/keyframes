@@ -16,6 +16,7 @@ loading.CircleSquare.cf = {
     init: {
         'name': 'circleSquare',
         'duration': '2.8s',
+        'count': 'infinite',
         'function': 'ease-in-out' // ease,linear,ease-in,ease-out,ease-in-out cub
     },
     class: {
