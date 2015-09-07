@@ -15,7 +15,7 @@ Util.define('{%domain%}');
 {%domain%}.cf = {
     init: {
         'name': '{%camelCase%}',
-        'duration': '2.8s',
+        'duration': '1.8s',
         'function': 'ease-in-out' // ease,linear,ease-in,ease-out,ease-in-out cub
     },
     class: {
