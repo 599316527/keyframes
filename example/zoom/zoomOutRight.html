@@ -3,10 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
-    <title>custom.FlameOnHover</title>
+    <title>zoom.ZoomOutRight</title>
     <script src="../../src/lib.js"></script>
     <script src="../../lib/jquery.min.js"></script>
-    <script src="../../src/custom/flameOnHover.js"></script>
+    <script src="../../src/zoom/zoomOutRight.js"></script>
     <script>
         var btn = Keyframe.defineClass('btn', {
             'background-color': '#000000',
@@ -27,7 +27,8 @@
             'overflow': 'hidden'
         });
         Keyframe.defineClass('mask', {
-            'color': '#d12'
+            'color': '#d12',
+            'mask-image': 'linear-gradient(45deg, rgba(0,0,0,1) 10%, rgba(0,0,0,0.7) 90%)'
         });
     </script>
     <style>
@@ -53,9 +54,9 @@
 <button id="goon" class="btn">goon</button>
 <button id="stop" class="btn">stop</button>
 <button id="restart" class="btn">restart</button>
-<div id="demo" class="mask">FlameOnHover</div>
+<div id="demo" class="mask">ZoomOutRight</div>
 <script>
-    var demo = new custom.FlameOnHover(document.getElementById('demo'));
+    var demo = new zoom.ZoomOutRight(document.getElementById('demo'));
     Keyframe.compile();
     document.getElementById('start').onclick = function () {
         demo.start();

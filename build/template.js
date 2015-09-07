@@ -28,18 +28,12 @@ Util.define('{%domain%}');
     },
     frame: {
         '{%camelCase%}': {
-            '50': {
-                'border-radius': '50%',
-                'rotate': '0.5turn',
-                'width': '1.25em',
-                'height': '1.25em',
-                'box-shadow': '-2.5em 0 0 #2ecc71, ' +
-                '2.5em 0 0 #e74c3c, ' +
-                '-2.5em 0 0 #3498db, ' +
-                '2.5em 0 0 #f1c40f'
+            '0': {
+                'scale3d': '.3, .3, .3',
+                'opacity': 0
             },
-            '80 100': {
-                'rotate': '1turn'
+            '50': {
+                'opacity': 1
             }
         }
     }
