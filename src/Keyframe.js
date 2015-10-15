@@ -187,8 +187,9 @@ Keyframe.defineKeyframe = function (frame, metaData) {
     if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         frame = Util.random.name(8);
+        return new FrameProxy(frame, metaData);
     }
-    if (Checker.stringObject.check(arguments)) {
+    else if (Checker.stringObject.check(arguments)) {
         return new FrameProxy(frame, metaData);
     }
     else {
@@ -246,3 +247,62 @@ Keyframe.pack = function (clz) {
 Keyframe.compile = function () {
     Compiler.instance().compile();
 };
+Keyframe.group = function(group) {
+    var frames = [];
+    var frame;
+    var domFn;
+    for (var dom in group) {
+        frame = Keyframe.timeLine(group[dom]);
+        domFn = dom.split('@');
+        frames.push(frame.bind(document.getElementById(domFn[0])));
+        if (domFn.length > 1)
+        {
+            frame.setFunction(domFn[1]);
+        }
+    }
+    Keyframe.compile();
+    return new Group(frames);
+};
+Keyframe.timeLine = function (timeLine) {
+    var times = [];
+    var map = {};
+    var tmp;
+    var time;
+    var adjust = {};
+    for (time in timeLine) {
+        tmp = time.split(/\s+/);
+        Util.each(tmp, function(data) {
+            map[data] = parseFloat(data);
+        });
+    }
+    for (time in map) {
+        times.push(map[time]);
+    }
+    times.sort();
+    var min = times[0];
+    var max = times[times.length - 1];
+    var duration = max - min;
+    var percent = -1;
+    for (time in map) {
+        percent = parseInt(Math.round((map[time] - min) * 100 / duration), 10);
+        while (percent in adjust) {
+            percent = percent + 1;
+        }
+        adjust[percent] = true;
+        map[time] = percent;
+    }
+    var percentLine = {};
+
+    for (time in timeLine) {
+        tmp = time.split(/\s+/);
+        percent = time;
+        Util.each(tmp, function(data) {
+            percent = percent.replace(data, map[data]);
+        });
+        percentLine[percent] = timeLine[time];
+    }
+    var frameProxy = Keyframe.defineKeyframe(percentLine);
+    frameProxy.setConfig({'duration': duration + 's', 'delay': min+ 's'});
+    return frameProxy;
+};
+

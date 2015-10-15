@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Animation Demo</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
+    <style>
+        @media (max-device-width: 520px) and (orientation: landscape) {
+            #container {
+                height: 100%;
+                width: 520px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        @media (max-device-width: 520px) and (orientation: portrait) {
+            #container {
+                height: 100%;
+                width: 320px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: cadetblue;
+        }
+
+        input {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #808080;
+            padding: 3px 7px;
+            width: 80px;
+            margin-top: 10px;
+        }
+
+        div {
+            color: #ffffff;
+            font-family: "Arial,宋体", "微软雅黑", "黑体", sans-serif;
+        }
+
+        #star1 {
+            position: absolute;
+            left: 500px;
+            top: 100px;
+        }
+
+        #star2 {
+            position: absolute;
+            left: 700px;
+            top: 140px;
+        }
+
+        #star3 {
+            position: absolute;
+            left: 910px;
+            top: 120px;
+        }
+
+        #star4 {
+            position: absolute;
+            left: 1120px;
+            top: 125px;
+        }
+        .demo {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background-color: #000000;
+            border-radius: 50%;
+        }
+    </style>
+    <script type="text/javascript" src="../../../../assets/js/tangram-base-1.3.7.1.js"></script>
+    <script type="text/javascript" src="../../../../assets/js/mustache.js"></script>
+    <script type="text/javascript" src="../../../base.js"></script>
+    <script type="text/javascript">
+        goog.require('ad.Debug');
+        goog.require('ad.animation.KeyFrames');
+        /*goog.require('ad.animation.KeyFrames');
+        goog.require('ad.animation.demo.ScaleA');*/
+        /*goog.require('ad.animation.custom.Blaze');*/
+        goog.require('ad.animation.custom.Flame');
+        goog.require('ad.material.BaseMaterial');
+    </script>
+</head>
+<body>
+<div id="container">
+    <input type="button" value="start" id="start">
+    <input type="button" value="pause" id="pause">
+    <input type="button" value="continue" id="continue">
+    <input type="button" value="close" id="close">
+    <input type="button" value="restart" id="restart">
+    <div id="star1"><div class="demo"></div></div>
+    <div id="star2"><div class="demo"></div></div>
+    <div id="star3"><div class="demo"></div></div>
+    <div id="star4"><div class="demo"></div></div>
+</div>
+<script>
+    ad.Debug(function () {
+        var material = new ad.material.BaseMaterial();
+        material.show();
+        ad.animation.KeyFrames.defineKeyFrame('star1', [
+            {
+                'percent': 100,
+                'border-radius': '50%',
+                'css': [
+                    {
+                        'key': 'top',
+                        'value': '400px'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.defineKeyFrame('star2', [
+            {
+                'percent': 100,
+                'css': [
+                    {
+                        'key': 'top',
+                        'value': '430px'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.defineKeyFrame('star3', [
+            {
+                'percent': 100,
+                'css': [
+                    {
+                        'key': 'top',
+                        'value': '380px'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.defineKeyFrame('star4', [
+            {
+                'percent': 100,
+                'css': [
+                    {
+                        'key': 'top',
+                        'value': ' 416px'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.defineKeyFrame('flame', [
+            {
+                'percent': 0,
+                'scale': '1,1',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': 'white'
+                    },
+                    {
+                        'key': 'opacity',
+                        'value': 1
+                    }
+                ]
+            },
+            {
+                'percent': 100,
+                'scale': '1.5, 1.5',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': ' transparent'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.compile();
+        var star1 = new ad.animation.KeyFrames(document.getElementById('star1'), {
+            'name': 'star1',
+            'duration': '1.5s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'mode': 'forwards', // forwards backwards both
+            'delay': '200ms'
+        });
+        var star2 = new ad.animation.KeyFrames(document.getElementById('star2'), {
+            'name': 'star2',
+            'duration': '1.3s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'mode': 'forwards', // forwards backwards both
+            'delay': '300ms'
+        });
+        var star3 = new ad.animation.KeyFrames(document.getElementById('star3'), {
+            'name': 'star3',
+            'duration': '1s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'mode': 'forwards', // forwards backwards both
+            'delay': '600ms'
+        });
+        var star4 = new ad.animation.KeyFrames(document.getElementById('star4'), {
+            'name': 'star4',
+            'duration': '1s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'mode': 'forwards', // forwards backwards both
+            'delay': '610ms'
+        });
+        var flames = [
+            new ad.animation.custom.Flame(star1._dom.firstChild),
+            new ad.animation.custom.Flame(star2._dom.firstChild),
+            new ad.animation.custom.Flame(star3._dom.firstChild),
+            new ad.animation.custom.Flame(star4._dom.firstChild)
+        ];
+
+        var move_ins = [star1, star2, star3, star4];
+
+        star1.on(ad.animation.KeyFrames.event.END, function () {
+            console.log('sss');
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].start();
+            }
+        });
+        document.getElementById('start').onclick = function () {
+            //what.start();
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].start();
+            }
+        }
+        document.getElementById('continue').onclick = function () {
+            //what.continue();
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].continue();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].continue();
+            }
+        }
+        document.getElementById('pause').onclick = function () {
+            //what.pause();
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].pause();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].pause();
+            }
+        }
+        document.getElementById('close').onclick = function () {
+            //what.close();
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].close();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].close();
+            }
+        }
+        document.getElementById('restart').onclick = function () {
+            //what.close();
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].restart();
+            }
+
+        }
+    });
+</script>
+</body>
+</html>

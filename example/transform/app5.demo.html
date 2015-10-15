@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Animation Demo</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
+    <style>
+        #container {
+            /*  transform-style: preserve-3d;
+              perspective: 1000px;*/
+
+        }
+
+        @media (max-device-width: 520px) and (orientation: landscape) {
+            #container {
+                height: 100%;
+                width: 520px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        @media (max-device-width: 520px) and (orientation: portrait) {
+            #container {
+                height: 100%;
+                width: 320px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: cadetblue;
+        }
+
+        input {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #808080;
+            padding: 3px 7px;
+            width: 80px;
+            margin-top: 10px;
+        }
+
+        div {
+            color: #ffffff;
+            font-family: "Arial,宋体", "微软雅黑", "黑体", sans-serif;
+        }
+
+        #star1 {
+            position: absolute;
+            left: 10px;
+            top: 100px;
+            background-color: red;
+            height: 50px;
+            width: 50px;
+        }
+
+        #star2 {
+            position: absolute;
+            left: 400px;
+            top: 200px;
+        }
+
+        #star3 {
+            position: absolute;
+            left: 100px;
+            top: 100px;
+        }
+
+        #star4 {
+            position: absolute;
+            left: 200px;
+            top: 200px;
+
+        }
+
+        #star5 {
+            position: absolute;
+            left: 400px;
+            top: 100px;
+
+        }
+
+        .demo {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background-color: #000000;
+            border-radius: 50%;
+        }
+
+        #rect {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            left: 700px;
+            top: 200px;
+            background-color: #0000ff;
+        }
+    </style>
+    <script type="text/javascript" src="../../../../assets/js/tangram-base-1.3.7.1.js"></script>
+    <script type="text/javascript" src="../../../../assets/js/mustache.js"></script>
+    <script type="text/javascript" src="../../../base.js"></script>
+    <script type="text/javascript">
+        goog.require('ad.Debug');
+        goog.require('ad.animation.KeyFrames');
+        /*goog.require('ad.animation.KeyFrames');
+         goog.require('ad.animation.demo.ScaleA');*/
+        /*goog.require('ad.animation.custom.Blaze');*/
+        goog.require('ad.animation.custom.Flame');
+        goog.require('ad.animation.Transform');
+        goog.require('ad.material.BaseMaterial');
+    </script>
+</head>
+<body>
+<div id="container">
+    <input type="button" value="start" id="start">
+    <input type="button" value="pause" id="pause">
+    <input type="button" value="continue" id="continue">
+    <input type="button" value="close" id="close">
+    <input type="button" value="restart" id="restart">
+
+    <div id="rect"></div>
+    <div id="star1">
+        <div class="demo">star</div>
+    </div>
+    <div id="star2">
+        <div class="demo">400 200</div>
+    </div>
+    <div id="star3">
+        <div class="demo">100 100</div>
+    </div>
+    <div id="star4">
+        <div class="demo">200 200</div>
+    </div>
+    <div id="star5">
+        <div class="demo">400 100</div>
+    </div>
+</div>
+<script>
+    ad.Debug(function () {
+        var material = new ad.material.BaseMaterial();
+        material.show();
+        ad.animation.KeyFrames.defineKeyFrame('flame', [
+            {
+                'percent': 0,
+                'scale': '1,1',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': 'white'
+                    },
+                    {
+                        'key': 'opacity',
+                        'value': 1
+                    }
+                ]
+            },
+            {
+                'percent': 100,
+                'scale': '1.5, 1.5',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': ' transparent'
+                    }
+                ]
+            }
+        ]);
+        var rect = new ad.animation.Transform(document.getElementById('rect'), true);
+        console.log(rect._store);
+        rect.perspective('1000px');
+        rect.rotateBy({
+            '2d': '45deg'
+        }).rotateBy({
+            '2d': '45deg'
+        }).rotateBy({
+            '2d': '45deg'
+        }).changeTo({
+            'duration': '1ms',
+            'o': 0.5
+        }).changeTo({
+
+            'o': 1
+        }).changeTo({
+            'o': 0.1
+        });
+        /*rect.changeTo([{
+            'br': '50%'
+        }, {
+            'bc': 'green',
+            'function': 'ease-in',
+            'duration': '3s'
+        }]).rotateBy({
+            'z': '45deg',
+            'delay': '1s'
+        }).mix({
+            'duration': '2s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '0ms',
+            'moveTo': [
+                {
+                    't': '300px'
+                },
+                {
+                    'l': '100px',
+                    'duration': '5s',
+                    'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                    'delay': '0ms'
+                }
+            ],
+            'moveBy': {
+                'x': '100px',
+                'y': '100px'
+            },
+            'scaleBy': {
+                '2d': '1.2, 1.5'
+            },
+            'rotateBy': {
+                'z': '45deg',
+                'x': '45deg'
+            },
+            'skewBy': {
+                'y': '15deg'
+            }
+        }).then(function () {
+            alert(1);
+        }).rotateBy({
+            'z': '45deg',
+            'delay': '1s'
+        }).moveBy({
+            'z': '-500px',
+            'x': '-150px',
+            'y': '100px'
+        }).then(function () {
+            console.log(rect._store);
+            alert(3);
+            //rect.reStore();
+        });*/
+        console.log(rect._store);
+        var star1 = new ad.animation.Transform(document.getElementById('star1'), false);
+        star1/*.moveTo({
+            't': '200px',
+            'l': '400px',
+            'duration': '0.5s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '200ms'
+        }).moveTo([
+            {
+                't': '100px',
+                'duration': '1s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'delay': '200ms'
+            },
+            {
+                'l': '100px',
+                'duration': '1.5s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'delay': '0ms'
+            }
+        ]).moveBy({
+            '2d': '100px, 100px',
+            'z': '100px',
+            'duration': '2s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '200ms'
+        }).moveBy({
+            '2d': '200px, -100px',
+            'z': '-100px',
+            'duration': '2.5s',
+            'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '0s'
+        }).scaleBy({
+            '2d': '2, 2',
+            'duration': '3s',
+            'function': 'linear'
+        })*/.skewBy({
+            'x': '45deg',
+            'duration': '4s',
+            'function': 'linear'
+        }).rotateBy({
+            'z': '45deg',
+                    'x': 0,
+            'duration': '3.5s',
+            'function': 'linear',
+            'delay': '1s'
+        }).skewBy({
+            'y': '45deg',
+            'duration': '4.5s',
+            'function': 'linear'
+        })/*.perspectiveTo({
+            'p': '2000px'
+        })*/.then(function () {
+                    alert(1);
+            new ad.animation.Transform(document.getElementById('star1').getElementsByClassName('demo')[0], true).changeTo({
+                'c': 'black',
+                'bc': 'green',
+                'fs': '30px',
+                'o': 0.6,
+                'br': '60% 60%'
+            })
+        });
+        var flames = [
+            new ad.animation.custom.Flame(star1._dom.firstChild)
+        ];
+        star1.then(function () {
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].start();
+            }
+            setTimeout(function () {
+                ad.animation.KeyFrames.defineKeyFrame('flame', [
+                    {
+                        'percent': 0,
+                        'scale': '1,1',
+                        'css': [
+                            {
+                                'key': 'background-color',
+                                'value': 'white'
+                            },
+                            {
+                                'key': 'opacity',
+                                'value': 1
+                            }
+                        ]
+                    },
+                    {
+                        'percent': 100,
+                        'scale': '2, 2',
+                        'css': [
+                            {
+                                'key': 'background-color',
+                                'value': ' transparent'
+                            }
+                        ]
+                    }
+                ]);
+                ad.animation.KeyFrames.compile();
+                for (var i = 0, l = flames.length; i < l; i++) {
+                    flames[i].restart();
+                }
+            }, 2000);
+
+        });
+        ad.animation.KeyFrames.compile();
+        var move_ins = [star1];
+        document.getElementById('start').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].doAction();
+            }
+        }
+        document.getElementById('continue').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].continue();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].continue();
+            }
+        }
+        document.getElementById('pause').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].pause();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].pause();
+            }
+        }
+        document.getElementById('close').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].close();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].close();
+            }
+        }
+        document.getElementById('restart').onclick = function () {
+            rect.reExecute();
+        }
+    });
+</script>
+</body>
+</html>

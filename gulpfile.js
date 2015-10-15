@@ -13,7 +13,7 @@ gulp.task('lint',['concat'], function() {
 });
 
 gulp.task('concat', function() {
-    return gulp.src(['src/Util.js', 'src/EventEmitter.js', 'src/Event.js', 'src/Promise.js','src/Deferred.js','src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/Compiler.js', 'src/ClassProxy.js','src/FrameProxy.js','src/Keyframe.js'])
+    return gulp.src(['src/Util.js', 'src/EventEmitter.js', 'src/Event.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/Compiler.js', 'src/ClassProxy.js','src/FrameProxy.js','src/Group.js','src/Keyframe.js'])
         .pipe(concat('lib.js'))
         .pipe(gulp.dest('src/'));
 });

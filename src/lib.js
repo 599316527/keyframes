@@ -17,7 +17,7 @@ var Util = {
         namespace = namespace.split('.');
         var domain;
         var module = window;
-        while (domain = namespace.shift()) {
+        while ((domain = namespace.shift())) {
             if (!(domain in module)) {
                 module[domain] = {};
             }
@@ -105,10 +105,36 @@ var Util = {
     removeClass: function (dom, className) {
         dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
     },
-    css: function (dom, key, value) {
+    css:  function (dom, attr, value) {
+        if (typeof attr === 'string') {
+            return Util._css(dom, attr, value);
+        }
+        /* jshint ignore:start */
+        else {
+            for (var item in attr) {
+                Util._css(dom, item, attr[item]);
+            }
+        }
+        /* jshint ignore:end */
+    },
+    stopPropagation: function (event) {
+        if (event.stopPropagation)
+        {
+            Util.stopPropagation = function (event) {
+                event.stopPropagation();
+            };
+        }
+        else {
+            Util.stopPropagation = function (event) {
+                event.cancelBubble = true;
+            };
+        }
+        return Util.stopPropagation(event);
+    },
+   _css: function (dom, key, value) {
         if (typeof window.getComputedStyle !== 'undefined')// W3C
         {
-            Util.css = function (dom, key, value) {
+            Util._css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
@@ -120,7 +146,7 @@ var Util = {
             };
         }
         else if (typeof dom.currentStyle !== 'undefined') {
-            Util.css = function (dom, key, value) {
+            Util._css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
@@ -131,7 +157,7 @@ var Util = {
                 }
             };
         }
-        return this.css(dom, key, value);
+        return this._css(dom, key, value);
     },
     on: function (dom, name, fn) {
         if ('addEventListener' in window) {
@@ -162,7 +188,7 @@ var Util = {
 };
 
 function EventEmitter() {
-    this._routes = {};
+    this._triggers = {};
 }
 
 EventEmitter.type = {
@@ -172,10 +198,10 @@ EventEmitter.type = {
 
 EventEmitter.prototype.on = function(eventName, fn, option) {
     if (eventName) {
-        if (eventName in this._routes) {
-            this._routes[eventName].push({fn:fn, option:option});
+        if (eventName in this._triggers) {
+            this._triggers[eventName].push({fn:fn, option:option});
         } else {
-            this._routes[eventName] = [{fn:fn, option:option}];
+            this._triggers[eventName] = [{fn:fn, option:option}];
         }
         this.emit(Event.on, eventName, option);
     }
@@ -185,22 +211,22 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
 };
 EventEmitter.prototype.off = function(eventName, fn) {
     if (Checker.string.check(arguments)) {
-        if (eventName in this._routes) {
-            this._routes[eventName] = [];
+        if (eventName in this._triggers) {
+            this._triggers[eventName] = [];
             this.emit(Event.off, eventName);
         }
     }
     else if (Checker.sFunction.check(arguments)) {
-        if (eventName in this._routes) {
+        if (eventName in this._triggers) {
             var index = -1;
-            Util.each(this._routes[eventName], function (item, i) {
+            Util.each(this._triggers[eventName], function (item, i) {
                 if (item.fn === fn) {
                     index = i;
                     return false;
                 }
             });
             if (index > -1) {
-                this._routes[eventName].splice(index, 1);
+                this._triggers[eventName].splice(index, 1);
                 this.emit(Event.off, eventName);
             }
         }
@@ -265,7 +291,7 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
 };
 
 EventEmitter.prototype.emit = function(eventName) {
-    var fns = this._routes[eventName],
+    var fns = this._triggers[eventName],
         itemFn, scope, type, fn, option,
         offs = [], itemOff;
     var args = arguments;
@@ -314,9 +340,9 @@ EventEmitter.prototype.emit = function(eventName) {
                 fnsIndex ++;
             }
             if(newFns.length === 0) {
-                delete this._routes[eventName];
+                delete this._triggers[eventName];
             } else {
-                this._routes[eventName] = newFns;
+                this._triggers[eventName] = newFns;
             }
         }
     }
@@ -331,80 +357,16 @@ var Event = {
     start: 'Start',
     iteration: 'Iteration',
     end: 'End',
+    done: 'Done',
     on: 'On',
     off: 'Off',
-    stop: 'stop',
-    goon: 'goon',
+    stop: 'Stop',
+    goon: 'Goon',
     once: 'Once',
     all: 'All',
     emit: 'Emit'
 };
 
-function Promise() {
-    Promise.superClass.call(this);
-}
-Promise.event = {
-    success: 'success',
-    error: 'error',
-    progress: 'progress'
-};
-Util.inherit(Promise, EventEmitter);
-Promise.prototype.then = function (fulfilledHandler, errorHandler, progressHandler) {
-    if (fulfilledHandler) {
-        this.on(Promise.event.success, fulfilledHandler);
-    }
-    if (errorHandler) {
-        this.on(Promise.event.error, errorHandler);
-    }
-    if (progressHandler) {
-        this.on(Promise.event.progress, progressHandler);
-    }
-    return this;
-};
-function Deferred() {
-    this.state = Deferred.state.unfulfilled;
-    this.promise = new Promise();
-}
-Deferred.state = {
-    unfulfilled: 'unfulfilled',
-    fulfilled: 'fulfilled',
-    failed: 'failed'
-};
-Deferred.prototype.resolve = function() {
-    //console.log("resolve", arguments);
-    this.state = Deferred.state.fulfilled;
-    var args =  Util.arg2Ary(arguments);
-    args.splice(0, 0, Promise.event.success);
-    this.promise.emit.apply(this.promise, args);
-};
-Deferred.prototype.reject = function() {
-    this.state = Deferred.state.failed;
-    var args =  Util.arg2Ary(arguments);
-    args.splice(0, 0, Promise.event.error);
-    this.promise.emit.apply(this.promise, args);
-};
-Deferred.prototype.progress = function() {
-    var args =  Util.arg2Ary(arguments);
-    args.splice(0, 0, Promise.event.progress);
-    this.promise.emit.apply(this.promise, args);
-};
-Deferred.prototype.all = function(promises) {
-    var count = promises.length;
-    var that = this;
-    var results = [];
-    Util.each(promises,function(promise, index) {
-        promise.then(function(data) {
-            count --;
-            results[index] = data;
-            if (count === 0) {
-                that.resolve(results);
-            }
-        }, function(err) {
-            that.reject(err);
-        });
-    });
-    return this.promise;
-};
 /**
  * @file checker.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
@@ -662,9 +624,7 @@ Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 return Compatible._keyMap[key][0];
             }
-            else {
-                return key;
-            }
+            return key;
         };
     }
     else {
@@ -899,6 +859,9 @@ FrameProxy.prototype._define = function (frame, metaData) {
     this._frame = Compiler.instance().defineKeyframe(frame, metaData);
     return this;
 };
+FrameProxy.prototype.getName = function() {
+    return this._frame;
+};
 FrameProxy.prototype.rewrite = function (metaData) {
     if (Checker.object.check(arguments)) {
         this._define(this._frame, metaData);
@@ -908,8 +871,40 @@ FrameProxy.prototype.rewrite = function (metaData) {
     }
     return this;
 };
+FrameProxy.prototype.setConfig = function (config) {
+    config['name'] = this._frame;
+    this._config = config;
+    this._configs = [config];
+    return this;
+};
+FrameProxy.prototype.setFunction = function (fn) {
+    this._config['function'] = fn;
+    return this;
+};
+FrameProxy.prototype.getConfigs = function () {
+    return this._configs;
+};
+FrameProxy.prototype.combine = function (frameProxy) {
+    var configs = frameProxy.getConfigs();
+    if (configs) {
+        this._configs = this._configs.concat(configs);
+    }
+    return this;
+};
+FrameProxy.prototype.bind = function (dom) {
+    this._keyframe = new Keyframe(dom, this._configs);
+    return this._keyframe;
+};
 
-
+function Group(frames) {
+    this._frames = frames;
+}
+Group.prototype.start = function () {
+    Util.each(this._frames, function(frame) {
+        frame.start();
+    });
+    return this;
+};
 /**
  * Created by dingguoliang01 on 2015/8/14.
  */
@@ -1099,8 +1094,9 @@ Keyframe.defineKeyframe = function (frame, metaData) {
     if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         frame = Util.random.name(8);
+        return new FrameProxy(frame, metaData);
     }
-    if (Checker.stringObject.check(arguments)) {
+    else if (Checker.stringObject.check(arguments)) {
         return new FrameProxy(frame, metaData);
     }
     else {
@@ -1158,3 +1154,62 @@ Keyframe.pack = function (clz) {
 Keyframe.compile = function () {
     Compiler.instance().compile();
 };
+Keyframe.group = function(group) {
+    var frames = [];
+    var frame;
+    var domFn;
+    for (var dom in group) {
+        frame = Keyframe.timeLine(group[dom]);
+        domFn = dom.split('@');
+        frames.push(frame.bind(document.getElementById(domFn[0])));
+        if (domFn.length > 1)
+        {
+            frame.setFunction(domFn[1]);
+        }
+    }
+    Keyframe.compile();
+    return new Group(frames);
+};
+Keyframe.timeLine = function (timeLine) {
+    var times = [];
+    var map = {};
+    var tmp;
+    var time;
+    var adjust = {};
+    for (time in timeLine) {
+        tmp = time.split(/\s+/);
+        Util.each(tmp, function(data) {
+            map[data] = parseFloat(data);
+        });
+    }
+    for (time in map) {
+        times.push(map[time]);
+    }
+    times.sort();
+    var min = times[0];
+    var max = times[times.length - 1];
+    var duration = max - min;
+    var percent = -1;
+    for (time in map) {
+        percent = parseInt(Math.round((map[time] - min) * 100 / duration), 10);
+        while (percent in adjust) {
+            percent = percent + 1;
+        }
+        adjust[percent] = true;
+        map[time] = percent;
+    }
+    var percentLine = {};
+
+    for (time in timeLine) {
+        tmp = time.split(/\s+/);
+        percent = time;
+        Util.each(tmp, function(data) {
+            percent = percent.replace(data, map[data]);
+        });
+        percentLine[percent] = timeLine[time];
+    }
+    var frameProxy = Keyframe.defineKeyframe(percentLine);
+    frameProxy.setConfig({'duration': duration + 's', 'delay': min+ 's'});
+    return frameProxy;
+};
+

@@ -17,7 +17,7 @@ var Util = {
         namespace = namespace.split('.');
         var domain;
         var module = window;
-        while (domain = namespace.shift()) {
+        while ((domain = namespace.shift())) {
             if (!(domain in module)) {
                 module[domain] = {};
             }
@@ -105,10 +105,36 @@ var Util = {
     removeClass: function (dom, className) {
         dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
     },
-    css: function (dom, key, value) {
+    css:  function (dom, attr, value) {
+        if (typeof attr === 'string') {
+            return Util._css(dom, attr, value);
+        }
+        /* jshint ignore:start */
+        else {
+            for (var item in attr) {
+                Util._css(dom, item, attr[item]);
+            }
+        }
+        /* jshint ignore:end */
+    },
+    stopPropagation: function (event) {
+        if (event.stopPropagation)
+        {
+            Util.stopPropagation = function (event) {
+                event.stopPropagation();
+            };
+        }
+        else {
+            Util.stopPropagation = function (event) {
+                event.cancelBubble = true;
+            };
+        }
+        return Util.stopPropagation(event);
+    },
+   _css: function (dom, key, value) {
         if (typeof window.getComputedStyle !== 'undefined')// W3C
         {
-            Util.css = function (dom, key, value) {
+            Util._css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
@@ -120,7 +146,7 @@ var Util = {
             };
         }
         else if (typeof dom.currentStyle !== 'undefined') {
-            Util.css = function (dom, key, value) {
+            Util._css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
@@ -131,7 +157,7 @@ var Util = {
                 }
             };
         }
-        return this.css(dom, key, value);
+        return this._css(dom, key, value);
     },
     on: function (dom, name, fn) {
         if ('addEventListener' in window) {

@@ -30,7 +30,6 @@ special.Hinge.cf = {
                 'opacity': 1
             },
             '100': {
-                'percent': 100,
                 'translate3d': '0, 700px, 0',
                 'opacity': 0
             }

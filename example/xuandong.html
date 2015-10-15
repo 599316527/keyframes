@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <script src="../src/lib.js"></script>
+    <style>
+        #frame1 {
+            width: 25px;
+            position: absolute;
+            height: 60px;
+            left: 168px;
+            top: 55px;
+            opacity: 1;
+            background: url(http://ecmb.bdimg.com/public03/2e897163616c44fddada5bad03fdcc62.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame2 {
+            width: 150px;
+            position: absolute;
+            height: 150px;
+            left: 105px;
+            top: 70px;
+            background: url(http://ecmb.bdimg.com/public03/9dead4c5f9d0f4207faba69eed020959.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame3 {
+            width: 150px;
+            position: absolute;
+            height: 150px;
+            left: 140px;
+            top: 70px;
+            background: url(http://ecmb.bdimg.com/public03/5f77e9c925ca8814cd779da3127ba576.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame4 {
+            position: absolute;
+            width: 55px;
+            height: 75px;
+            left: 122px;
+            top: 144px;
+            background: url(http://ecmb.bdimg.com/public03/de7e49534a28de35b65314e8285b1f64.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame5 {
+            width: 180px;
+            position: absolute;
+            height: 140px;
+            left: 60px;
+            top: 70px;
+            opacity: 0;
+            background: url(http://ecmb.bdimg.com/public03/98e241f90a5302ad09c93c06f0a51d99.png) no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="frame5"></div>
+<div id="frame3"></div>
+<div id="frame4"></div>
+
+<div id="frame2"></div>
+<div id="frame1"></div>
+
+<script>
+   var group = {
+        'frame1': {
+            '0.6': {
+                'translateY': '0px'
+            },
+            '1.2': {
+                'translateY': '55px',
+                'opacity': 1
+            },
+            '1.8': {
+                'translateY': '55px',
+                'opacity' : 0
+            }
+        },
+       'frame2': {
+           '0': {
+               'scale': 0.2,
+               'opacity': 0
+           },
+           '1.18': {
+               'opacity': 0
+           },
+           '1.2': {
+               'opacity': 1,
+               'scale': 0.2
+           },
+           '2.1': {
+               'opacity': 0,
+               'scale': 1
+           }
+       },
+       'frame3': {
+           '0': {
+               'opacity': 0
+           },
+           '2.1': {
+               'opacity': 0
+           },
+           '2.3': {
+               'opacity': 0.1
+           },
+           '2.9': {
+               'opacity': 0.5
+           },
+           '3.1': {
+               'opacity': 1
+           }
+       },
+       'frame4@ease-in-out': {
+           '0': {
+               'opacity': 0
+           },
+           '3.1': {
+               'opacity': 0
+           },
+           '3.12': {
+               'opacity': 1,
+               'translateX':'0px',
+               'rotateZ':'0deg'
+           },
+           '4.32': {
+               'translateX': '-60px',
+               'rotateZ':'360deg'
+           }
+       },
+       'frame5': {
+           '3.7': {
+               'opacity': 0
+           },
+           '3.9': {
+               'opacity': 1
+           }
+       }
+    };
+    Keyframe.group(group).start();
+</script>
+</body>
+</html>

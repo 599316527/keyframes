@@ -8,10 +8,11 @@ var Event = {
     start: 'Start',
     iteration: 'Iteration',
     end: 'End',
+    done: 'Done',
     on: 'On',
     off: 'Off',
-    stop: 'stop',
-    goon: 'goon',
+    stop: 'Stop',
+    goon: 'Goon',
     once: 'Once',
     all: 'All',
     emit: 'Emit'

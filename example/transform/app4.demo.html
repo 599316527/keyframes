@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Animation Demo</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0"/>
+    <style>
+        #container {
+            transform-style: preserve-3d;
+
+        }
+
+        @media (max-device-width: 520px) and (orientation: landscape) {
+            #container {
+                height: 100%;
+                width: 520px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        @media (max-device-width: 520px) and (orientation: portrait) {
+            #container {
+                height: 100%;
+                width: 320px;
+                overflow: hidden;
+                position: relative;
+            }
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: cadetblue;
+        }
+
+        input {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #808080;
+            padding: 3px 7px;
+            width: 80px;
+            margin-top: 10px;
+        }
+
+        div {
+            color: #ffffff;
+            font-family: "Arial,宋体", "微软雅黑", "黑体", sans-serif;
+        }
+
+        #star1 {
+            position: absolute;
+            left: 500px;
+            top: 100px;
+        }
+
+        #star2 {
+            position: absolute;
+            left: 700px;
+            top: 140px;
+        }
+
+        #star3 {
+            position: absolute;
+            left: 910px;
+            top: 120px;
+        }
+
+        #star4 {
+            position: absolute;
+            left: 1120px;
+            top: 125px;
+
+        }
+
+        .demo {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background-color: #000000;
+            border-radius: 50%;
+        }
+    </style>
+    <script type="text/javascript" src="../../../../assets/js/tangram-base-1.3.7.1.js"></script>
+    <script type="text/javascript" src="../../../../assets/js/mustache.js"></script>
+    <script type="text/javascript" src="../../../base.js"></script>
+    <script type="text/javascript">
+        goog.require('ad.Debug');
+        goog.require('ad.animation.KeyFrames');
+        goog.require('ad.animation.custom.Flame');
+        goog.require('ad.animation.Transform');
+        goog.require('ad.material.BaseMaterial');
+    </script>
+</head>
+<body>
+<div id="container">
+    <input type="button" value="start" id="start">
+    <input type="button" value="close" id="close">
+    <input type="button" value="restart" id="restart">
+
+    <div id="star1">
+        <div class="demo"></div>
+    </div>
+    <div id="star2">
+        <div class="demo"></div>
+    </div>
+    <div id="star3">
+        <div class="demo"></div>
+    </div>
+    <div id="star4">
+        <div class="demo"></div>
+    </div>
+</div>
+<script>
+    ad.Debug(function () {
+        var material = new ad.material.BaseMaterial();
+        material.show();
+        ad.animation.KeyFrames.defineKeyFrame('flame', [
+            {
+                'percent': 0,
+                'scale': '1,1',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': 'white'
+                    },
+                    {
+                        'key': 'opacity',
+                        'value': 1
+                    }
+                ]
+            },
+            {
+                'percent': 100,
+                'scale': '1.5, 1.5',
+                'css': [
+                    {
+                        'key': 'background-color',
+                        'value': ' transparent'
+                    }
+                ]
+            }
+        ]);
+        ad.animation.KeyFrames.compile();
+        var star1 = new ad.animation.Transform(document.getElementById('star1'), true);
+        //star1.setExecuteInTime(true);
+        star1.moveTo({
+            'duration': '1.5s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '200ms',
+            't': '400px'
+        }).then(function () {
+            alert('pause!');
+        }).then(function () {
+            console.log('pause2!');
+        }).moveBy({
+            'duration': '1.5s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            '2d': '100px, -100px'
+        });
+        var star2 = new ad.animation.Transform(document.getElementById('star2'));
+        star2.moveTo({
+            'duration': '1.3s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '300ms',
+            't': '430px'
+        });
+        var star3 = new ad.animation.Transform(document.getElementById('star3'));
+        star3.moveTo({
+            'duration': '1s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '600ms',
+            't': '380px'
+        });
+        var star4 = new ad.animation.Transform(document.getElementById('star4'));
+        star4.moveTo({
+            'duration': '1s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '610ms',
+            't': '416px'
+        }).skewBy({
+            'duration': '1.5s',
+            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'x': '45deg'
+        });
+
+        var move_ins = [star1, star2, star3, star4];
+        var flames = [
+            new ad.animation.custom.Flame(star1._dom.children[0]),
+            new ad.animation.custom.Flame(star2._dom.children[0]),
+            new ad.animation.custom.Flame(star3._dom.children[0]),
+            new ad.animation.custom.Flame(star4._dom.children[0])
+        ];
+        star1.then(function () {
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].start();
+                console.log('start');
+            }
+            setTimeout(function () {
+                ad.animation.KeyFrames.defineKeyFrame('flame', [
+                    {
+                        'percent': 0,
+                        'scale': '1,1',
+                        'css': [
+                            {
+                                'key': 'background-color',
+                                'value': 'white'
+                            },
+                            {
+                                'key': 'opacity',
+                                'value': 1
+                            }
+                        ]
+                    },
+                    {
+                        'percent': 100,
+                        'scale': '2, 2',
+                        'css': [
+                            {
+                                'key': 'background-color',
+                                'value': ' transparent'
+                            }
+                        ]
+                    }
+                ]);
+                ad.animation.KeyFrames.compile();
+                for (var i = 0, l = flames.length; i < l; i++) {
+                    flames[i].restart();
+                }
+            }, 2000);
+
+        });
+
+
+        document.getElementById('start').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].execute();
+            }
+        }
+        document.getElementById('close').onclick = function () {
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].reStore();
+            }
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].close();
+            }
+        }
+        document.getElementById('restart').onclick = function () {
+            for (var i = 0, l = flames.length; i < l; i++) {
+                flames[i].close();
+            }
+            for (var i = 0, l = move_ins.length; i < l; i++) {
+                move_ins[i].reExecute();
+            }
+        }
+    });
+</script>
+</body>
+</html>

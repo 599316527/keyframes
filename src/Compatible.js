@@ -175,9 +175,7 @@ Compatible.prototype.parseCSS = function (key) {
             if (key in Compatible._keyMap) {
                 return Compatible._keyMap[key][0];
             }
-            else {
-                return key;
-            }
+            return key;
         };
     }
     else {

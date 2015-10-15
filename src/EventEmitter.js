@@ -1,5 +1,5 @@
 function EventEmitter() {
-    this._routes = {};
+    this._triggers = {};
 }
 
 EventEmitter.type = {
@@ -9,10 +9,10 @@ EventEmitter.type = {
 
 EventEmitter.prototype.on = function(eventName, fn, option) {
     if (eventName) {
-        if (eventName in this._routes) {
-            this._routes[eventName].push({fn:fn, option:option});
+        if (eventName in this._triggers) {
+            this._triggers[eventName].push({fn:fn, option:option});
         } else {
-            this._routes[eventName] = [{fn:fn, option:option}];
+            this._triggers[eventName] = [{fn:fn, option:option}];
         }
         this.emit(Event.on, eventName, option);
     }
@@ -22,22 +22,22 @@ EventEmitter.prototype.on = function(eventName, fn, option) {
 };
 EventEmitter.prototype.off = function(eventName, fn) {
     if (Checker.string.check(arguments)) {
-        if (eventName in this._routes) {
-            this._routes[eventName] = [];
+        if (eventName in this._triggers) {
+            this._triggers[eventName] = [];
             this.emit(Event.off, eventName);
         }
     }
     else if (Checker.sFunction.check(arguments)) {
-        if (eventName in this._routes) {
+        if (eventName in this._triggers) {
             var index = -1;
-            Util.each(this._routes[eventName], function (item, i) {
+            Util.each(this._triggers[eventName], function (item, i) {
                 if (item.fn === fn) {
                     index = i;
                     return false;
                 }
             });
             if (index > -1) {
-                this._routes[eventName].splice(index, 1);
+                this._triggers[eventName].splice(index, 1);
                 this.emit(Event.off, eventName);
             }
         }
@@ -102,7 +102,7 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
 };
 
 EventEmitter.prototype.emit = function(eventName) {
-    var fns = this._routes[eventName],
+    var fns = this._triggers[eventName],
         itemFn, scope, type, fn, option,
         offs = [], itemOff;
     var args = arguments;
@@ -151,9 +151,9 @@ EventEmitter.prototype.emit = function(eventName) {
                 fnsIndex ++;
             }
             if(newFns.length === 0) {
-                delete this._routes[eventName];
+                delete this._triggers[eventName];
             } else {
-                this._routes[eventName] = newFns;
+                this._triggers[eventName] = newFns;
             }
         }
     }
