@@ -23,3 +23,9 @@ Group.prototype.start = function () {
     });
     return this;
 };
+Group.prototype.clear = function () {
+    Util.each(this._frames, function(frame) {
+        frame.stop();
+    });
+    return this;
+};

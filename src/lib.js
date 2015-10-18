@@ -352,6 +352,8 @@ EventEmitter.prototype.emit = function(eventName) {
  */
 var Event = {
     style: 'Style',
+    css:  'Css',
+    clear: 'Clear',
     beforeStart: 'BeforeStart',
     pause: 'Pause',
     start: 'Start',
@@ -455,6 +457,7 @@ Pitch.prototype.do = function (key, value, opt) {
 
 /* global Pitch*/
 function Compatible() {
+    Compatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
     /* jshint ignore:start */
@@ -516,6 +519,7 @@ function Compatible() {
             return me.prefix + key + ':' + value + ';';
         });
 }
+Util.inherit(Compatible, EventEmitter);
 
 Compatible.prototype.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
@@ -607,9 +611,11 @@ Compatible.instance = function () {
 };
 Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
+    var me = this;
     if (css || css === '') {
         this.requestAnimationFrame(function() {
             Util.css(dom, key, css);
+            me.emit(Event.css, dom, key, css);
         });
     }
     else {
@@ -850,9 +856,6 @@ ClassProxy.prototype.rewrite = function (metaData, pseudo) {
 /**
  * Created by dingguoliang01 on 2015/8/17.
  */
-/**
- * Created by dingguoliang01 on 2015/8/17.
- */
 function FrameProxy(frame, metaData) {
     return this._define(frame, metaData);
 }
@@ -927,6 +930,12 @@ Group.prototype.start = function () {
     });
     return this;
 };
+Group.prototype.clear = function () {
+    Util.each(this._frames, function(frame) {
+        frame.stop();
+    });
+    return this;
+};
 /**
  * Created by dingguoliang01 on 2015/8/14.
  */
@@ -942,12 +951,12 @@ function Keyframe(dom, animations, cf) {
     else {
         if (!Checker.array.check([animations])) {
             this._animations = [animations];
-            this._animationStatus[animations['name']] = false;
+            this._animationStatus[animations['name']] = {ko: false, count: animations['count'], record: 0};
         }
         else {
             var me = this;
             Util.each(animations, function (animation) {
-                me._animationStatus[animation['name']] = false;
+                me._animationStatus[animation['name']] = {ko:false, count: animation['count'], record: 0};
             });
             this._animations = animations;
         }
@@ -980,16 +989,35 @@ function Keyframe(dom, animations, cf) {
     });
     this.on(Event.end, function(end, evt) {
         if (evt.animationName in me._animationStatus) {
-            me._animationStatus[evt.animationName] = true;
+            me._animationStatus[evt.animationName].ko = true;
             var isEnd = true;
             for (var key in me._animationStatus) {
-                if (!me._animationStatus[key]) {
+                if (!me._animationStatus[key].ko) {
                     isEnd = false;
                     break;
                 }
             }
             if (isEnd) {
                 me.emit(Event.over, me._animationStatus);
+            }
+        }
+    });
+    this.on(Event.iteration, function(end, evt) {
+        if (evt.animationName in me._animationStatus) {
+            var tmp = me._animationStatus[evt.animationName];
+            tmp.record++;
+            if (tmp.count === 'infinite' && !tmp.ko) {
+                tmp.ko = true;
+                var isEnd = true;
+                for (var key in me._animationStatus) {
+                    if (!me._animationStatus[key].ko) {
+                        isEnd = false;
+                        break;
+                    }
+                }
+                if (isEnd) {
+                    me.emit(Event.over, me._animationStatus);
+                }
             }
         }
     });
@@ -1054,23 +1082,22 @@ Keyframe.prototype.reflow = function () {
     return this;
 };
 Keyframe.prototype.restart = function () {
-    var cpt = this._compatible;
-    cpt.css(this._dom, 'animation', this._filter());
-    /* jshint ignore:start */
-    for (var key in this._animationStatus) {
-        this._animationStatus[key] = false;
-    }
-    this.reflow();
-    this.start();
+    this.clear().reflow().start();
 };
-Keyframe.prototype.stop = function () {
+Keyframe.prototype.clear = function () {
     var cpt = this._compatible;
     cpt.css(this._dom, 'animation', this._filter());
     /* jshint ignore:start */
     for (var key in this._animationStatus) {
-        this._animationStatus[key] = false;
+        this._animationStatus[key].ko = false;
+        this._animationStatus[key].record = 0;
     }
     /* jshint ignore:end */
+    return this;
+};
+Keyframe.prototype.stop = function () {
+    this.clear();
+    var cpt = this._compatible;
     if (this._monitorStart) {
         Util.off(this._dom, cpt.parseEvent(Event.start), this._monitorStart);
         this._monitorStart = false;
@@ -1219,7 +1246,7 @@ Keyframe.timeLine = function (timeLine) {
     times.sort();
     var min = times[0];
     var max = times[times.length - 1];
-    var duration = max - min;
+    var duration = parseFloat(max - min).toFixed(3);
     var percent = -1;
     for (time in map) {
         percent = parseInt(Math.round((map[time] - min) * 100 / duration), 10);
@@ -1240,7 +1267,7 @@ Keyframe.timeLine = function (timeLine) {
         percentLine[percent] = timeLine[time];
     }
     var frameProxy = Keyframe.defineKeyframe(percentLine);
-    frameProxy.setConfig({'duration': duration + 's', 'delay': min+ 's'});
+    frameProxy.setConfig({'duration': duration + 's', 'delay': min + 's'});
     return frameProxy;
 };
 

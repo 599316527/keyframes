@@ -5,6 +5,7 @@
 
 /* global Pitch*/
 function Compatible() {
+    Compatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
     /* jshint ignore:start */
@@ -66,6 +67,7 @@ function Compatible() {
             return me.prefix + key + ':' + value + ';';
         });
 }
+Util.inherit(Compatible, EventEmitter);
 
 Compatible.prototype.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
@@ -157,9 +159,11 @@ Compatible.instance = function () {
 };
 Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
+    var me = this;
     if (css || css === '') {
         this.requestAnimationFrame(function() {
             Util.css(dom, key, css);
+            me.emit(Event.css, dom, key, css);
         });
     }
     else {

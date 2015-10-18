@@ -3,6 +3,8 @@
  */
 var Event = {
     style: 'Style',
+    css:  'Css',
+    clear: 'Clear',
     beforeStart: 'BeforeStart',
     pause: 'Pause',
     start: 'Start',

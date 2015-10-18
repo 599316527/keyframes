@@ -1,9 +1,6 @@
 /**
  * Created by dingguoliang01 on 2015/8/17.
  */
-/**
- * Created by dingguoliang01 on 2015/8/17.
- */
 function FrameProxy(frame, metaData) {
     return this._define(frame, metaData);
 }
