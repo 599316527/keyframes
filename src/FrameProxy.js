@@ -29,12 +29,21 @@ FrameProxy.prototype.setConfig = function (config) {
     this._configs = [config];
     return this;
 };
-FrameProxy.prototype.setFunction = function (fn) {
-    this._config['function'] = fn;
-    return this;
-};
 FrameProxy.prototype.getConfigs = function () {
     return this._configs;
+};
+//FrameProxy只针对一个keyframes
+FrameProxy.prototype.keyframe = function (domFnIt) {
+    var map = {'@': 'function', '#': 'count'};
+    var option = {};
+    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function($0,$1,$2){
+        option[$1] = $2;
+        return '';});
+    for (var key in option) {
+        this._config[map[key]] = option[key];
+    }
+    this._keyframe = new Keyframe(document.getElementById(dom), this._configs);
+    return this._keyframe;
 };
 FrameProxy.prototype.combine = function (frameProxy) {
     var configs = frameProxy.getConfigs();
@@ -42,8 +51,4 @@ FrameProxy.prototype.combine = function (frameProxy) {
         this._configs = this._configs.concat(configs);
     }
     return this;
-};
-FrameProxy.prototype.bind = function (dom) {
-    this._keyframe = new Keyframe(dom, this._configs);
-    return this._keyframe;
 };

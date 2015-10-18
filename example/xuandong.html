@@ -112,7 +112,7 @@
                'opacity': 1
            }
        },
-       'frame4@ease-in-out': {
+       'frame4@ease-in-out#infinite': {
            '0': {
                'opacity': 0
            },
@@ -138,7 +138,11 @@
            }
        }
     };
-    Keyframe.group(group).start();
+    var group = Keyframe.group(group);
+    group.onEnd(function() {
+        console.log(arguments);
+    });
+    group.start();
 </script>
 </body>
 </html>

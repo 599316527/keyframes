@@ -9,6 +9,7 @@ var Event = {
     iteration: 'Iteration',
     end: 'End',
     done: 'Done',
+    over: 'Over',
     on: 'On',
     off: 'Off',
     stop: 'Stop',

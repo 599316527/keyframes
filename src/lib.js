@@ -358,6 +358,7 @@ var Event = {
     iteration: 'Iteration',
     end: 'End',
     done: 'Done',
+    over: 'Over',
     on: 'On',
     off: 'Off',
     stop: 'Stop',
@@ -877,12 +878,21 @@ FrameProxy.prototype.setConfig = function (config) {
     this._configs = [config];
     return this;
 };
-FrameProxy.prototype.setFunction = function (fn) {
-    this._config['function'] = fn;
-    return this;
-};
 FrameProxy.prototype.getConfigs = function () {
     return this._configs;
+};
+//FrameProxy只针对一个keyframes
+FrameProxy.prototype.keyframe = function (domFnIt) {
+    var map = {'@': 'function', '#': 'count'};
+    var option = {};
+    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function($0,$1,$2){
+        option[$1] = $2;
+        return '';});
+    for (var key in option) {
+        this._config[map[key]] = option[key];
+    }
+    this._keyframe = new Keyframe(document.getElementById(dom), this._configs);
+    return this._keyframe;
 };
 FrameProxy.prototype.combine = function (frameProxy) {
     var configs = frameProxy.getConfigs();
@@ -891,17 +901,29 @@ FrameProxy.prototype.combine = function (frameProxy) {
     }
     return this;
 };
-FrameProxy.prototype.bind = function (dom) {
-    this._keyframe = new Keyframe(dom, this._configs);
-    return this._keyframe;
-};
 
 function Group(frames) {
+    Group.superClass.call(this);
     this._frames = frames;
+    return this;
 }
+Util.inherit(Group, EventEmitter);
+Group.prototype.onEnd = function (fn, option) {
+    this.on(Event.end, fn, option);
+    return this;
+};
 Group.prototype.start = function () {
+    var status = [];
+    var me = this;
+    function over(evt, st) {
+        status.push(st);
+        if (status.length === me._frames.length) {
+            me.emit(Event.end, status);
+        }
+    }
     Util.each(this._frames, function(frame) {
         frame.start();
+        frame.on(Event.over, over);
     });
     return this;
 };
@@ -932,8 +954,8 @@ function Keyframe(dom, animations, cf) {
     }
 
     function wrap(eventName) {
-        return function () {
-            me.emit(eventName, arguments);
+        return function (evt) {
+            me.emit(eventName, evt);
         };
     }
     this.on(Event.on, function(on, eventName) {
@@ -953,6 +975,21 @@ function Keyframe(dom, animations, cf) {
             if (!me._monitorIteration) {
                 me._monitorIteration = wrap(eventName);
                 Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorIteration);
+            }
+        }
+    });
+    this.on(Event.end, function(end, evt) {
+        if (evt.animationName in me._animationStatus) {
+            me._animationStatus[evt.animationName] = true;
+            var isEnd = true;
+            for (var key in me._animationStatus) {
+                if (!me._animationStatus[key]) {
+                    isEnd = false;
+                    break;
+                }
+            }
+            if (isEnd) {
+                me.emit(Event.over, me._animationStatus);
             }
         }
     });
@@ -1156,16 +1193,10 @@ Keyframe.compile = function () {
 };
 Keyframe.group = function(group) {
     var frames = [];
-    var frame;
-    var domFn;
+    var frameProxy;
     for (var dom in group) {
-        frame = Keyframe.timeLine(group[dom]);
-        domFn = dom.split('@');
-        frames.push(frame.bind(document.getElementById(domFn[0])));
-        if (domFn.length > 1)
-        {
-            frame.setFunction(domFn[1]);
-        }
+        frameProxy = Keyframe.timeLine(group[dom]);
+        frames.push(frameProxy.keyframe(dom));
     }
     Keyframe.compile();
     return new Group(frames);
