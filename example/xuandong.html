@@ -2,147 +2,163 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>demo</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-    <script src="../src/lib.js"></script>
+    <title></title>
     <style>
-        #frame1 {
-            width: 25px;
-            position: absolute;
-            height: 60px;
-            left: 168px;
-            top: 55px;
-            opacity: 1;
-            background: url(http://ecmb.bdimg.com/public03/2e897163616c44fddada5bad03fdcc62.png) no-repeat;
-            background-size: 100% 100%;
+        html, body {
+            height: 100%;
+
         }
-        #frame2 {
-            width: 150px;
-            position: absolute;
-            height: 150px;
-            left: 105px;
-            top: 70px;
-            background: url(http://ecmb.bdimg.com/public03/9dead4c5f9d0f4207faba69eed020959.png) no-repeat;
-            background-size: 100% 100%;
+
+        .container {
+            width: 96%;
+            margin: auto;
+            height: 100%;
         }
-        #frame3 {
-            width: 150px;
-            position: absolute;
-            height: 150px;
-            left: 140px;
-            top: 70px;
-            background: url(http://ecmb.bdimg.com/public03/5f77e9c925ca8814cd779da3127ba576.png) no-repeat;
-            background-size: 100% 100%;
+
+        #jsonEditor {
+            width: 49%;
+            height: 100%;
+            font-size: 16px;
+            float: left;
         }
-        #frame4 {
-            position: absolute;
-            width: 55px;
-            height: 75px;
-            left: 122px;
-            top: 144px;
-            background: url(http://ecmb.bdimg.com/public03/de7e49534a28de35b65314e8285b1f64.png) no-repeat;
-            background-size: 100% 100%;
+
+        #cssEditor {
+            width: 49%;
+            font-size: 16px;
+            height: 100%;
+            float: right;
         }
-        #frame5 {
-            width: 180px;
-            position: absolute;
-            height: 140px;
-            left: 60px;
-            top: 70px;
-            opacity: 0;
-            background: url(http://ecmb.bdimg.com/public03/98e241f90a5302ad09c93c06f0a51d99.png) no-repeat;
-            background-size: 100% 100%;
+
+        button {
+            float: left;
+            width: 40px;
+            height: 220px;
+            margin-top: 70px;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 25px;
+        }
+        iframe {
+            float: right;
+            width: 92%;
+            border: 1px solid rgb(39, 40, 34);
+            height: 400px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        pre {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-<div id="frame5"></div>
-<div id="frame3"></div>
-<div id="frame4"></div>
-
-<div id="frame2"></div>
-<div id="frame1"></div>
-
-<script>
-   var group = {
-        'frame1': {
-            '0.6': {
-                'translateY': '0px'
-            },
-            '1.2': {
-                'translateY': '55px',
-                'opacity': 1
-            },
-            '1.8': {
-                'translateY': '55px',
-                'opacity' : 0
-            }
+<div class="container">
+    <button>c<br/>o<br/>m<br/>p<br/>i<br/>l<br/>e</button>
+    <iframe id="env" src="env.html"></iframe>
+<pre id="jsonEditor">
+{
+   "frame1": {
+        "0.6": {
+            "translateY": "0px"
         },
-       'frame2': {
-           '0': {
-               'scale': 0.2,
-               'opacity': 0
-           },
-           '1.18': {
-               'opacity': 0
-           },
-           '1.2': {
-               'opacity': 1,
-               'scale': 0.2
-           },
-           '2.1': {
-               'opacity': 0,
-               'scale': 1
-           }
+        "1.2": {
+            "translateY": "55px",
+            "opacity": 1
+        },
+        "1.8": {
+            "translateY": "55px",
+            "opacity" : 0
+        }
+    },
+   "frame2": {
+       "0": {
+           "scale": 0.2
        },
-       'frame3': {
-           '0': {
-               'opacity': 0
-           },
-           '2.1': {
-               'opacity': 0
-           },
-           '2.3': {
-               'opacity': 0.1
-           },
-           '2.9': {
-               'opacity': 0.5
-           },
-           '3.1': {
-               'opacity': 1
-           }
+       "1.18": {
+           "opacity": 0
        },
-       'frame4@ease-in-out#infinite': {
-           '0': {
-               'opacity': 0
-           },
-           '3.1': {
-               'opacity': 0
-           },
-           '3.12': {
-               'opacity': 1,
-               'translateX':'0px',
-               'rotateZ':'0deg'
-           },
-           '4.32': {
-               'translateX': '-60px',
-               'rotateZ':'360deg'
-           }
+       "1.2": {
+           "opacity": 1,
+           "scale": 0.2
        },
-       'frame5': {
-           '3.7': {
-               'opacity': 0
-           },
-           '3.9': {
-               'opacity': 1
-           }
+       "2.1": {
+           "opacity": 0,
+           "scale": 1
        }
-    };
-    var group = Keyframe.group(group);
-    group.onEnd(function() {
-        console.log(arguments);
+   },
+   "frame3": {
+       "2.1": {
+           "opacity": 0
+       },
+       "2.3": {
+           "opacity": 0.1
+       },
+       "2.9": {
+           "opacity": 0.5
+       },
+       "3.1": {
+           "opacity": 1
+       }
+   },
+   "frame4@ease-in-out#infinite": {
+       "0": {
+           "opacity": 0
+       },
+       "3.1": {
+           "opacity": 0
+       },
+       "3.12": {
+           "opacity": 1,
+           "translateX":"0px",
+           "rotateZ":"0deg"
+       },
+       "4.32": {
+           "translateX": "-60px",
+           "opacity": 1,
+           "rotateZ":"360deg"
+       }
+   },
+   "frame5": {
+       "3.7": {
+           "opacity": 0
+       },
+       "3.9": {
+           "opacity": 1
+       }
+   }
+}
+</pre>
+
+    <pre id="cssEditor"></pre>
+</div>
+
+<script src="../lib/require.js"></script>
+<script src="../dist/lib.min.js"></script>
+<script src="../lib/cssbeautify.js"></script>
+<script>
+    var envWin = document.getElementById('env').contentWindow;
+    require.config({paths: {ace: "../ace"}});
+    require(["ace/ace"], function (ace) {
+        Util.on(document.getElementsByTagName('button')[0], 'click', function () {
+            cssEditor.setValue("");
+            var code = jsonEditor.getValue();
+            envWin.postMessage(code, '*');
+        });
+
+        var jsonEditor = ace.edit("jsonEditor");
+        jsonEditor.session.setMode("ace/mode/json");
+        jsonEditor.setTheme("ace/theme/monokai");
+        var cssEditor = ace.edit("cssEditor");
+        cssEditor.session.setMode("ace/mode/css");
+        cssEditor.setTheme("ace/theme/monokai");
+        Util.on(window, 'message', function (messageEvent) {
+            cssEditor.insert(cssbeautify(messageEvent.data + "\n", {
+                indent: "  ",
+                openbrace: "separate-line",
+                autosemicolon: true
+            }));
+        });
     });
-    group.start();
 </script>
 </body>
 </html>
