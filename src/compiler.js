@@ -6,6 +6,8 @@
 /* global Checker Compatible Util */
 function Compiler() {
     Compiler.superClass.call(this);
+    //define时cache到map中，map存keyframeName + json
+    //compile时清空map，cache到store中，store中存keyframeName + css
     this._classStore = {};
     this._classMap = {};
     this._keyframeMap = {};
@@ -91,9 +93,24 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     this.emit(Event.style, id, cssText);
     return style;
 };
+Compiler.prototype.clear = function () {
+    for (var className in this._classStore) {
+        this._clearSheet(this._classId(className));
+    }
+    for (var frameName in this._keyframeStore) {
+        this._clearSheet(this._keyframeId(frameName));
+    }
+    this._classStore = {};
+    this._keyframeStore = {};
+    this._classMap = {};
+    this._keyframeMap = {};
+};
 Compiler.prototype._refreshSheet = function (cssText, id) {
     document.getElementById(id).innerHTML = cssText;
     this.emit(Event.style, id, cssText);
+};
+Compiler.prototype._clearSheet = function (id) {
+    document.querySelector('head').removeChild(document.getElementById(id));
 };
 Compiler.prototype._compileClass = function (metaData) {
     var body = '{';

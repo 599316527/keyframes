@@ -13,18 +13,18 @@ Checker.prototype.check = function (arg) {
     if (arg.length !== me._list.length) {
         return false;
     }
-    var _type;
-    var _typeof;
+    var type;
+    var typeOf;
     var match = Util.each(arg, function (item, i) {
-        _type = me._list[i];
-        _typeof = typeof _type;
-        if (_typeof === 'string') {
-            if (typeof item !== _type) {
+        type = me._list[i];
+        typeOf = typeof type;
+        if (typeOf === 'string') {
+            if (typeof item !== type) {
                 return false;
             }
         }
-        else if (_typeof === 'function') {
-            if (!(item instanceof _type)) {
+        else if (typeOf === 'function') {
+            if (!(item instanceof type)) {
                 return false;
             }
         }
