@@ -76,12 +76,10 @@ gulp.task('pack', ['lint'], function() {
         .pipe(rename(function (path) {
             //path.dirname += "/ciao";
             if (path.dirname==='amd') {
-
             }
             else {
                 path.basename += ".min";
             }
-
             //path.extname = ".md"
         }))
         .pipe(gulp.dest('dist'));
