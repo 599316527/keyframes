@@ -1,5 +1,16 @@
 /**
- * Created by dingguoliang01 on 2015/8/17.
+ * @file classproxy.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Compiler */
+
+/**
+ * 样式代理,提供简便调用
+ *
+ * @param {string} className 样式名
+ * @param {Object} metaData  定义样式的json数据
+ * @class
  */
 function ClassProxy(className, metaData) {
     if (metaData) {
@@ -28,13 +39,12 @@ ClassProxy.prototype.focus = function (metaData) {
 ClassProxy.prototype._name = function (pseudo) {
     return this._className + ':' + pseudo;
 };
-
 ClassProxy.prototype._pseudo = function (pseudo, metaData) {
     if (metaData) {
         Compiler.instance().defineClass(this._name(pseudo), metaData);
     }
     else {
-        throw new Error('incorrect parameter, metaData is required！');
+        throw new Error('incorrect parameter, metaData is required!');
     }
     return this;
 };
@@ -46,7 +56,7 @@ ClassProxy.prototype.rewrite = function (metaData, pseudo) {
         this._define(this._className, metaData);
     }
     else {
-        throw new Error('incorrect parameter！');
+        throw new Error('incorrect parameter!');
     }
     return this;
 };

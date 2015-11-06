@@ -3,11 +3,15 @@
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
+/* global Checker */
+
 /**
- * 构造函数
+ * css属性转cssText过滤器
  *
+ * @param {string} name  pitch的别名.
  * @param {string} keys 补丁属性集合.
  * @param {Function} handler 补丁函数.
+ * @class
  */
 function Pitch(name, keys, handler) {
     this._router = [];
@@ -15,9 +19,8 @@ function Pitch(name, keys, handler) {
         this.use(name, keys, handler);
     }
 }
-
 Pitch.prototype.use = function (name, keys, handler) {
-    this._router.push({name:name, keys: keys + ' ', handler: handler});
+    this._router.push({name: name, keys: keys + ' ', handler: handler});
     return this;
 };
 Pitch.prototype.next = function (index, key, value, opt) {

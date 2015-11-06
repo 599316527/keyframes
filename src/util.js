@@ -4,13 +4,21 @@
  **/
 
 var Util = {
+    forIn: function (obj, handler, scope) {
+        for (var key in obj) {
+            if (handler.call(scope, key, obj[key]) === false) {
+                return false;
+            }
+        }
+        return true;
+    },
     rewrite: function (init, replace) {
-        if(!replace) {
+        if (!replace) {
             return init;
         }
-        for (var key in replace) {
-            init[key] = replace[key];
-        }
+        Util.forIn(replace, function (key, item) {
+            init[key] = item;
+        });
         return init;
     },
     define: function (namespace) {
@@ -24,27 +32,26 @@ var Util = {
             module = module[domain];
         }
     },
+    // extend 只是拓展没有的属性 rewrite则是重写
     extend: function (src, init) {
-        if(!src) {
+        if (!src) {
             return init;
         }
         if (init) {
-            for (var key in init) {
+            Util.forIn(init, function (key, item) {
                 if (!(key in src)) {
-                    src[key] = init[key];
+                    src[key] = item;
                 }
-            }
+            });
         }
         return src;
     },
     inherit: function (Child, Parent) {
-        /* jshint ignore:start */
         var Clz = new Function();
         Clz.prototype = Parent.prototype;
         Child.prototype = new Clz();
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
-        /* jshint ignore:end */
     },
     xInA: function (val, ary) {
         var index = -1;
@@ -105,21 +112,16 @@ var Util = {
     removeClass: function (dom, className) {
         dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
     },
-    css:  function (dom, attr, value) {
+    css: function (dom, attr, value) {
         if (typeof attr === 'string') {
-            return Util._css(dom, attr, value);
+            return Util.$css(dom, attr, value);
         }
-        /* jshint ignore:start */
-        else {
-            for (var item in attr) {
-                Util._css(dom, item, attr[item]);
-            }
-        }
-        /* jshint ignore:end */
+        Util.forIn(attr, function (key, item) {
+            Util.$css(dom, key, item);
+        });
     },
     stopPropagation: function (event) {
-        if (event.stopPropagation)
-        {
+        if (event.stopPropagation) {
             Util.stopPropagation = function (event) {
                 event.stopPropagation();
             };
@@ -131,33 +133,28 @@ var Util = {
         }
         return Util.stopPropagation(event);
     },
-   _css: function (dom, key, value) {
-        if (typeof window.getComputedStyle !== 'undefined')// W3C
-        {
-            Util._css = function (dom, key, value) {
+    $css: function (dom, key, value) {
+        if (typeof window.getComputedStyle !== 'undefined') { // W3C
+            Util.$css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
                 }
-                else {
-                    var tmp = window.getComputedStyle(dom, null)[key];
-                    return !tmp ? dom.style[key] : tmp;
-                }
+                var tmp = window.getComputedStyle(dom, null)[key];
+                return !tmp ? dom.style[key] : tmp;
             };
         }
         else if (typeof dom.currentStyle !== 'undefined') {
-            Util._css = function (dom, key, value) {
+            Util.$css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
                 }
-                else {
-                    var tmp = dom.currentStyle[key];
-                    return !tmp ? dom.style[key] : tmp;
-                }
+                var tmp = dom.currentStyle[key];
+                return !tmp ? dom.style[key] : tmp;
             };
         }
-        return this._css(dom, key, value);
+        return this.$css(dom, key, value);
     },
     on: function (dom, name, fn) {
         if ('addEventListener' in window) {

@@ -1,11 +1,24 @@
 /**
- * Created by dingguoliang01 on 2015/8/14.
+ * @file keyframe.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible*/
+
+/**
+ * css属性转cssText过滤器
+ *
+ * @param {Dom} dom  dom元素.
+ * @param {(Object|Array)} animations 动画集合.
+ * @param {Object=} cf 默认配置，只用于animations不为数组的情况.
+ * @class
  */
 function Keyframe(dom, animations, cf) {
     Keyframe.superClass.call(this);
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
+    var me = this;
     animations = Util.extend(animations, cf);
     if (!animations) {
         this._animations = [];
@@ -13,23 +26,22 @@ function Keyframe(dom, animations, cf) {
     else {
         if (!Checker.array.check([animations])) {
             this._animations = [animations];
-            this._animationStatus[animations['name']] = {ko: false, count: animations['count'], record: 0};
+            this._animationStatus[animations.name] = {ko: false, count: animations.count, record: 0};
         }
         else {
-            var me = this;
             Util.each(animations, function (animation) {
-                me._animationStatus[animation['name']] = {ko:false, count: animation['count'], record: 0};
+                me._animationStatus[animation.name] = {ko: false, count: animation.count, record: 0};
             });
             this._animations = animations;
         }
     }
-
     function wrap(eventName) {
         return function (evt) {
             me.emit(eventName, evt);
         };
     }
-    this.on(Event.on, function(on, eventName) {
+    // 只有在绑定start end iteration监听时才真正的在dom元素上监听
+    this.on(Event.on, function (on, eventName) {
         if (eventName  === Event.start) {
             if (!me._monitorStart) {
                 me._monitorStart = wrap(eventName);
@@ -49,35 +61,33 @@ function Keyframe(dom, animations, cf) {
             }
         }
     });
-    this.on(Event.end, function(end, evt) {
+    this.on(Event.end, function (end, evt) {
         if (evt.animationName in me._animationStatus) {
             me._animationStatus[evt.animationName].ko = true;
-            var isEnd = true;
-            for (var key in me._animationStatus) {
+            var isEnd = Util.forIn(me._animationStatus, function (key) {
                 if (!me._animationStatus[key].ko) {
-                    isEnd = false;
-                    break;
+                    return false;
                 }
-            }
+            });
             if (isEnd) {
+                // 所有keyframe都执行完了触发
                 me.emit(Event.over, me._animationStatus);
             }
         }
     });
-    this.on(Event.iteration, function(end, evt) {
+    this.on(Event.iteration, function (end, evt) {
         if (evt.animationName in me._animationStatus) {
             var tmp = me._animationStatus[evt.animationName];
             tmp.record++;
             if (tmp.count === 'infinite' && !tmp.ko) {
                 tmp.ko = true;
-                var isEnd = true;
-                for (var key in me._animationStatus) {
+                var isEnd = Util.forIn(me._animationStatus, function (key) {
                     if (!me._animationStatus[key].ko) {
-                        isEnd = false;
-                        break;
+                        return false;
                     }
-                }
+                });
                 if (isEnd) {
+                    // 对于无限执行的keyframe执行完一次即可
                     me.emit(Event.over, me._animationStatus);
                 }
             }
@@ -85,7 +95,6 @@ function Keyframe(dom, animations, cf) {
     });
     return this;
 }
-
 Util.inherit(Keyframe, EventEmitter);
 Keyframe.prototype._init = function (dom) {
     this._dom = dom;
@@ -111,34 +120,33 @@ Keyframe.prototype.start = function () {
     }
     return this;
 };
-Keyframe.prototype.pause = function (opt_name) {
-    this._playState('paused', opt_name);
+Keyframe.prototype.pause = function (optName) {
+    this._playState('paused', optName);
     this.emit(Event.pause);
     return this;
 };
 Keyframe.prototype._filter = function () {
     var animation = this._compatible.css(this._dom, 'animation');
-    var _animation = [];
+    var $animation = [];
     if (animation) {
         animation = animation.split(',');
         var tmp = ['(?:none)'];
         Util.each(this._animations, function (animation) {
-            tmp.push('(?:' + animation['name'] + ')');
+            tmp.push('(?:' + animation.name + ')');
         });
         var reg = this._compatible.regExp(tmp.join('|'));
         Util.each(animation, function (ceil) {
             if (!reg.test(ceil)) {
-                _animation.push(ceil);
+                $animation.push(ceil);
             }
         });
     }
-    return _animation.join(',').trim();
+    return $animation.join(',').trim();
 };
 Keyframe.prototype.reflow = function () {
     // -> triggering reflow /* The actual magic */
-    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
     var dom = this._dom;
-    this._compatible.requestAnimationFrame(function() {
+    this._compatible.requestAnimationFrame(function () {
         dom.offsetWidth = dom.offsetWidth;
     });
     return this;
@@ -149,12 +157,10 @@ Keyframe.prototype.restart = function () {
 Keyframe.prototype.clear = function () {
     var cpt = this._compatible;
     cpt.css(this._dom, 'animation', this._filter());
-    /* jshint ignore:start */
-    for (var key in this._animationStatus) {
+    Util.forIn(this._animationStatus, function (key) {
         this._animationStatus[key].ko = false;
         this._animationStatus[key].record = 0;
-    }
-    /* jshint ignore:end */
+    }, this);
     return this;
 };
 Keyframe.prototype.stop = function () {
@@ -175,8 +181,8 @@ Keyframe.prototype.stop = function () {
     this.emit(Event.stop);
     return this;
 };
-Keyframe.prototype.goon = function (opt_name) {
-    this._playState('running', opt_name);
+Keyframe.prototype.goon = function (optName) {
+    this._playState('running', optName);
     this.emit(Event.goon);
     return this;
 };
@@ -185,12 +191,12 @@ Keyframe.prototype._c2A = function (key) {
     return css.split(/,\s?/);
 };
 // 根据animationName 和 animationState 来过滤,避免破坏当前状态
-Keyframe.prototype._playState = function (state, opt_name) {
+Keyframe.prototype._playState = function (state, optName) {
     var namesAry = this._c2A('name');
     var statesAry = this._c2A('state');
     var index;
-    if (opt_name) {
-        index = Util.xInA(opt_name, namesAry);
+    if (optName) {
+        index = Util.xInA(optName, namesAry);
         if (index > -1) {
             statesAry[index] = state;
         }
@@ -198,7 +204,7 @@ Keyframe.prototype._playState = function (state, opt_name) {
     else {
         var aniName;
         Util.each(this._animations, function (animation) {
-            aniName = animation['name'];
+            aniName = animation.name;
             index = Util.xInA(aniName, namesAry);
             if (index > -1) {
                 statesAry[index] = state;
@@ -220,14 +226,12 @@ Keyframe.defineKeyframe = function (frame, metaData) {
     if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         frame = Util.random.name(8);
-        return new FrameProxy(frame, metaData);
+        return new FrameProxy(frame, metaData, Keyframe);
     }
     else if (Checker.stringObject.check(arguments)) {
-        return new FrameProxy(frame, metaData);
+        return new FrameProxy(frame, metaData, Keyframe);
     }
-    else {
-        throw new Error('incorrect parameters!');
-    }
+    throw new Error('incorrect parameters!');
 };
 Keyframe.defineClass = function (className, metaData) {
     if (Checker.object.check(arguments)) {
@@ -240,20 +244,18 @@ Keyframe.defineClass = function (className, metaData) {
     else if (Checker.string.check(arguments)) {
         return new ClassProxy(className);
     }
-    else {
-        throw new Error('incorrect parameters!');
-    }
+    throw new Error('incorrect parameters!');
 };
 Keyframe.pack = function (clz) {
     Util.inherit(clz, Keyframe);
     var clazz = clz.cf.class;
     var frame = clz.cf.frame;
-    for (var className in clazz) {
-        Keyframe.defineClass(className, clazz[className]);
-    }
-    for (var frameName in frame) {
-        Keyframe.defineKeyframe(frameName, frame[frameName]);
-    }
+    Util.forIn(clazz, function (className, item) {
+        Keyframe.defineClass(className, item);
+    });
+    Util.forIn(frame, function (frameName, item) {
+        Keyframe.defineKeyframe(frameName, item);
+    });
     clz.rewriteClass = function (part, config) {
         if (!clazz) {
             clazz = clz.cf.class = {};
@@ -280,56 +282,50 @@ Keyframe.pack = function (clz) {
 Keyframe.compile = function () {
     Compiler.instance().compile();
 };
-Keyframe.group = function(group) {
+Keyframe.group = function (group) {
     var frames = [];
     var frameProxy;
-    for (var dom in group) {
-        frameProxy = Keyframe.timeLine(group[dom]);
+    Util.forIn(group, function (dom, item) {
+        frameProxy = Keyframe.timeLine(item);
         frames.push(frameProxy.keyframe(dom));
-    }
+    });
     Keyframe.compile();
     return new Group(frames);
 };
 Keyframe.timeLine = function (timeLine) {
     var times = [];
     var map = {};
-    var tmp;
-    var time;
     var adjust = {};
-    for (time in timeLine) {
-        tmp = time.split(/\s+/);
-        Util.each(tmp, function(data) {
+    Util.forIn(timeLine, function (time) {
+        Util.each(time.split(/\s+/), function (data) {
             map[data] = parseFloat(data);
         });
-    }
-    for (time in map) {
-        times.push(map[time]);
-    }
+    });
+    Util.forIn(map, function (time, item) {
+        times.push(item);
+    });
     times.sort();
     var min = times[0];
     var max = times[times.length - 1];
     var duration = parseFloat(max - min).toFixed(3);
     var percent = -1;
-    for (time in map) {
-        percent = parseInt(Math.round((map[time] - min) * 100 / duration), 10);
+    Util.forIn(map, function (time, item) {
+        percent = parseInt(Math.round((item - min) * 100 / duration), 10);
         while (percent in adjust) {
             percent = percent + 1;
         }
         adjust[percent] = true;
         map[time] = percent;
-    }
+    });
     var percentLine = {};
-
-    for (time in timeLine) {
-        tmp = time.split(/\s+/);
+    Util.forIn(timeLine, function (time, item) {
         percent = time;
-        Util.each(tmp, function(data) {
+        Util.each(time.split(/\s+/), function (data) {
             percent = percent.replace(data, map[data]);
         });
-        percentLine[percent] = timeLine[time];
-    }
+        percentLine[percent] = item;
+    });
     var frameProxy = Keyframe.defineKeyframe(percentLine);
-    frameProxy.setConfig({'duration': duration + 's', 'delay': min + 's'});
+    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
     return frameProxy;
 };
-

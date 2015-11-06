@@ -1,3 +1,9 @@
+/**
+ * @file group.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Util Event EventEmitter*/
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;
@@ -17,14 +23,14 @@ Group.prototype.start = function () {
             me.emit(Event.end, status);
         }
     }
-    Util.each(this._frames, function(frame) {
+    Util.each(this._frames, function (frame) {
         frame.start();
         frame.on(Event.over, over);
     });
     return this;
 };
 Group.prototype.clear = function () {
-    Util.each(this._frames, function(frame) {
+    Util.each(this._frames, function (frame) {
         frame.stop();
     });
     return this;

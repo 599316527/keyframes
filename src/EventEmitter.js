@@ -1,26 +1,32 @@
+/**
+ * @file eventemitter.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Event Util*/
+
 function EventEmitter() {
     this._triggers = {};
 }
-
 EventEmitter.type = {
     once: 'once',
     all: 'all'
 };
-
-EventEmitter.prototype.on = function(eventName, fn, option) {
+EventEmitter.prototype.on = function (eventName, fn, option) {
     if (eventName) {
         if (eventName in this._triggers) {
-            this._triggers[eventName].push({fn:fn, option:option});
-        } else {
-            this._triggers[eventName] = [{fn:fn, option:option}];
+            this._triggers[eventName].push({fn: fn, option: option});
+        }
+        else {
+            this._triggers[eventName] = [{fn: fn, option: option}];
         }
         this.emit(Event.on, eventName, option);
     }
     else {
-        throw new Error('undefined event！');
+        throw new Error('undefined event!');
     }
 };
-EventEmitter.prototype.off = function(eventName, fn) {
+EventEmitter.prototype.off = function (eventName, fn) {
     if (Checker.string.check(arguments)) {
         if (eventName in this._triggers) {
             this._triggers[eventName] = [];
@@ -46,7 +52,7 @@ EventEmitter.prototype.off = function(eventName, fn) {
         throw new Error('incorrect parameter!');
     }
 };
-EventEmitter.prototype.once = function(eventName, fn, option) {
+EventEmitter.prototype.once = function (eventName, fn, option) {
     if (!option) {
         option = {};
     }
@@ -54,41 +60,35 @@ EventEmitter.prototype.once = function(eventName, fn, option) {
     this.emit(Event.once, eventName, option);
     this.on(eventName, fn, option);
 };
-
-EventEmitter.prototype.callWithScope = function(fn, option, params) {
+EventEmitter.prototype.callWithScope = function (fn, option, params) {
     params = params || [];
-    if(option && ('scope' in option)) {
-        /* jshint ignore:start */
-        fn.apply(option['scope'], params);
-        /* jshint ignore:end */
+    if (option && option.hasOwnProperty('scope')) {
+        fn.apply(option.scope, params);
     }
     else
     {
         fn.apply(this, params);
     }
 };
-
-EventEmitter.prototype.all = function(dependency, fn, option) {
-    var record = {},
-        results = [];
+EventEmitter.prototype.all = function (dependency, fn, option) {
+    var record = {};
+    var results = [];
     if (dependency.length === 0) {
         this.callWithScope(fn, option);
         return;
     }
     var me = this;
-    var proxyCallback = function(index) {
-        return  function(eventName, result) {
+    var proxyCallback = function (index) {
+        return  function (eventName, result) {
             if (eventName in record) {
                 record[eventName] = true;
                 results[index] = result;
             }
-            var trigger = true;
-            for (var item in record) {
-                if (record[item] === false) {
-                    trigger = false;
-                    break;
+            var trigger = Util.forIn(record, function (key, item) {
+                if (item === false) {
+                    return false;
                 }
-            }
+            });
             if (trigger) {
                 me.callWithScope(fn, option, results);
             }
@@ -96,63 +96,71 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
     };
     Util.each(dependency, function (eventName, i) {
         record[eventName] = false;
-        this.on(eventName, proxyCallback(i), {type:EventEmitter.type.all});
+        this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
     });
     this.emit(Event.all, dependency, option);
 };
-
-EventEmitter.prototype.emit = function(eventName) {
-    var fns = this._triggers[eventName],
-        itemFn, scope, type, fn, option,
-        offs = [], itemOff;
+EventEmitter.prototype.emit = function (eventName) {
+    var fns = this._triggers[eventName];
+    var scope;
+    var type;
+    var fn;
+    var option;
+    var offs = [];
     var args = arguments;
     if (fns) {
         var me = this;
-        Util.each(fns, function(itemFn) {
+        Util.each(fns, function (itemFn) {
             fn = itemFn.fn;
             option = itemFn.option;
             if (option) {
                 scope = option.scope;
                 type = option.type;
-            } else {
+            }
+            else {
                 scope = false;
                 type = false;
             }
-
             if (scope) {
                 fn.apply(scope, Util.arg2Ary(args));
-            } else {
+            }
+            else {
                 fn.apply(me, Util.arg2Ary(args));
             }
-
             if (type) {
-                //type === EventEmitter.type.once or type === EventEmitter.type.all
+                // type === EventEmitter.type.once or type === EventEmitter.type.all
                 offs.push(itemFn);
             }
         });
         if (offs.length > 0) {
             var newFns = [];
-            var fnsIndex = 0, offIndex = 0,
-                sizeFns = fns.length,
-                sizeOffs = offs.length;
+            var fnsIndex = 0;
+            var offIndex = 0;
+            var sizeFns = fns.length;
+            var sizeOffs = offs.length;
+            var itemOff;
+            var itemFn;
             itemOff = offs[offIndex];
-            while(fnsIndex < sizeFns) {
+            while (fnsIndex < sizeFns) {
                 itemFn = fns[fnsIndex];
                 if (itemFn === itemOff) {
-                    offIndex ++;
-                    if (offIndex <sizeOffs) {
+                    offIndex++;
+                    if (offIndex < sizeOffs) {
                         itemOff = offs[offIndex];
-                    } else {
+                    }
+                    else {
                         itemOff = -1;
                     }
-                } else {
+                }
+                else {
                     newFns.push(itemFn);
                 }
-                fnsIndex ++;
+                fnsIndex++;
             }
-            if(newFns.length === 0) {
+            if (newFns.length === 0) {
                 delete this._triggers[eventName];
-            } else {
+            }
+            else {
                 this._triggers[eventName] = newFns;
             }
         }

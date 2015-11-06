@@ -1,9 +1,10 @@
 /**
- * Created by dingguoliang01 on 2015/8/13.
- */
+ * @file event.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
 var Event = {
     style: 'Style',
-    css:  'Css',
+    css: 'Css',
     clear: 'Clear',
     beforeStart: 'BeforeStart',
     pause: 'Pause',

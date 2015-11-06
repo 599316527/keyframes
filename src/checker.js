@@ -4,10 +4,15 @@
  **/
 
 /* global Util */
+
+/**
+ * 参数类型匹配
+ *
+ * @class
+ */
 function Checker() {
     this._list = Util.arg2Ary(arguments);
 }
-
 Checker.prototype.check = function (arg) {
     var me = this;
     if (arg.length !== me._list.length) {
@@ -31,7 +36,6 @@ Checker.prototype.check = function (arg) {
     });
     return match;
 };
-
 Checker.stringObject = new Checker('string', 'object');
 Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');

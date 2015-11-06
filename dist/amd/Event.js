@@ -1,0 +1,1 @@
+define(function(){var e={style:"Style",css:"Css",clear:"Clear",beforeStart:"BeforeStart",pause:"Pause",start:"Start",iteration:"Iteration",end:"End",done:"Done",over:"Over",on:"On",off:"Off",stop:"Stop",goon:"Goon",once:"Once",all:"All",emit:"Emit"};return e});

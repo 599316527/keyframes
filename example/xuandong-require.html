@@ -2,10 +2,10 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>炫动-移动</title>
+    <title>炫动-依赖加载</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
-    <script src="../dist/lib.min.js"></script>
+    <script src="../lib/require.js"></script>
     <style>
         html, body {
             height: 100%;
@@ -151,11 +151,16 @@
             }
         }
     };
-    var group = Keyframe.group(config);
-    group.onEnd(function() {
-        console.log('finished');
+    require.config({baseUrl: '../dist/amd'});
+
+    require(["Keyframe"], function (Keyframe) {
+        var group = Keyframe.group(config);
+        group.onEnd(function() {
+            console.log('finished');
+        });
+        group.start();
     });
-    group.start();
+
 </script>
 </body>
 </html>

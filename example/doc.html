@@ -5,9 +5,9 @@
     <title>学习文档</title>
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
-
         }
 
         .container {
@@ -34,11 +34,11 @@
             float: left;
             width: 40px;
             height: 220px;
-            margin-top: 70px;
-            margin-left: 5px;
+            margin: 70px 0 0 5px;
             border-radius: 5px;
             font-size: 25px;
         }
+
         iframe {
             float: right;
             width: 92%;
@@ -46,6 +46,7 @@
             height: 400px;
             border-radius: 5px;
         }
+
         pre {
             margin-bottom: 20px;
         }
@@ -130,24 +131,21 @@
 </pre>
     <pre id="cssEditor"></pre>
 </div>
-
 <script src="../lib/require.js"></script>
-<script src="../dist/lib.min.js"></script>
 <script src="../lib/cssbeautify.js"></script>
 <script>
     var envWin = document.getElementById('env').contentWindow;
-    require.config({paths: {ace: "../ace"}});
-    require(["ace/ace"], function (ace) {
+    require.config({paths: {ace: "../ace", ani:"../dist/amd"}});
+    require(["ace/ACE", "ani/Util"], function (ACE, Util) {
         Util.on(document.getElementsByTagName('button')[0], 'click', function () {
             cssEditor.setValue("");
             var code = jsonEditor.getValue();
             envWin.postMessage(code, '*');
         });
-
-        var jsonEditor = ace.edit("jsonEditor");
+        var jsonEditor = ACE.edit("jsonEditor");
         jsonEditor.session.setMode("ace/mode/json");
         jsonEditor.setTheme("ace/theme/monokai");
-        var cssEditor = ace.edit("cssEditor");
+        var cssEditor = ACE.edit("cssEditor");
         cssEditor.session.setMode("ace/mode/css");
         cssEditor.setTheme("ace/theme/monokai");
         Util.on(window, 'message', function (messageEvent) {

@@ -4,13 +4,21 @@
  **/
 
 var Util = {
+    forIn: function (obj, handler, scope) {
+        for (var key in obj) {
+            if (handler.call(scope, key, obj[key]) === false) {
+                return false;
+            }
+        }
+        return true;
+    },
     rewrite: function (init, replace) {
-        if(!replace) {
+        if (!replace) {
             return init;
         }
-        for (var key in replace) {
-            init[key] = replace[key];
-        }
+        Util.forIn(replace, function (key, item) {
+            init[key] = item;
+        });
         return init;
     },
     define: function (namespace) {
@@ -24,27 +32,26 @@ var Util = {
             module = module[domain];
         }
     },
+    // extend 只是拓展没有的属性 rewrite则是重写
     extend: function (src, init) {
-        if(!src) {
+        if (!src) {
             return init;
         }
         if (init) {
-            for (var key in init) {
+            Util.forIn(init, function (key, item) {
                 if (!(key in src)) {
-                    src[key] = init[key];
+                    src[key] = item;
                 }
-            }
+            });
         }
         return src;
     },
     inherit: function (Child, Parent) {
-        /* jshint ignore:start */
         var Clz = new Function();
         Clz.prototype = Parent.prototype;
         Child.prototype = new Clz();
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
-        /* jshint ignore:end */
     },
     xInA: function (val, ary) {
         var index = -1;
@@ -105,21 +112,16 @@ var Util = {
     removeClass: function (dom, className) {
         dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
     },
-    css:  function (dom, attr, value) {
+    css: function (dom, attr, value) {
         if (typeof attr === 'string') {
-            return Util._css(dom, attr, value);
+            return Util.$css(dom, attr, value);
         }
-        /* jshint ignore:start */
-        else {
-            for (var item in attr) {
-                Util._css(dom, item, attr[item]);
-            }
-        }
-        /* jshint ignore:end */
+        Util.forIn(attr, function (key, item) {
+            Util.$css(dom, key, item);
+        });
     },
     stopPropagation: function (event) {
-        if (event.stopPropagation)
-        {
+        if (event.stopPropagation) {
             Util.stopPropagation = function (event) {
                 event.stopPropagation();
             };
@@ -131,33 +133,28 @@ var Util = {
         }
         return Util.stopPropagation(event);
     },
-   _css: function (dom, key, value) {
-        if (typeof window.getComputedStyle !== 'undefined')// W3C
-        {
-            Util._css = function (dom, key, value) {
+    $css: function (dom, key, value) {
+        if (typeof window.getComputedStyle !== 'undefined') { // W3C
+            Util.$css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
                 }
-                else {
-                    var tmp = window.getComputedStyle(dom, null)[key];
-                    return !tmp ? dom.style[key] : tmp;
-                }
+                var tmp = window.getComputedStyle(dom, null)[key];
+                return !tmp ? dom.style[key] : tmp;
             };
         }
         else if (typeof dom.currentStyle !== 'undefined') {
-            Util._css = function (dom, key, value) {
+            Util.$css = function (dom, key, value) {
                 if (value !== undefined) {
                     dom.style[key] = value;
                     return value;
                 }
-                else {
-                    var tmp = dom.currentStyle[key];
-                    return !tmp ? dom.style[key] : tmp;
-                }
+                var tmp = dom.currentStyle[key];
+                return !tmp ? dom.style[key] : tmp;
             };
         }
-        return this._css(dom, key, value);
+        return this.$css(dom, key, value);
     },
     on: function (dom, name, fn) {
         if ('addEventListener' in window) {
@@ -187,29 +184,59 @@ var Util = {
     }
 };
 
+/**
+ * @file event.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+var Event = {
+    style: 'Style',
+    css: 'Css',
+    clear: 'Clear',
+    beforeStart: 'BeforeStart',
+    pause: 'Pause',
+    start: 'Start',
+    iteration: 'Iteration',
+    end: 'End',
+    done: 'Done',
+    over: 'Over',
+    on: 'On',
+    off: 'Off',
+    stop: 'Stop',
+    goon: 'Goon',
+    once: 'Once',
+    all: 'All',
+    emit: 'Emit'
+};
+
+/**
+ * @file eventemitter.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Event Util*/
+
 function EventEmitter() {
     this._triggers = {};
 }
-
 EventEmitter.type = {
     once: 'once',
     all: 'all'
 };
-
-EventEmitter.prototype.on = function(eventName, fn, option) {
+EventEmitter.prototype.on = function (eventName, fn, option) {
     if (eventName) {
         if (eventName in this._triggers) {
-            this._triggers[eventName].push({fn:fn, option:option});
-        } else {
-            this._triggers[eventName] = [{fn:fn, option:option}];
+            this._triggers[eventName].push({fn: fn, option: option});
+        }
+        else {
+            this._triggers[eventName] = [{fn: fn, option: option}];
         }
         this.emit(Event.on, eventName, option);
     }
     else {
-        throw new Error('undefined event！');
+        throw new Error('undefined event!');
     }
 };
-EventEmitter.prototype.off = function(eventName, fn) {
+EventEmitter.prototype.off = function (eventName, fn) {
     if (Checker.string.check(arguments)) {
         if (eventName in this._triggers) {
             this._triggers[eventName] = [];
@@ -235,7 +262,7 @@ EventEmitter.prototype.off = function(eventName, fn) {
         throw new Error('incorrect parameter!');
     }
 };
-EventEmitter.prototype.once = function(eventName, fn, option) {
+EventEmitter.prototype.once = function (eventName, fn, option) {
     if (!option) {
         option = {};
     }
@@ -243,41 +270,35 @@ EventEmitter.prototype.once = function(eventName, fn, option) {
     this.emit(Event.once, eventName, option);
     this.on(eventName, fn, option);
 };
-
-EventEmitter.prototype.callWithScope = function(fn, option, params) {
+EventEmitter.prototype.callWithScope = function (fn, option, params) {
     params = params || [];
-    if(option && ('scope' in option)) {
-        /* jshint ignore:start */
-        fn.apply(option['scope'], params);
-        /* jshint ignore:end */
+    if (option && option.hasOwnProperty('scope')) {
+        fn.apply(option.scope, params);
     }
     else
     {
         fn.apply(this, params);
     }
 };
-
-EventEmitter.prototype.all = function(dependency, fn, option) {
-    var record = {},
-        results = [];
+EventEmitter.prototype.all = function (dependency, fn, option) {
+    var record = {};
+    var results = [];
     if (dependency.length === 0) {
         this.callWithScope(fn, option);
         return;
     }
     var me = this;
-    var proxyCallback = function(index) {
-        return  function(eventName, result) {
+    var proxyCallback = function (index) {
+        return  function (eventName, result) {
             if (eventName in record) {
                 record[eventName] = true;
                 results[index] = result;
             }
-            var trigger = true;
-            for (var item in record) {
-                if (record[item] === false) {
-                    trigger = false;
-                    break;
+            var trigger = Util.forIn(record, function (key, item) {
+                if (item === false) {
+                    return false;
                 }
-            }
+            });
             if (trigger) {
                 me.callWithScope(fn, option, results);
             }
@@ -285,89 +306,75 @@ EventEmitter.prototype.all = function(dependency, fn, option) {
     };
     Util.each(dependency, function (eventName, i) {
         record[eventName] = false;
-        this.on(eventName, proxyCallback(i), {type:EventEmitter.type.all});
+        this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
     });
     this.emit(Event.all, dependency, option);
 };
-
-EventEmitter.prototype.emit = function(eventName) {
-    var fns = this._triggers[eventName],
-        itemFn, scope, type, fn, option,
-        offs = [], itemOff;
+EventEmitter.prototype.emit = function (eventName) {
+    var fns = this._triggers[eventName];
+    var scope;
+    var type;
+    var fn;
+    var option;
+    var offs = [];
     var args = arguments;
     if (fns) {
         var me = this;
-        Util.each(fns, function(itemFn) {
+        Util.each(fns, function (itemFn) {
             fn = itemFn.fn;
             option = itemFn.option;
             if (option) {
                 scope = option.scope;
                 type = option.type;
-            } else {
+            }
+            else {
                 scope = false;
                 type = false;
             }
-
             if (scope) {
                 fn.apply(scope, Util.arg2Ary(args));
-            } else {
+            }
+            else {
                 fn.apply(me, Util.arg2Ary(args));
             }
-
             if (type) {
-                //type === EventEmitter.type.once or type === EventEmitter.type.all
+                // type === EventEmitter.type.once or type === EventEmitter.type.all
                 offs.push(itemFn);
             }
         });
         if (offs.length > 0) {
             var newFns = [];
-            var fnsIndex = 0, offIndex = 0,
-                sizeFns = fns.length,
-                sizeOffs = offs.length;
+            var fnsIndex = 0;
+            var offIndex = 0;
+            var sizeFns = fns.length;
+            var sizeOffs = offs.length;
+            var itemOff;
+            var itemFn;
             itemOff = offs[offIndex];
-            while(fnsIndex < sizeFns) {
+            while (fnsIndex < sizeFns) {
                 itemFn = fns[fnsIndex];
                 if (itemFn === itemOff) {
-                    offIndex ++;
-                    if (offIndex <sizeOffs) {
+                    offIndex++;
+                    if (offIndex < sizeOffs) {
                         itemOff = offs[offIndex];
-                    } else {
+                    }
+                    else {
                         itemOff = -1;
                     }
-                } else {
+                }
+                else {
                     newFns.push(itemFn);
                 }
-                fnsIndex ++;
+                fnsIndex++;
             }
-            if(newFns.length === 0) {
+            if (newFns.length === 0) {
                 delete this._triggers[eventName];
-            } else {
+            }
+            else {
                 this._triggers[eventName] = newFns;
             }
         }
     }
-};
-/**
- * Created by dingguoliang01 on 2015/8/13.
- */
-var Event = {
-    style: 'Style',
-    css:  'Css',
-    clear: 'Clear',
-    beforeStart: 'BeforeStart',
-    pause: 'Pause',
-    start: 'Start',
-    iteration: 'Iteration',
-    end: 'End',
-    done: 'Done',
-    over: 'Over',
-    on: 'On',
-    off: 'Off',
-    stop: 'Stop',
-    goon: 'Goon',
-    once: 'Once',
-    all: 'All',
-    emit: 'Emit'
 };
 
 /**
@@ -376,10 +383,15 @@ var Event = {
  **/
 
 /* global Util */
+
+/**
+ * 参数类型匹配
+ *
+ * @class
+ */
 function Checker() {
     this._list = Util.arg2Ary(arguments);
 }
-
 Checker.prototype.check = function (arg) {
     var me = this;
     if (arg.length !== me._list.length) {
@@ -403,7 +415,6 @@ Checker.prototype.check = function (arg) {
     });
     return match;
 };
-
 Checker.stringObject = new Checker('string', 'object');
 Checker.objectString = new Checker('object', 'string');
 Checker.object = new Checker('object');
@@ -417,11 +428,15 @@ Checker.array = new Checker(Array);
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
+/* global Checker */
+
 /**
- * 构造函数
+ * css属性转cssText过滤器
  *
+ * @param {string} name  pitch的别名.
  * @param {string} keys 补丁属性集合.
  * @param {Function} handler 补丁函数.
+ * @class
  */
 function Pitch(name, keys, handler) {
     this._router = [];
@@ -429,9 +444,8 @@ function Pitch(name, keys, handler) {
         this.use(name, keys, handler);
     }
 }
-
 Pitch.prototype.use = function (name, keys, handler) {
-    this._router.push({name:name, keys: keys + ' ', handler: handler});
+    this._router.push({name: name, keys: keys + ' ', handler: handler});
     return this;
 };
 Pitch.prototype.next = function (index, key, value, opt) {
@@ -456,23 +470,30 @@ Pitch.prototype.do = function (key, value, opt) {
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Pitch*/
+/* global Pitch Util Checker Event EventEmitter */
+
+/**
+ *  浏览器兼容处理
+ *
+ * @class
+ * @extend EventEmitter
+ */
 function Compatible() {
     Compatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
-    /* jshint ignore:start */
     pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
         + 'animation-timing-function transform-origin',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
-        });
-    /* jshint ignore:end */
+        }
+    );
     pitch.use('needAll', 'box-shadow border-radius',
         function (key, value) {
             return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
-        });
-    /* jshint ignore:start */
+        }
+    );
+    // 需要整合到transform中的值，暂存如opt中
     pitch.use('extend', 'translateX translateY translateZ translate translate3d '
         + 'rotateX rotateY rotateZ rotate rotate3d '
         + 'skewX skewY skewZ skew '
@@ -480,28 +501,29 @@ function Compatible() {
         + 'perspective',
         function (key, value, opt) {
             if ('transform' in opt) {
-                opt['transform'] += ' ' + key + '(' + value + ')';
+                opt.transform += ' ' + key + '(' + value + ')';
             }
             else {
-                opt['transform'] = key + '(' + value + ')';
+                opt.transform = key + '(' + value + ')';
             }
             return '';
-        });
-
+        }
+    );
+    // 直接的transform，需要拼接到opt.transform
     pitch.use('transform', 'transform',
         function (key, value, opt) {
             if ('transform' in opt) {
-                opt['transform'] += ' ' + value;
+                opt.transform += ' ' + value;
             }
             else {
-                opt['transform'] = value;
+                opt.transform = value;
             }
             return '';
         });
+    // class的定义中可能出现
     pitch.use('animation', 'animation', function (key, value) {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
-    /* jshint ignore:end */
     pitch.use('specialA', 'background',
         function (key, value) {
             return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
@@ -515,21 +537,20 @@ function Compatible() {
             return key + ':' + value + ';';
         });
     this._pitch = pitch;
+    // 经过_pitch处理，transform聚合到opt中，由_combine处理
     this._combine = new Pitch('combine', 'transform',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
-        });
+        }
+    );
 }
 Util.inherit(Compatible, EventEmitter);
-
 Compatible.prototype.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
     var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
     var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-    /* jshint ignore:start */
     var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
         || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-    /* jshint ignore:end */
     var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
     var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
     var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
@@ -562,9 +583,7 @@ Compatible.prototype.parseAnimation = function (animations) {
         if ($1 in css) {
             return css[$1];
         }
-        else {
-            return Compatible._keyMap[$1][1];
-        }
+        return Compatible._keyMap[$1][1];
     }
     Util.each(animations, function (animation) {
         css = animation;
@@ -575,13 +594,11 @@ Compatible.prototype.parseAnimation = function (animations) {
 Compatible.prototype.animationTpl = function () {
     if (!this._animationTpl) {
         if (this.prefix === '-moz-') {
-            this._animationTpl = '<duration> <function> <delay> ' +
-            '<direction> <mode> <count> <state> <name>';
+            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
             this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
         }
         else {
-            this._animationTpl = '<name> <duration> <function> <delay> ' +
-            '<count> <direction> <mode>';
+            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
             this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
         }
     }
@@ -614,7 +631,7 @@ Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
     var me = this;
     if (css || css === '') {
-        this.requestAnimationFrame(function() {
+        this.requestAnimationFrame(function () {
             Util.css(dom, key, css);
             me.emit(Event.css, dom, key, css);
         });
@@ -623,8 +640,7 @@ Compatible.prototype.css = function (dom, key, css) {
         return Util.css(dom, key);
     }
 };
-
-//简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName
+// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
@@ -661,11 +677,9 @@ Compatible.prototype.parseEvent = function (key) {
     return this.parseEvent(key);
 };
 Compatible.prototype.requestAnimationFrame = (function () {
-    window.requestAnimFrame = (function(){
-        return  window.requestAnimationFrame       ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            function( callback ){
+    window.requestAnimFrame = (function () {
+        return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
+            || function (callback) {
                 window.setTimeout(callback, 1000 / 60);
             };
     })();
@@ -673,16 +687,24 @@ Compatible.prototype.requestAnimationFrame = (function () {
         window.requestAnimationFrame(fn);
     };
 })();
+
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Checker Compatible Util */
+/* global Checker Compatible Util Event EventEmitter*/
+
+/**
+ * 编译类，根据metaData生成class或者keyframes
+ *
+ * @class
+ * @extend EventEmitter
+ */
 function Compiler() {
     Compiler.superClass.call(this);
-    //define时cache到map中，map存keyframeName + json
-    //compile时清空map，cache到store中，store中存keyframeName + css
+    // define时cache到map中，map存keyframeName + json
+    // compile时清空map，cache到store中，store中存keyframeName + css
     this._classStore = {};
     this._classMap = {};
     this._keyframeMap = {};
@@ -699,11 +721,11 @@ function Compiler() {
         return '.' + className + ' ' + body;
     };
     this._keyframeText = function (keyframe, body) {
+        // @-webkit-keyframes xxx
         return compatible.keyframe(keyframe) + body;
     };
 }
 Util.inherit(Compiler, EventEmitter);
-
 Compiler.prototype.defineClass = function (className, metaData) {
     this._classMap[className] = metaData;
     return className;
@@ -712,41 +734,41 @@ Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
     this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };
-
 Compiler.prototype.compile = function () {
     var classes = {};
     var keyframes = {};
-    var metaData;
-    for (var className in this._classMap) {
-        metaData = this._classMap[className];
-        classes[className] = this._compileClass(metaData);
-        delete this._classMap[className];
-    }
-    for (var keyframe in this._keyframeMap) {
-        metaData = this._keyframeMap[keyframe];
-        keyframes[keyframe] = this._compileKeyframe(metaData);
-        delete this._keyframeMap[keyframe];
-    }
+    Util.forIn(this._classMap, function (className, item) {
+        classes[className] = this._compileClass(item);
+    }, this);
+    Util.forIn(this._keyframeMap, function (keyframe, item) {
+        keyframes[keyframe] = this._compileKeyframe(item);
+    }, this);
+    this._classMap = {};
+    this._keyframeMap = {};
+    // classes cache className：cssTextBody
+    // keyframes cache frameName： frameTextBody
     this._effect(classes, keyframes);
 };
-
 Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
     var id;
     var cssText;
-    for (var key in obj) {
+    Util.forIn(obj, function (key, item) {
+        // class & keyframe 的id
         id = idG(key);
-        cssText = textG(key, obj[key]);
+        // 完整的cssText
+        // className + {}  --> .className{}
+        // frameName + {} --> @-webkit-keyframes frameName{}
+        cssText = textG(key, item);
         if (key in store) {
             this._refreshSheet(cssText, id);
         }
         else {
             frag.appendChild(this._styleSheet(cssText, id));
         }
-        store[key] = obj[key];
-        delete obj[key];
-    }
+        store[key] = item;
+    }, this);
+    obj = null;
 };
-
 Compiler.prototype._effect = function (classes, keyframes) {
     var frag = this._fragment();
     this._absorb(classes, this._classId, this._classText, this._classStore, frag);
@@ -755,7 +777,7 @@ Compiler.prototype._effect = function (classes, keyframes) {
 };
 Compiler.prototype._fragment = function () {
     var fragment = document.createDocumentFragment();
-    fragment.effect = function() {
+    fragment.effect = function () {
         document.querySelector('head').appendChild(fragment);
     };
     return fragment;
@@ -769,12 +791,12 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     return style;
 };
 Compiler.prototype.clear = function () {
-    for (var className in this._classStore) {
+    Util.forIn(this._classStore, function (className) {
         this._clearSheet(this._classId(className));
-    }
-    for (var frameName in this._keyframeStore) {
+    }, this);
+    Util.forIn(this._keyframeStore, function (frameName) {
         this._clearSheet(this._keyframeId(frameName));
-    }
+    }, this);
     this._classStore = {};
     this._keyframeStore = {};
     this._classMap = {};
@@ -787,39 +809,51 @@ Compiler.prototype._refreshSheet = function (cssText, id) {
 Compiler.prototype._clearSheet = function (id) {
     document.querySelector('head').removeChild(document.getElementById(id));
 };
+// 编译生成cssTextBody {}
 Compiler.prototype._compileClass = function (metaData) {
     var body = '{';
     var opt = {};
-    var key;
-    for (key in metaData) {
-        body += this._compatible.patch(key, metaData[key], opt);
-    }
-    for (key in opt) {
-        body += this._compatible.patchCombine(key, opt[key]);
-    }
+    Util.forIn(metaData, function (key, item) {
+        body += this._compatible.patch(key, item, opt);
+    }, this);
+    Util.forIn(opt, function (key, item) {
+        body += this._compatible.patchCombine(key, item);
+    }, this);
     body += '}';
     return body;
 };
+// 编译生成keyframesTextBody {}
 Compiler.prototype._compileKeyframe = function (metaData) {
     var body = '{';
-    for (var percent in metaData) {
-        body += this._compileFrame(percent, metaData[percent]);
-    }
+    Util.forIn(metaData, function (percent, item) {
+        body += this._compileFrame(percent, item);
+    }, this);
     body += '}';
     return body;
 };
 Compiler.prototype._compileFrame = function (percent, metaData) {
     return this._compatible.percent(percent) + this._compileClass(metaData);
 };
-
 Compiler.instance = function () {
     if (!Compiler._compiler) {
         Compiler._compiler = new Compiler();
     }
     return Compiler._compiler;
 };
+
 /**
- * Created by dingguoliang01 on 2015/8/17.
+ * @file classproxy.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Compiler */
+
+/**
+ * 样式代理,提供简便调用
+ *
+ * @param {string} className 样式名
+ * @param {Object} metaData  定义样式的json数据
+ * @class
  */
 function ClassProxy(className, metaData) {
     if (metaData) {
@@ -848,13 +882,12 @@ ClassProxy.prototype.focus = function (metaData) {
 ClassProxy.prototype._name = function (pseudo) {
     return this._className + ':' + pseudo;
 };
-
 ClassProxy.prototype._pseudo = function (pseudo, metaData) {
     if (metaData) {
         Compiler.instance().defineClass(this._name(pseudo), metaData);
     }
     else {
-        throw new Error('incorrect parameter, metaData is required！');
+        throw new Error('incorrect parameter, metaData is required!');
     }
     return this;
 };
@@ -866,22 +899,26 @@ ClassProxy.prototype.rewrite = function (metaData, pseudo) {
         this._define(this._className, metaData);
     }
     else {
-        throw new Error('incorrect parameter！');
+        throw new Error('incorrect parameter!');
     }
     return this;
 };
 
 /**
- * Created by dingguoliang01 on 2015/8/17.
- */
-function FrameProxy(frame, metaData) {
+ * @file frameproxy.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Util Compiler*/
+function FrameProxy(frame, metaData, clazz) {
+    this._clazz = clazz;
     return this._define(frame, metaData);
 }
 FrameProxy.prototype._define = function (frame, metaData) {
     this._frame = Compiler.instance().defineKeyframe(frame, metaData);
     return this;
 };
-FrameProxy.prototype.getName = function() {
+FrameProxy.prototype.getName = function () {
     return this._frame;
 };
 FrameProxy.prototype.rewrite = function (metaData) {
@@ -889,12 +926,12 @@ FrameProxy.prototype.rewrite = function (metaData) {
         this._define(this._frame, metaData);
     }
     else {
-        throw new Error('incorrect parameter！');
+        throw new Error('incorrect parameter!');
     }
     return this;
 };
 FrameProxy.prototype.setConfig = function (config) {
-    config['name'] = this._frame;
+    config.name = this._frame;
     this._config = config;
     this._configs = [config];
     return this;
@@ -902,17 +939,18 @@ FrameProxy.prototype.setConfig = function (config) {
 FrameProxy.prototype.getConfigs = function () {
     return this._configs;
 };
-//FrameProxy只针对一个keyframes
+// FrameProxy只针对一个keyframes
 FrameProxy.prototype.keyframe = function (domFnIt) {
     var map = {'@': 'function', '#': 'count'};
     var option = {};
-    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function($0,$1,$2){
-        option[$1] = $2;
-        return '';});
-    for (var key in option) {
-        this._config[map[key]] = option[key];
-    }
-    this._keyframe = new Keyframe(document.getElementById(dom), this._configs);
+    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function ($0, $1, $2) {
+            option[$1] = $2;
+            return '';
+        });
+    Util.forIn(option, function (key, item) {
+        this._config[map[key]] = item;
+    }, this);
+    this._keyframe = new this._clazz(document.getElementById(dom), this._configs);
     return this._keyframe;
 };
 FrameProxy.prototype.combine = function (frameProxy) {
@@ -923,6 +961,12 @@ FrameProxy.prototype.combine = function (frameProxy) {
     return this;
 };
 
+/**
+ * @file group.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Util Event EventEmitter*/
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;
@@ -942,26 +986,40 @@ Group.prototype.start = function () {
             me.emit(Event.end, status);
         }
     }
-    Util.each(this._frames, function(frame) {
+    Util.each(this._frames, function (frame) {
         frame.start();
         frame.on(Event.over, over);
     });
     return this;
 };
 Group.prototype.clear = function () {
-    Util.each(this._frames, function(frame) {
+    Util.each(this._frames, function (frame) {
         frame.stop();
     });
     return this;
 };
+
 /**
- * Created by dingguoliang01 on 2015/8/14.
+ * @file keyframe.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible*/
+
+/**
+ * css属性转cssText过滤器
+ *
+ * @param {Dom} dom  dom元素.
+ * @param {(Object|Array)} animations 动画集合.
+ * @param {Object=} cf 默认配置，只用于animations不为数组的情况.
+ * @class
  */
 function Keyframe(dom, animations, cf) {
     Keyframe.superClass.call(this);
     this._compiler = Compiler.instance();
     this._compatible = Compatible.instance();
     this._init(dom);
+    var me = this;
     animations = Util.extend(animations, cf);
     if (!animations) {
         this._animations = [];
@@ -969,23 +1027,22 @@ function Keyframe(dom, animations, cf) {
     else {
         if (!Checker.array.check([animations])) {
             this._animations = [animations];
-            this._animationStatus[animations['name']] = {ko: false, count: animations['count'], record: 0};
+            this._animationStatus[animations.name] = {ko: false, count: animations.count, record: 0};
         }
         else {
-            var me = this;
             Util.each(animations, function (animation) {
-                me._animationStatus[animation['name']] = {ko:false, count: animation['count'], record: 0};
+                me._animationStatus[animation.name] = {ko: false, count: animation.count, record: 0};
             });
             this._animations = animations;
         }
     }
-
     function wrap(eventName) {
         return function (evt) {
             me.emit(eventName, evt);
         };
     }
-    this.on(Event.on, function(on, eventName) {
+    // 只有在绑定start end iteration监听时才真正的在dom元素上监听
+    this.on(Event.on, function (on, eventName) {
         if (eventName  === Event.start) {
             if (!me._monitorStart) {
                 me._monitorStart = wrap(eventName);
@@ -1005,35 +1062,33 @@ function Keyframe(dom, animations, cf) {
             }
         }
     });
-    this.on(Event.end, function(end, evt) {
+    this.on(Event.end, function (end, evt) {
         if (evt.animationName in me._animationStatus) {
             me._animationStatus[evt.animationName].ko = true;
-            var isEnd = true;
-            for (var key in me._animationStatus) {
+            var isEnd = Util.forIn(me._animationStatus, function (key) {
                 if (!me._animationStatus[key].ko) {
-                    isEnd = false;
-                    break;
+                    return false;
                 }
-            }
+            });
             if (isEnd) {
+                // 所有keyframe都执行完了触发
                 me.emit(Event.over, me._animationStatus);
             }
         }
     });
-    this.on(Event.iteration, function(end, evt) {
+    this.on(Event.iteration, function (end, evt) {
         if (evt.animationName in me._animationStatus) {
             var tmp = me._animationStatus[evt.animationName];
             tmp.record++;
             if (tmp.count === 'infinite' && !tmp.ko) {
                 tmp.ko = true;
-                var isEnd = true;
-                for (var key in me._animationStatus) {
+                var isEnd = Util.forIn(me._animationStatus, function (key) {
                     if (!me._animationStatus[key].ko) {
-                        isEnd = false;
-                        break;
+                        return false;
                     }
-                }
+                });
                 if (isEnd) {
+                    // 对于无限执行的keyframe执行完一次即可
                     me.emit(Event.over, me._animationStatus);
                 }
             }
@@ -1041,7 +1096,6 @@ function Keyframe(dom, animations, cf) {
     });
     return this;
 }
-
 Util.inherit(Keyframe, EventEmitter);
 Keyframe.prototype._init = function (dom) {
     this._dom = dom;
@@ -1067,34 +1121,33 @@ Keyframe.prototype.start = function () {
     }
     return this;
 };
-Keyframe.prototype.pause = function (opt_name) {
-    this._playState('paused', opt_name);
+Keyframe.prototype.pause = function (optName) {
+    this._playState('paused', optName);
     this.emit(Event.pause);
     return this;
 };
 Keyframe.prototype._filter = function () {
     var animation = this._compatible.css(this._dom, 'animation');
-    var _animation = [];
+    var $animation = [];
     if (animation) {
         animation = animation.split(',');
         var tmp = ['(?:none)'];
         Util.each(this._animations, function (animation) {
-            tmp.push('(?:' + animation['name'] + ')');
+            tmp.push('(?:' + animation.name + ')');
         });
         var reg = this._compatible.regExp(tmp.join('|'));
         Util.each(animation, function (ceil) {
             if (!reg.test(ceil)) {
-                _animation.push(ceil);
+                $animation.push(ceil);
             }
         });
     }
-    return _animation.join(',').trim();
+    return $animation.join(',').trim();
 };
 Keyframe.prototype.reflow = function () {
     // -> triggering reflow /* The actual magic */
-    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
     var dom = this._dom;
-    this._compatible.requestAnimationFrame(function() {
+    this._compatible.requestAnimationFrame(function () {
         dom.offsetWidth = dom.offsetWidth;
     });
     return this;
@@ -1105,12 +1158,10 @@ Keyframe.prototype.restart = function () {
 Keyframe.prototype.clear = function () {
     var cpt = this._compatible;
     cpt.css(this._dom, 'animation', this._filter());
-    /* jshint ignore:start */
-    for (var key in this._animationStatus) {
+    Util.forIn(this._animationStatus, function (key) {
         this._animationStatus[key].ko = false;
         this._animationStatus[key].record = 0;
-    }
-    /* jshint ignore:end */
+    }, this);
     return this;
 };
 Keyframe.prototype.stop = function () {
@@ -1131,8 +1182,8 @@ Keyframe.prototype.stop = function () {
     this.emit(Event.stop);
     return this;
 };
-Keyframe.prototype.goon = function (opt_name) {
-    this._playState('running', opt_name);
+Keyframe.prototype.goon = function (optName) {
+    this._playState('running', optName);
     this.emit(Event.goon);
     return this;
 };
@@ -1141,12 +1192,12 @@ Keyframe.prototype._c2A = function (key) {
     return css.split(/,\s?/);
 };
 // 根据animationName 和 animationState 来过滤,避免破坏当前状态
-Keyframe.prototype._playState = function (state, opt_name) {
+Keyframe.prototype._playState = function (state, optName) {
     var namesAry = this._c2A('name');
     var statesAry = this._c2A('state');
     var index;
-    if (opt_name) {
-        index = Util.xInA(opt_name, namesAry);
+    if (optName) {
+        index = Util.xInA(optName, namesAry);
         if (index > -1) {
             statesAry[index] = state;
         }
@@ -1154,7 +1205,7 @@ Keyframe.prototype._playState = function (state, opt_name) {
     else {
         var aniName;
         Util.each(this._animations, function (animation) {
-            aniName = animation['name'];
+            aniName = animation.name;
             index = Util.xInA(aniName, namesAry);
             if (index > -1) {
                 statesAry[index] = state;
@@ -1176,14 +1227,12 @@ Keyframe.defineKeyframe = function (frame, metaData) {
     if (Checker.object.check(arguments)) {
         metaData = arguments[0];
         frame = Util.random.name(8);
-        return new FrameProxy(frame, metaData);
+        return new FrameProxy(frame, metaData, Keyframe);
     }
     else if (Checker.stringObject.check(arguments)) {
-        return new FrameProxy(frame, metaData);
+        return new FrameProxy(frame, metaData, Keyframe);
     }
-    else {
-        throw new Error('incorrect parameters!');
-    }
+    throw new Error('incorrect parameters!');
 };
 Keyframe.defineClass = function (className, metaData) {
     if (Checker.object.check(arguments)) {
@@ -1196,20 +1245,18 @@ Keyframe.defineClass = function (className, metaData) {
     else if (Checker.string.check(arguments)) {
         return new ClassProxy(className);
     }
-    else {
-        throw new Error('incorrect parameters!');
-    }
+    throw new Error('incorrect parameters!');
 };
 Keyframe.pack = function (clz) {
     Util.inherit(clz, Keyframe);
     var clazz = clz.cf.class;
     var frame = clz.cf.frame;
-    for (var className in clazz) {
-        Keyframe.defineClass(className, clazz[className]);
-    }
-    for (var frameName in frame) {
-        Keyframe.defineKeyframe(frameName, frame[frameName]);
-    }
+    Util.forIn(clazz, function (className, item) {
+        Keyframe.defineClass(className, item);
+    });
+    Util.forIn(frame, function (frameName, item) {
+        Keyframe.defineKeyframe(frameName, item);
+    });
     clz.rewriteClass = function (part, config) {
         if (!clazz) {
             clazz = clz.cf.class = {};
@@ -1236,56 +1283,50 @@ Keyframe.pack = function (clz) {
 Keyframe.compile = function () {
     Compiler.instance().compile();
 };
-Keyframe.group = function(group) {
+Keyframe.group = function (group) {
     var frames = [];
     var frameProxy;
-    for (var dom in group) {
-        frameProxy = Keyframe.timeLine(group[dom]);
+    Util.forIn(group, function (dom, item) {
+        frameProxy = Keyframe.timeLine(item);
         frames.push(frameProxy.keyframe(dom));
-    }
+    });
     Keyframe.compile();
     return new Group(frames);
 };
 Keyframe.timeLine = function (timeLine) {
     var times = [];
     var map = {};
-    var tmp;
-    var time;
     var adjust = {};
-    for (time in timeLine) {
-        tmp = time.split(/\s+/);
-        Util.each(tmp, function(data) {
+    Util.forIn(timeLine, function (time) {
+        Util.each(time.split(/\s+/), function (data) {
             map[data] = parseFloat(data);
         });
-    }
-    for (time in map) {
-        times.push(map[time]);
-    }
+    });
+    Util.forIn(map, function (time, item) {
+        times.push(item);
+    });
     times.sort();
     var min = times[0];
     var max = times[times.length - 1];
     var duration = parseFloat(max - min).toFixed(3);
     var percent = -1;
-    for (time in map) {
-        percent = parseInt(Math.round((map[time] - min) * 100 / duration), 10);
+    Util.forIn(map, function (time, item) {
+        percent = parseInt(Math.round((item - min) * 100 / duration), 10);
         while (percent in adjust) {
             percent = percent + 1;
         }
         adjust[percent] = true;
         map[time] = percent;
-    }
+    });
     var percentLine = {};
-
-    for (time in timeLine) {
-        tmp = time.split(/\s+/);
+    Util.forIn(timeLine, function (time, item) {
         percent = time;
-        Util.each(tmp, function(data) {
+        Util.each(time.split(/\s+/), function (data) {
             percent = percent.replace(data, map[data]);
         });
-        percentLine[percent] = timeLine[time];
-    }
+        percentLine[percent] = item;
+    });
     var frameProxy = Keyframe.defineKeyframe(percentLine);
-    frameProxy.setConfig({'duration': duration + 's', 'delay': min + 's'});
+    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
     return frameProxy;
 };
-

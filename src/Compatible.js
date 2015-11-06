@@ -3,23 +3,30 @@
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Pitch*/
+/* global Pitch Util Checker Event EventEmitter */
+
+/**
+ *  浏览器兼容处理
+ *
+ * @class
+ * @extend EventEmitter
+ */
 function Compatible() {
     Compatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
-    /* jshint ignore:start */
     pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
         + 'animation-timing-function transform-origin',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
-        });
-    /* jshint ignore:end */
+        }
+    );
     pitch.use('needAll', 'box-shadow border-radius',
         function (key, value) {
             return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
-        });
-    /* jshint ignore:start */
+        }
+    );
+    // 需要整合到transform中的值，暂存如opt中
     pitch.use('extend', 'translateX translateY translateZ translate translate3d '
         + 'rotateX rotateY rotateZ rotate rotate3d '
         + 'skewX skewY skewZ skew '
@@ -27,28 +34,29 @@ function Compatible() {
         + 'perspective',
         function (key, value, opt) {
             if ('transform' in opt) {
-                opt['transform'] += ' ' + key + '(' + value + ')';
+                opt.transform += ' ' + key + '(' + value + ')';
             }
             else {
-                opt['transform'] = key + '(' + value + ')';
+                opt.transform = key + '(' + value + ')';
             }
             return '';
-        });
-
+        }
+    );
+    // 直接的transform，需要拼接到opt.transform
     pitch.use('transform', 'transform',
         function (key, value, opt) {
             if ('transform' in opt) {
-                opt['transform'] += ' ' + value;
+                opt.transform += ' ' + value;
             }
             else {
-                opt['transform'] = value;
+                opt.transform = value;
             }
             return '';
         });
+    // class的定义中可能出现
     pitch.use('animation', 'animation', function (key, value) {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
-    /* jshint ignore:end */
     pitch.use('specialA', 'background',
         function (key, value) {
             return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
@@ -62,21 +70,20 @@ function Compatible() {
             return key + ':' + value + ';';
         });
     this._pitch = pitch;
+    // 经过_pitch处理，transform聚合到opt中，由_combine处理
     this._combine = new Pitch('combine', 'transform',
         function (key, value) {
             return me.prefix + key + ':' + value + ';';
-        });
+        }
+    );
 }
 Util.inherit(Compatible, EventEmitter);
-
 Compatible.prototype.prefix = (function () {
     var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
     var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
     var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-    /* jshint ignore:start */
     var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
         || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-    /* jshint ignore:end */
     var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
     var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
     var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
@@ -109,9 +116,7 @@ Compatible.prototype.parseAnimation = function (animations) {
         if ($1 in css) {
             return css[$1];
         }
-        else {
-            return Compatible._keyMap[$1][1];
-        }
+        return Compatible._keyMap[$1][1];
     }
     Util.each(animations, function (animation) {
         css = animation;
@@ -122,13 +127,11 @@ Compatible.prototype.parseAnimation = function (animations) {
 Compatible.prototype.animationTpl = function () {
     if (!this._animationTpl) {
         if (this.prefix === '-moz-') {
-            this._animationTpl = '<duration> <function> <delay> ' +
-            '<direction> <mode> <count> <state> <name>';
+            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
             this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
         }
         else {
-            this._animationTpl = '<name> <duration> <function> <delay> ' +
-            '<count> <direction> <mode>';
+            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
             this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
         }
     }
@@ -161,7 +164,7 @@ Compatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
     var me = this;
     if (css || css === '') {
-        this.requestAnimationFrame(function() {
+        this.requestAnimationFrame(function () {
             Util.css(dom, key, css);
             me.emit(Event.css, dom, key, css);
         });
@@ -170,8 +173,7 @@ Compatible.prototype.css = function (dom, key, css) {
         return Util.css(dom, key);
     }
 };
-
-//简称转全称,并且加入兼容性前缀  name --> animationName --> webkitAnimationName
+// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
 Compatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
@@ -208,11 +210,9 @@ Compatible.prototype.parseEvent = function (key) {
     return this.parseEvent(key);
 };
 Compatible.prototype.requestAnimationFrame = (function () {
-    window.requestAnimFrame = (function(){
-        return  window.requestAnimationFrame       ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            function( callback ){
+    window.requestAnimFrame = (function () {
+        return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
+            || function (callback) {
                 window.setTimeout(callback, 1000 / 60);
             };
     })();
