@@ -115,16 +115,18 @@ define(['Checker', 'Compatible', 'Util', 'Event', 'EventEmitter'], function (Che
 	};
 	// 编译生成cssTextBody {}
 	Compiler.prototype._compileClass = function (metaData) {
-	    var body = '{';
+	    return '{' + this._compileContent(metaData) + '}';
+	};
+	Compiler.prototype._compileContent = function (metaData) {
 	    var opt = {};
+	    var content = [];
 	    Util.forIn(metaData, function (key, item) {
-	        body += this._compatible.patch(key, item, opt);
+	        content.push(this._compatible.patch(key, item, opt));
 	    }, this);
 	    Util.forIn(opt, function (key, item) {
-	        body += this._compatible.patchCombine(key, item);
+	        content.push(this._compatible.patchCombine(key, item));
 	    }, this);
-	    body += '}';
-	    return body;
+	    return content.join('');
 	};
 	// 编译生成keyframesTextBody {}
 	Compiler.prototype._compileKeyframe = function (metaData) {

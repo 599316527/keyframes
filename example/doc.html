@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>学习文档</title>
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <style>
         html,
         body {
@@ -48,11 +54,20 @@
         }
 
         pre {
-            margin-bottom: 20px;
+            margin: 20px 0;
+        }
+        .page-header {
+            text-align: center;
+            width: 96%;
+            margin: auto;
+            border: none;
         }
     </style>
 </head>
 <body>
+<div class="page-header">
+    <h1>Write & Compile in Time<small style="margin-left: 20px;"><a target="_blank" href="../index.html" style="cursor: pointer;">keyframes animation api doc</a></small></h1>
+</div>
 <div class="container">
     <button>c<br/>o<br/>m<br/>p<br/>i<br/>l<br/>e</button>
     <iframe id="env" src="env.html"></iframe>
@@ -135,23 +150,23 @@
 <script src="../lib/cssbeautify.js"></script>
 <script>
     var envWin = document.getElementById('env').contentWindow;
-    require.config({paths: {ace: "../ace", ani:"../dist/amd"}});
-    require(["ace/ACE", "ani/Util"], function (ACE, Util) {
+    require.config({paths: {ace: '../ace', ani:'../dist/amd'}});
+    require(['ace/ace', 'ani/Util'], function (ACE, Util) {
         Util.on(document.getElementsByTagName('button')[0], 'click', function () {
-            cssEditor.setValue("");
+            cssEditor.setValue('');
             var code = jsonEditor.getValue();
             envWin.postMessage(code, '*');
         });
-        var jsonEditor = ACE.edit("jsonEditor");
-        jsonEditor.session.setMode("ace/mode/json");
-        jsonEditor.setTheme("ace/theme/monokai");
-        var cssEditor = ACE.edit("cssEditor");
-        cssEditor.session.setMode("ace/mode/css");
-        cssEditor.setTheme("ace/theme/monokai");
+        var jsonEditor = ACE.edit('jsonEditor');
+        jsonEditor.session.setMode('ace/mode/json');
+        jsonEditor.setTheme('ace/theme/monokai');
+        var cssEditor = ACE.edit('cssEditor');
+        cssEditor.session.setMode('ace/mode/css');
+        cssEditor.setTheme('ace/theme/monokai');
         Util.on(window, 'message', function (messageEvent) {
-            cssEditor.insert(cssbeautify(messageEvent.data + "\n", {
-                indent: "  ",
-                openbrace: "separate-line",
+            cssEditor.insert(cssbeautify(messageEvent.data + '\n', {
+                indent: '  ',
+                openbrace: 'separate-line',
                 autosemicolon: true
             }));
         });

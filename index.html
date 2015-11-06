@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Keyframes</title>
+    <link rel="SHORTCUT ICON" href="http://www.baidu.com/favicon.ico">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="src/lib.js"></script>
+    <script src="lib/mustache.compiled.js"></script>
+    <script type="text/html" id="template">
+        {{#doc}}
+        <h3>{{title}}</h3>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>元数据</th>
+                <th>css样式</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#module}}
+            {{#list}}
+            <tr class="{{class}}" data-css="{{css}}">
+                <th scope="row">{{@index}}</th>
+                <td>{{meta}}</td>
+                <td>{{css}}</td>
+                <td>{{{notify}}}</td>
+            </tr>
+            {{/list}}
+            {{/module}}
+            </tbody>
+        </table>
+        {{/doc}}
+    </script>
+    <style>
+        #after {
+            background-color: black;
+        }
+        .api {
+            margin-left: 30px;
+            width: 950px;
+        }
+        .api td {
+            cursor: pointer;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        .p3d {
+            position: fixed;
+            right: -10px;
+            top: 120px;
+        }
+        .page-header {
+            text-align: center;
+            width: 96%;
+            margin: auto;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page-header">
+    <h1>Keyframes Animation API DOC<small style="margin-left: 20px;"><a target="_blank" href="example/doc.html" style="cursor: pointer;">write & compile in time</a></small></h1>
+</div>
+<div class="api">
+    <script>
+        var table = {
+            doc: [{
+                title: '1. 动画配置项',
+                module: [{
+                    class: 'info',
+                    list: [{
+                        meta: '{"translateX":"100px"}'
+                    }, {
+                        meta: '{"translateY":"100px"}'
+                    }, {
+                        meta: '{"translateZ":"100px"}'
+                    }, {
+                        meta: '{"translate":"-100px, 100px"}'
+                    }, {
+                        meta: '{"translate3d":"-100px, 100px, -100px"}'
+                    }]
+                }, {
+                    class: 'success',
+                    list: [{
+                        meta: '{"rotateX":"30deg"}'
+                    }, {
+                        meta: '{"rotateY":"30deg"}'
+                    }, {
+                        meta: '{"rotateZ":"30deg"}',
+                        notify: 'rotateZ()函数让元素顺时针或逆时针旋转'
+                    }, {
+                        meta: '{"rotate":"30deg"}',
+                        notify: '效果和rotate()效果等同,不是在2D平面的旋转'
+                    }, {
+                        meta: '{"rotate3d":"1, 1, 1, 30deg"}'
+                    }]
+                }, {
+                    class: 'warning',
+                    list: [{
+                        meta: '{"skewX":"30deg"}'
+                    }, {
+                        meta: '{"skewY":"30deg"}'
+                    }, {
+                        meta: '{"skew":"30deg, 60deg"}',
+                        notify: 'skew没有3d转换,目前无Z轴倾斜'
+                    }]
+                }, {
+                    class: 'danger',
+                    list: [{
+                        meta: '{"scaleX":"2"}'
+                    }, {
+                        meta: '{"scaleY":"2"}'
+                    }, {
+                        meta: '{"scaleZ":"200"}',
+                        notify: 'scaleZ没有效果，没有厚度概念'
+                    }, {
+                        meta: '{"scale":"2, 1.6"}',
+                        notify: 'skew没有3d转换'
+                    }, {
+                        meta: '{"scale3d":"2, 1.6, 1"}',
+                        notify: '因为没有厚度概念，建议用scale'
+                    }]
+                }, {
+                    class: 'active',
+                    list: [{
+                        meta: '{"transform": "translateY(10px) rotateY(60deg)"}',
+                        notify: '支持以上所有配置项，需要注意:<br>translateY(10px) rotateX(10deg) !== rotateX(10deg) translateY(10px)'
+                    }]
+                }]
+            }, {
+                title: '2. 基准配置项',
+                module: [{
+                    class: 'info',
+                    list: [{
+                        meta: '{"perspective":"100px"}'
+                    }, {
+                        meta: '{"perspective-origin":"30% 80%"}'
+                    }, {
+                        meta: '{"transform-style":"preserve-3d"}',
+                        notify: '对于嵌套的dom结构，父元素都需要设置preserve-3d,<br>在根元素设置只会影响直接子元素，且会影响到间接子元素'
+                    }, {
+                        meta: '{"transform-origin":"20% 50%"}'
+                    }, {
+                        meta: '{"backface-visibility":"visible"}',
+                        notify: 'visible || hidden'
+                    }]
+                }]
+            }]
+        };
+        var cpl = Compiler.instance();
+        Util.each(table.doc, function(item) {
+            Util.each(item.module, function(item) {
+                Util.each(item.list, function(item) {
+                    item.css = cpl._compileContent(JSON.parse(item.meta));
+                });
+            });
+        });
+        $('.api').delegate('tr', 'click', function() {
+            $('#after').attr('style', $(this).attr('data-css'));
+        });
+        document.write(Mustache.render(document.getElementById('template').innerHTML, table));
+    </script>
+</div>
+<script>
+    Keyframe.defineClass('target', {
+        'width': '200px',
+        'height': '200px',
+        'background-color': 'gray',
+        'border': '1px solid black',
+        'transition': 'transform 2s',
+        'position': 'absolute',
+        'right': '200px',
+        'top': '100px',
+        'backface-visibility': 'visible'
+    });
+    Keyframe.defineClass('wall', {
+        'width': '300px',
+        'height': '300px',
+        'position': 'absolute',
+        'text-align': 'center',
+        'font-size': '40px',
+        'opacity': 0.5,
+        'border': '1px solid black'
+    });
+    Keyframe.defineClass('x', {
+        'background-color': 'red',
+        'transform-origin': 'bottom',
+        'rotateX': '-90deg'
+    });
+    Keyframe.defineClass('y', {
+        'background-color': 'green',
+        'transform-origin': 'right',
+        'rotateY': '90deg'
+    });
+    Keyframe.defineClass('z', {
+        'background-color': 'blue'
+    });
+    Keyframe.defineClass('p3d', {
+        'transform-style': 'preserve-3d',
+        'perspective': '900px',
+        'width': '800px',
+        'height': '500px',
+        'perspective-origin': '10% 10%'
+    });
+    Keyframe.defineClass('demo', {
+        'margin': '20px auto',
+        'rotateX': '90deg',
+        'position': 'absolute',
+        'width': '300px',
+        'height': '300px',
+        'translateY': '140px',
+        'translateZ': '300px',
+        'translateX': '400px',
+        'transform-style': 'preserve-3d',
+        'backface-visibility': 'visible'
+    });
+    Keyframe.defineClass('zuobiao', {
+        'width': '300px',
+        'height': '300px',
+        'transform-style': 'preserve-3d',
+        'translateX': '200px',
+        'translateZ': '10px',
+        //'rotateX': '-10deg',
+        'backface-visibility': 'visible'
+    });
+    Keyframe.compile();
+</script>
+<div class="p3d">
+    <div class="zuobiao">
+        <div class="z wall">x</div>
+        <div class="x wall">y</div>
+        <div class="y wall">z</div>
+    </div>
+    <div class="demo">
+        <div id="after" class="target"></div>
+        <div id="before" class="target"></div>
+    </div>
+</div>
+</body>
+</html>

@@ -482,9 +482,12 @@ function Compatible() {
     Compatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
-    pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
-        + 'animation-timing-function transform-origin',
+    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
+        + 'animation-timing-function transform-origin transform-style perspective-origin perspective',
         function (key, value) {
+            if (value === 'transform') {
+                value = me.prefix + value;
+            }
             return me.prefix + key + ':' + value + ';';
         }
     );
@@ -497,8 +500,9 @@ function Compatible() {
     pitch.use('extend', 'translateX translateY translateZ translate translate3d '
         + 'rotateX rotateY rotateZ rotate rotate3d '
         + 'skewX skewY skewZ skew '
-        + 'scaleZ scaleX scaleY scale3d scale '
-        + 'perspective',
+        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
+        // + 'perspective',
+        + 'scaleZ scaleX scaleY scale3d scale ',
         function (key, value, opt) {
             if ('transform' in opt) {
                 opt.transform += ' ' + key + '(' + value + ')';
@@ -811,16 +815,18 @@ Compiler.prototype._clearSheet = function (id) {
 };
 // 编译生成cssTextBody {}
 Compiler.prototype._compileClass = function (metaData) {
-    var body = '{';
+    return '{' + this._compileContent(metaData) + '}';
+};
+Compiler.prototype._compileContent = function (metaData) {
     var opt = {};
+    var content = [];
     Util.forIn(metaData, function (key, item) {
-        body += this._compatible.patch(key, item, opt);
+        content.push(this._compatible.patch(key, item, opt));
     }, this);
     Util.forIn(opt, function (key, item) {
-        body += this._compatible.patchCombine(key, item);
+        content.push(this._compatible.patchCombine(key, item));
     }, this);
-    body += '}';
-    return body;
+    return content.join('');
 };
 // 编译生成keyframesTextBody {}
 Compiler.prototype._compileKeyframe = function (metaData) {

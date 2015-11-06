@@ -9,9 +9,12 @@ define(['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter'], function (Pitch, U
 	    Compatible.superClass.call(this);
 	    var pitch = new Pitch();
 	    var me = this;
-	    pitch.use('prefixOnly', 'text-shadow transition transition-timing-function '
-	        + 'animation-timing-function transform-origin',
+	    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
+	        + 'animation-timing-function transform-origin transform-style perspective-origin perspective',
 	        function (key, value) {
+	            if (value === 'transform') {
+	                value = me.prefix + value;
+	            }
 	            return me.prefix + key + ':' + value + ';';
 	        }
 	    );
@@ -24,8 +27,9 @@ define(['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter'], function (Pitch, U
 	    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
 	        + 'rotateX rotateY rotateZ rotate rotate3d '
 	        + 'skewX skewY skewZ skew '
-	        + 'scaleZ scaleX scaleY scale3d scale '
-	        + 'perspective',
+	        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
+	        // + 'perspective',
+	        + 'scaleZ scaleX scaleY scale3d scale ',
 	        function (key, value, opt) {
 	            if ('transform' in opt) {
 	                opt.transform += ' ' + key + '(' + value + ')';
