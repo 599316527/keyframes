@@ -10,7 +10,7 @@
     <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="src/lib.js"></script>
+    <script src="dist/lib.min.js"></script>
     <script src="lib/mustache.compiled.js"></script>
     <script type="text/html" id="template">
         {{#doc}}
@@ -27,7 +27,7 @@
             <tbody>
             {{#module}}
             {{#list}}
-            <tr class="{{class}}" data-css="{{css}}">
+            <tr class="{{class}}" data-css="{{css}}" data-title="{{title}}">
                 <th scope="row">{{@index}}</th>
                 <td>{{meta}}</td>
                 <td>{{css}}</td>
@@ -40,28 +40,40 @@
         {{/doc}}
     </script>
     <style>
-        #after {
-            background-color: black;
-        }
+
         .api {
             margin-left: 30px;
             width: 950px;
+            min-width: 70%;
         }
         .api td {
             cursor: pointer;
             word-break: break-all;
             word-wrap: break-word;
         }
-        .p3d {
-            position: fixed;
-            right: -10px;
-            top: 120px;
-        }
         .page-header {
             text-align: center;
             width: 96%;
             margin: auto;
             border: none;
+        }
+        em {
+            color: #ffffff;
+            position: absolute;
+            left: 130px;
+            top: 130px;
+            font-size: 40px;
+        }
+        #after {
+            background-color: black;
+        }
+        #after em {
+            left: 60px;
+            top: 80px;
+        }
+        /* 3d转换中掉所有元素都应该为absolute布局，从所在空间点(0,0)点开始变换*/
+        .space {
+            position: absolute;
         }
     </style>
 </head>
@@ -77,30 +89,30 @@
                 module: [{
                     class: 'info',
                     list: [{
-                        meta: '{"translateX":"100px"}'
+                        meta: '{"translateX":"50px"}'
                     }, {
-                        meta: '{"translateY":"100px"}'
+                        meta: '{"translateY":"50px"}'
                     }, {
                         meta: '{"translateZ":"100px"}'
                     }, {
-                        meta: '{"translate":"-100px, 100px"}'
+                        meta: '{"translate":"-50px, -50px"}'
                     }, {
-                        meta: '{"translate3d":"-100px, 100px, -100px"}'
+                        meta: '{"translate3d":"50px, 50px, -150px"}'
                     }]
                 }, {
                     class: 'success',
                     list: [{
-                        meta: '{"rotateX":"30deg"}'
+                        meta: '{"rotateX":"120deg"}'
                     }, {
-                        meta: '{"rotateY":"30deg"}'
+                        meta: '{"rotateY":"120deg"}'
                     }, {
-                        meta: '{"rotateZ":"30deg"}',
+                        meta: '{"rotateZ":"120deg"}',
                         notify: 'rotateZ()函数让元素顺时针或逆时针旋转'
                     }, {
-                        meta: '{"rotate":"30deg"}',
+                        meta: '{"rotate":"120deg"}',
                         notify: '效果和rotate()效果等同,不是在2D平面的旋转'
                     }, {
-                        meta: '{"rotate3d":"1, 1, 1, 30deg"}'
+                        meta: '{"rotate3d":"1, 1, 1, 120deg"}'
                     }]
                 }, {
                     class: 'warning',
@@ -110,7 +122,7 @@
                         meta: '{"skewY":"30deg"}'
                     }, {
                         meta: '{"skew":"30deg, 60deg"}',
-                        notify: 'skew没有3d转换,目前无Z轴倾斜'
+                        notify: 'skew存在兼容性问题，建议使用skewX＋skewY组合，<br>skew没有3d转换,目前无Z轴倾斜'
                     }]
                 }, {
                     class: 'danger',
@@ -120,13 +132,13 @@
                         meta: '{"scaleY":"2"}'
                     }, {
                         meta: '{"scaleZ":"200"}',
-                        notify: 'scaleZ没有效果，没有厚度概念'
+                        notify: '从z轴看去，scaleZ没有效果，从y轴看去scaleY没有效果'
                     }, {
                         meta: '{"scale":"2, 1.6"}',
-                        notify: 'skew没有3d转换'
+                        notify: ''
                     }, {
-                        meta: '{"scale3d":"2, 1.6, 1"}',
-                        notify: '因为没有厚度概念，建议用scale'
+                        meta: '{"scale3d":"1, 1, 2", "rotateX":"30deg"}',
+                        notify: '需要配合其他变形才会有效果'
                     }]
                 }, {
                     class: 'active',
@@ -140,19 +152,28 @@
                 module: [{
                     class: 'info',
                     list: [{
-                        meta: '{"perspective":"100px"}'
+                        meta: '{"perspective":"250px"}'
                     }, {
                         meta: '{"perspective-origin":"30% 80%"}'
                     }, {
-                        meta: '{"transform-style":"preserve-3d"}',
+                        meta: '{"transform-style":"flat"}',
                         notify: '对于嵌套的dom结构，父元素都需要设置preserve-3d,<br>在根元素设置只会影响直接子元素，且会影响到间接子元素'
                     }, {
                         meta: '{"transform-origin":"20% 50%"}'
-                    }, {
-                        meta: '{"backface-visibility":"visible"}',
-                        notify: 'visible || hidden'
                     }]
                 }]
+            },{
+                title: '3. 必要配置项',
+                module: [{
+                    class: 'warning',
+                    list: [{
+                        meta: '{"backface-visibility":"hidden"}',
+                        notify: 'visible || hidden'
+                    },{
+                        meta: '{"position":"absolute"}',
+                        notify: '3d转换中掉所有元素都应该为absolute布局，从所在空间点(0,0)点开始变换,清除static定位产生的影响'
+                    }]
+                },]
             }]
         };
         var cpl = Compiler.instance();
@@ -160,89 +181,109 @@
             Util.each(item.module, function(item) {
                 Util.each(item.list, function(item) {
                     item.css = cpl._compileContent(JSON.parse(item.meta));
+                    item.meta = item.meta.replace(/[{}]/g, '');
                 });
             });
         });
         $('.api').delegate('tr', 'click', function() {
-            $('#after').attr('style', $(this).attr('data-css'));
+            var me = $(this);
+            var title = me.attr('data-title');
+            switch (title) {
+                case table.doc[0].title:
+                    $('#after').attr('style', $(this).attr('data-css'));
+                    break;
+                case table.doc[1].title:
+                    $('.scene').attr('style', $(this).attr('data-css'));
+                    break;
+                case table.doc[2].title:
+                    $('#after').attr('style', $('#after').attr('style') + $(this).attr('data-css'));
+                    break;
+            }
         });
         document.write(Mustache.render(document.getElementById('template').innerHTML, table));
     </script>
 </div>
 <script>
+    Keyframe.defineClass('scene', {
+        'transform-style': 'preserve-3d',
+        'scale': '1.3, 1.3',
+        'perspective': '400px',
+        'width': '700px',
+        'height': '600px',
+        //'border': '1px dotted black',
+        'perspective-origin': '70% 55%',
+        'position': 'fixed',
+        'right': '10px',
+        'top': '120px',
+        'transition': 'transform 2s, perspective-origin 2s, perspective 2s, transform-origin 2s'
+    });
+    Keyframe.defineClass('p3d', {
+        'transform-style': 'preserve-3d',
+        'width': '500px',
+        'height': '500px',
+        'rotateX': '90deg',
+        'translateZ': '-300px',
+        'translateX': '100px'
+    });
+    Keyframe.defineClass('zuobiao', {
+        'width': '500px',
+        'height': '500px',
+        'transform-style': 'preserve-3d',
+        'backface-visibility': 'visible'
+    });
+    Keyframe.defineClass('wall', {
+        'width': '300px',
+        'height': '300px',
+        'opacity': 0.5,
+        'border': '1px solid black'
+    });
+    Keyframe.defineClass('y', {
+        'background-color': 'red',
+        'transform-origin': 'bottom',
+        'translateY': '-300px',
+        'translateZ': '300px',
+        'rotateX': '90deg'
+    });
+    Keyframe.defineClass('x', {
+        'background-color': 'green',
+        'transform-origin': 'right',
+        'translateX': '-300px',
+        'rotateY': '90deg'
+    });
+    Keyframe.defineClass('z', {
+        'background-color': 'blue'
+    });
+    Keyframe.defineClass('demo', {
+        'width': '300px',
+        'height': '300px',
+        'translateY': '50px',
+        'translateZ': '150px',
+        'translateX': '50px',
+        'transform-style': 'preserve-3d',
+        'backface-visibility': 'visible'
+    });
     Keyframe.defineClass('target', {
         'width': '200px',
         'height': '200px',
         'background-color': 'gray',
         'border': '1px solid black',
         'transition': 'transform 2s',
-        'position': 'absolute',
-        'right': '200px',
-        'top': '100px',
-        'backface-visibility': 'visible'
-    });
-    Keyframe.defineClass('wall', {
-        'width': '300px',
-        'height': '300px',
-        'position': 'absolute',
-        'text-align': 'center',
-        'font-size': '40px',
-        'opacity': 0.5,
-        'border': '1px solid black'
-    });
-    Keyframe.defineClass('x', {
-        'background-color': 'red',
-        'transform-origin': 'bottom',
-        'rotateX': '-90deg'
-    });
-    Keyframe.defineClass('y', {
-        'background-color': 'green',
-        'transform-origin': 'right',
-        'rotateY': '90deg'
-    });
-    Keyframe.defineClass('z', {
-        'background-color': 'blue'
-    });
-    Keyframe.defineClass('p3d', {
-        'transform-style': 'preserve-3d',
-        'perspective': '900px',
-        'width': '800px',
-        'height': '500px',
-        'perspective-origin': '10% 10%'
-    });
-    Keyframe.defineClass('demo', {
-        'margin': '20px auto',
-        'rotateX': '90deg',
-        'position': 'absolute',
-        'width': '300px',
-        'height': '300px',
-        'translateY': '140px',
-        'translateZ': '300px',
-        'translateX': '400px',
-        'transform-style': 'preserve-3d',
-        'backface-visibility': 'visible'
-    });
-    Keyframe.defineClass('zuobiao', {
-        'width': '300px',
-        'height': '300px',
-        'transform-style': 'preserve-3d',
-        'translateX': '200px',
-        'translateZ': '10px',
-        //'rotateX': '-10deg',
         'backface-visibility': 'visible'
     });
     Keyframe.compile();
 </script>
-<div class="p3d">
-    <div class="zuobiao">
-        <div class="z wall">x</div>
-        <div class="x wall">y</div>
-        <div class="y wall">z</div>
+<div class="scene">
+<div class="p3d space">
+    <div class="zuobiao space">
+        <div class="z wall space"><em>Z</em></div>
+        <div class="x wall space"><em>X</em></div>
+        <div class="y wall space"><em>Y</em></div>
     </div>
-    <div class="demo">
-        <div id="after" class="target"></div>
-        <div id="before" class="target"></div>
+    <div class="demo space">
+        <div id="before" class="target space"></div>
+        <div id="after" class="target space"><em>炫动</em></div>
     </div>
+</div>
 </div>
 </body>
 </html>
