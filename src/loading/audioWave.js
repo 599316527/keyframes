@@ -16,7 +16,7 @@ loading.AudioWave.cf = {
     init: {
         'name': 'audioWave',
         'duration': '2s',
-        'count': 'infinite',
+        'count': 'infinite'
     },
     class: {
         'ec-audioWave': {
