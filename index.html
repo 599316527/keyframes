@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -14,7 +15,7 @@
     <script src="lib/mustache.compiled.js"></script>
     <script type="text/html" id="template">
         {{#doc}}
-        <h3>{{title}}</h3>
+        <h3>{{{title}}}</h3>
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
@@ -27,7 +28,7 @@
             <tbody>
             {{#module}}
             {{#list}}
-            <tr class="{{class}}" data-css="{{css}}" data-title="{{title}}">
+            <tr class="{{class}}" data-css="{{css}}" data-title="{{title}}" data-target="{{target}}">
                 <th scope="row">{{@index}}</th>
                 <td>{{meta}}</td>
                 <td>{{css}}</td>
@@ -45,6 +46,10 @@
             margin-left: 30px;
             width: 950px;
             min-width: 70%;
+        }
+        .api small {
+            margin-left: 10px;
+            margin-top: 1px;
         }
         .api td {
             cursor: pointer;
@@ -88,122 +93,142 @@
     <script>
         var table = {
             doc: [{
-                title: '1. 动画配置项(作用于黑色元素为示例)',
+                title: '1. 动画配置项<small>(作用于黑色元素变换不叠加为示例)</small>',
                 module: [{
                     class: 'info',
                     list: [{
-                        meta: '{"translateX":"50px"}'
+                        meta: {'translateX':'50px'}
                     }, {
-                        meta: '{"translateY":"50px"}'
+                        meta: {'translateY':'50px'}
                     }, {
-                        meta: '{"translateZ":"100px"}'
+                        meta: {'translateZ':'100px'}
                     }, {
-                        meta: '{"translate":"-50px, -50px"}'
+                        meta: {'translate':'-50px, -50px'}
                     }, {
-                        meta: '{"translate3d":"50px, 50px, -150px"}'
+                        meta: {'translate3d':'50px, 50px, -150px'}
                     }]
                 }, {
                     class: 'success',
                     list: [{
-                        meta: '{"rotateX":"120deg"}'
+                        meta: {'rotateX':'120deg'}
                     }, {
-                        meta: '{"rotateY":"120deg"}'
+                        meta: {'rotateY':'120deg'}
                     }, {
-                        meta: '{"rotateZ":"120deg"}',
+                        meta: {'rotateZ':'120deg'},
                         notify: 'rotateZ()函数让元素顺时针或逆时针旋转'
                     }, {
-                        meta: '{"rotate":"120deg"}',
+                        meta: {'rotate':'120deg'},
                         notify: '效果和rotate()效果等同,不是在2D平面的旋转'
                     }, {
-                        meta: '{"rotate3d":"1, 1, 1, 120deg"}'
+                        meta: {'rotate3d':'1, 1, 1, 120deg'}
                     }]
                 }, {
                     class: 'warning',
                     list: [{
-                        meta: '{"skewX":"30deg"}'
+                        meta: {'skewX':'30deg'}
                     }, {
-                        meta: '{"skewY":"30deg"}'
+                        meta: {'skewY':'30deg'}
                     }, {
-                        meta: '{"skew":"30deg, 60deg"}',
+                        meta: {'skew':'30deg, 60deg'},
                         notify: 'skew存在兼容性问题，建议使用skewX＋skewY组合，<br>skew没有3d转换,目前无Z轴倾斜'
                     }]
                 }, {
                     class: 'danger',
                     list: [{
-                        meta: '{"scaleX":"2"}'
+                        meta: {'scaleX':'2'}
                     }, {
-                        meta: '{"scaleY":"2"}'
+                        meta: {'scaleY':'2'}
                     }, {
-                        meta: '{"scaleZ":"200"}',
+                        meta: {'scaleZ':'200'},
                         notify: '从z轴看去，scaleZ没有效果，从y轴看去scaleY没有效果'
                     }, {
-                        meta: '{"scale":"2, 1.6"}',
+                        meta: {'scale':'2, 1.6'},
                         notify: ''
                     }, {
-                        meta: '{"scale3d":"1, 1, 2", "rotateX":"30deg"}',
+                        meta: {'scale3d':'1, 1, 2', 'rotateX':'30deg'},
                         notify: '需要配合其他变形才会有效果'
                     }]
                 }, {
                     class: 'active',
                     list: [{
-                        meta: '{"transform": "translateY(10px) rotateY(60deg)"}',
+                        meta: {'transform': 'translateY(10px) rotateY(60deg)'},
                         notify: '支持以上所有配置项，需要注意:<br>translateY(10px) rotateX(10deg) !== rotateX(10deg) translateY(10px)'
                     }]
                 }]
             }, {
-                title: '2. 基准配置项（作用于3d场景为示例）',
+                title: '2. 基准配置项<small>(作用于3d场景变换不叠加为示例)</small>',
                 module: [{
                     class: 'info',
                     list: [{
-                        meta: '{"perspective":"250px"}'
+                        meta: {'perspective':'250px'}
                     }, {
-                        meta: '{"perspective-origin":"30% 80%"}'
+                        meta: {'perspective-origin':'30% 80%'}
                     },{
-                        meta: '{"position":"absolute"}',
+                        meta: {'position':'absolute'},
                         notify: '3d转换中掉所有元素都应该为absolute布局，从所在空间(0,0)点开始变换,清除static定位产生的影响'
                     },{
-                        meta: '{"transform-origin":"20% 50%"}',
+                        meta: {'transform-origin':'20% 50%'},
                         notify: '针对3d变换，支持x y z三个参数，z为远离用户眼睛视点的距离，默认值z＝0'
                     }]
                 }]
             },{
-                title: '3. 常用配置项（作用于黑色元素为示例）',
+                title: '3. 常用配置项<small>(作用于黑色元素变换叠加为示例)</small>',
                 module: [{
                     class: 'warning',
                     list: [{
-                        meta: '{"backface-visibility":"hidden"}',
+                        meta: {'backface-visibility':'hidden'},
                         notify: 'visible || hidden'
                     }, {
-                        meta: '{"transform-style":"flat"}',
+                        meta: {'transform-style':'flat'},
                         notify: '对于嵌套的dom结构，父元素都需要设置preserve-3d,<br>在根元素设置只会影响直接子元素，且会影响到间接子元素'
                     }, {
-                        meta: '{"color":"red"}',
+                        meta: {'color':'red'},
                         notify: '颜色变换可以不使用16进制'
                     }, {
-                        meta: '{"opacity":"0.3"}',
+                        meta: {'opacity':'0.3'},
                         notify: ''
                     }, {
-                        meta: '{"background-color":"yellow"}',
+                        meta: {'background-color':'yellow'},
                         notify: ''
                     }, {
-                        meta: '{"border-radius":"50%"}',
+                        meta: {'border-radius':'50%'},
                         notify: ''
                     }]
                 }]
             },{
-                title: '4. 不常用配置项（作用于条型背景为示例）',
+                title: '4. 不常用配置项<small>(作用于条型背景为示例)</small>',
                 module: [{
                     class: 'success',
                     list: [{
-                        meta: '{"background":"linear-gradient(#9b59be,#9b59b6) 0 50%,' +
-                        'linear-gradient(#3498db,#3498db) 0.625em 50%,' +
-                        'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
-                        'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
-                        'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%", "background-repeat": "no-repeat",' +
-                        '"background-size":"0.5em 0.25em, 0.5em 2em, 0.5em 0.25em, 0.5em 0.25em, 0.5em 0.25em",' +
-                        '"rotateX":"-90deg"}',
+                        target: 'ec-audioWave',
+                        meta: {
+                            'background':'linear-gradient(#9b59be,#9b59b6) 0 50%,' +
+                            'linear-gradient(#3498db,#3498db) 0.625em 50%,' +
+                            'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
+                            'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
+                            'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%',
+                            'background-repeat': 'no-repeat',
+                            'background-size':'0.5em 0.25em, 0.5em 2em, 0.5em 0.25em, 0.5em 0.25em, 0.5em 0.25em',
+                            'rotateX':'-90deg'
+                        },
                         notify: ''
-                    }]
+                    },{
+                        target: 'ec-snake',
+                        meta: {
+                            'border-radius': '50%',
+                            'box-shadow': '1.375em 0em #debf23, ' +
+                            '1.375em 0em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '2.75em 0.29721em #b8b64c, ' +
+                            '2.75em -0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '4.125em 0.18368em #92ae75, ' +
+                            '4.125em -0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '5.5em -0.18368em #6ca59d, ' +
+                            '5.5em 0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '6.875em -0.29721em #469cc6, ' +
+                            '6.875em 0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52)'
+                        }
+                    }
+                    ]
                 }]
             }]
         };
@@ -211,8 +236,8 @@
         Util.each(table.doc, function(item) {
             Util.each(item.module, function(item) {
                 Util.each(item.list, function(item) {
-                    item.css = cpl._compileContent(JSON.parse(item.meta));
-                    item.meta = item.meta.replace(/[{}]/g, '');
+                    item.css = cpl._compileContent(item.meta);
+                    item.meta = JSON.stringify(item.meta, 4).replace(/[{}]/g, '');
                 });
             });
         });
@@ -237,13 +262,14 @@
                     }
                     break;
                 case table.doc[3].title:
-                    var old = $('.ec-audioWave').attr('style');
+                    var target = $('.' + me.attr('data-target'));
+                    var old = target.attr('style');
                     if (old) {
-                        var attach = $(this).attr('data-css');
-                        $('.ec-audioWave').attr('style',  old.replace(attach, '') + attach);
+                        var attach = me.attr('data-css');
+                        target.attr('style',  old.replace(attach, '') + attach);
                     }
                     else {
-                        $('.ec-audioWave').attr('style',  $(this).attr('data-css'));
+                        target.attr('style',  me.attr('data-css'));
                     }
                     break;
             }
@@ -252,17 +278,26 @@
     </script>
 </div>
 <script>
+    var _scale, _top;
+    if ($(window).height() > 700) {
+        _scale = '1.3, 1.3';
+        _top = '5%';
+    }
+    else {
+        _scale = '1, 1';
+        _top = '-100px';
+    }
     Keyframe.defineClass('scene', {
         'transform-style': 'preserve-3d',
-        'scale': '1.3, 1.3',
+        'scale': _scale,
         'perspective': '400px',
         'width': '700px',
         'height': '600px',
         //'border': '1px dotted black',
         'perspective-origin': '70% 55%',
         'position': 'fixed',
-        'right': '-150px',
-        'top': '10%',
+        'right': '-230px',
+        'top': _top,
         'transition': 'all 2s'
     });
     Keyframe.defineClass('p3d', {
@@ -298,6 +333,12 @@
         'translateX': '-300px',
         'rotateY': '90deg'
     });
+    Keyframe.defineClass('z90', {
+        'rotateZ': '90deg'
+    });
+    Keyframe.defineClass('x180', {
+        'rotateX': '180deg'
+    });
     Keyframe.defineClass('z', {
         'background-color': 'blue'
     });
@@ -325,8 +366,8 @@
         'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
         'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
         'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%',
-                'background-repeat': 'no-repeat',
-                'background-size': '0.5em 0.25em, ' +
+        'background-repeat': 'no-repeat',
+        'background-size': '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
@@ -338,22 +379,34 @@
         'top': '50%',
         'font-size': '75px'
     });
-
+    Keyframe.defineClass('ec-snake', {
+        'transition': 'all 2s',
+        'width': '50px',
+        'height': '50px',
+        'left': '0',
+        'background-color': 'yellow',
+        'top': '50%',
+        'translateZ': '340px',
+        'rotateX': '90deg',
+        'translateX': '-30px',
+        'font-size': '40px'
+    });
     Keyframe.compile();
 </script>
 <div class="scene">
-<div class="p3d space">
-    <div class="zuobiao space">
-        <div class="z wall space"><em>Z</em></div>
-        <div class="x wall space"><em>X</em></div>
-        <div class="y wall space"><em>Y</em></div>
+    <div class="p3d space">
+        <div class="zuobiao space">
+            <div class="z wall space"><em>Z</em></div>
+            <div class="x wall space"><em class="z90">X</em></div>
+            <div class="y wall space"><em class="x180">Y</em></div>
+        </div>
+        <div class="demo space">
+            <div id="before" class="target space"></div>
+            <div id="after" class="target space"><em>炫动</em></div>
+        </div>
+        <div class="ec-audioWave space"></div>
+        <div class="ec-snake space"></div>
     </div>
-    <div class="demo space">
-        <div id="before" class="target space"></div>
-        <div id="after" class="target space"><em>炫动</em></div>
-    </div>
-    <div class="ec-audioWave space"></div>
-</div>
 
 </div>
 </body>
