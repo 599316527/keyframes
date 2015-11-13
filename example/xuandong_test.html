@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>炫动-移动</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
+    <script src="../dist/lib.min.js"></script>
+    <script src="http://172.18.20.115:8081/target/target-script-min.js#anonymous"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+        #container {
+            width: 230px;
+            height: 165px;
+            position: relative;
+            margin: -85px auto 0;
+            top: 50%;
+        }
+        #frame1 {
+            width: 25px;
+            position: absolute;
+            height: 60px;
+            left: 108px;
+            top: 0px;
+            opacity: 1;
+            background: url(http://bs.baidu.com/public03/2e897163616c44fddada5bad03fdcc62.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame2 {
+            width: 150px;
+            position: absolute;
+            height: 150px;
+            left: 45px;
+            top: 15px;
+            opacity: 0;
+            background: url(http://bs.baidu.com/public03/9dead4c5f9d0f4207faba69eed020959.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame3 {
+            width: 150px;
+            position: absolute;
+            height: 150px;
+            left: 80px;
+            opacity: 0;
+            top: 15px;
+            background: url(http://bs.baidu.com/public03/5f77e9c925ca8814cd779da3127ba576.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame4 {
+            position: absolute;
+            opacity: 0;
+            width: 55px;
+            height: 75px;
+            left: 62px;
+            top: 89px;
+            background: url(http://bs.baidu.com/public03/de7e49534a28de35b65314e8285b1f64.png) no-repeat;
+            background-size: 100% 100%;
+        }
+        #frame5 {
+            width: 180px;
+            position: absolute;
+            height: 140px;
+            left: 0px;
+            top: 15px;
+            opacity: 0;
+            background: url(http://bs.baidu.com/public03/98e241f90a5302ad09c93c06f0a51d99.png) no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="frame5"></div>
+    <div id="frame3"></div>
+    <div id="frame4"></div>
+    <div id="frame2"></div>
+    <div id="frame1"></div>
+</div>
+<script>
+    var config = {
+        "frame1": {
+            "0.6": {
+                "translateY": "0px"
+            },
+            "1.2": {
+                "translateY": "55px",
+                "opacity": 1
+            },
+            "1.8": {
+                "translateY": "55px",
+                "opacity" : 0
+            }
+        },
+        "frame2": {
+            "0": {
+                "scale": 0.2
+            },
+            "1.18": {
+                "opacity": 0
+            },
+            "1.2": {
+                "opacity": 1,
+                "scale": 0.2
+            },
+            "2.1": {
+                "opacity": 0,
+                "scale": 1
+            }
+        },
+        "frame3": {
+            "2.1": {
+                "opacity": 0
+            },
+            "2.3": {
+                "opacity": 0.1
+            },
+            "2.9": {
+                "opacity": 0.5
+            },
+            "3.1": {
+                "opacity": 1
+            }
+        },
+        "frame4@ease-in-out#infinite": {
+            "0": {
+                "opacity": 0
+            },
+            "3.1": {
+                "opacity": 0
+            },
+            "3.12": {
+                "opacity": 1,
+                "translateX":"0px",
+                "rotateZ":"0deg"
+            },
+            "4.32": {
+                "translateX": "-60px",
+                "opacity": 1,
+                "rotateZ":"360deg"
+            }
+        },
+        "frame5": {
+            "3.7": {
+                "opacity": 0
+            },
+            "3.9": {
+                "opacity": 1
+            }
+        }
+    };
+    var group = Keyframe.group(config);
+    group.onEnd(function() {
+        console.log('finished');
+    });
+    group.start();
+</script>
+</body>
+</html>

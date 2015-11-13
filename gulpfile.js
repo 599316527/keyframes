@@ -13,7 +13,7 @@ gulp.task('lint',['concat'], function() {
 });
 
 gulp.task('concat', function() {
-    return gulp.src(['src/Util.js', 'src/Event.js', 'src/EventEmitter.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/Compiler.js', 'src/ClassProxy.js','src/FrameProxy.js','src/Group.js','src/Keyframe.js'])
+    return gulp.src(['src/Util.js', 'src/Event.js', 'src/EventEmitter.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/KFCompatible.js', 'src/Compiler.js', 'src/ClassProxy.js','src/FrameProxy.js','src/Group.js','src/Keyframe.js'])
         .pipe(concat('lib.js'))
         .pipe(gulp.dest('src/'));
 });
@@ -34,12 +34,12 @@ gulp.task('amd', function() {
                 var content = fs.readFileSync(fName, 'utf-8').toString();
                 var result = /\/\*\s*global\s+(.*?)\s*\*\/\s*/.exec(content);
                 var dependency;
-                var domain
+                var domain = /\/\*\s*define\s+(.*?)\s*\*\/\s*/.exec(content);
+                var index = domain.index + domain[0].length;
+                content = content.substring(index);
+                domain = domain[1];
                 if (result) {
                     dependency = result[1];
-                    var index = result.index + result[0].length;
-                    content = content.substring(index);
-                    domain = /function\s+(.*)\s*\(/.exec(content)[1];
                     combine.push("define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
                         return '\n\t';
                     }) + 'return ' + domain + ';\r});');
@@ -48,13 +48,6 @@ gulp.task('amd', function() {
                     }) + 'return ' + domain + ';\r});';
                 }
                 else {
-                    domain = /function\s+(.*)\s*\(/.exec(content);
-                    if (domain && domain[1]) {
-                        domain = domain[1];
-                    }
-                    else {
-                        domain = /var\s+([^\s]*)/.exec(content)[1];
-                    }
                     combine.push("define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
                         return  '\n\t';
                     }) + 'return ' + domain + ';\r});');

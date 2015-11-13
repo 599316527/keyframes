@@ -1,9 +1,4 @@
 define(function () {
-	/**
-	 * @file util.js ~ 2015/08/13 11:47:13
-	 * @author tingkl(dingguoliang01@baidu.com)
-	 **/
-	
 	var Util = {
 	    forIn: function (obj, handler, scope) {
 	        for (var key in obj) {

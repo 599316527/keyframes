@@ -1,4 +1,4 @@
-define(['Checker', 'Compatible', 'Util', 'Event', 'EventEmitter'], function (Checker, Compatible, Util, Event, EventEmitter) {
+define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (Checker, KFCompatible, Util, Event, EventEmitter) {
 	/**
 	 * 编译类，根据metaData生成class或者keyframes
 	 *
@@ -13,7 +13,7 @@ define(['Checker', 'Compatible', 'Util', 'Event', 'EventEmitter'], function (Che
 	    this._classMap = {};
 	    this._keyframeMap = {};
 	    this._keyframeStore = {};
-	    var compatible = Compatible.instance();
+	    var compatible = KFCompatible.instance();
 	    this._compatible = compatible;
 	    this._classId = function (className) {
 	        return 'class(' + className + ')';

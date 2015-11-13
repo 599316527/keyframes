@@ -1,12 +1,20 @@
 /**
- * @file util.js ~ 2015/08/13 11:47:13
+ * @file Util.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
+/* define Util */
 var Util = {
     forIn: function (obj, handler, scope) {
         for (var key in obj) {
             if (handler.call(scope, key, obj[key]) === false) {
+                return false;
+            }
+        }
+        return true;
+    },
+    forKey: function (obj, handler, scope) {
+        for (var key in obj) {
+            if (handler.call(scope, key) === false) {
                 return false;
             }
         }
@@ -66,9 +74,9 @@ var Util = {
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },
-    each: function (ary, iterator) {
+    each: function (ary, iterator, scope) {
         for (var i = 0, l = ary.length; i < l; i++) {
-            if (iterator(ary[i], i, ary) === false) {
+            if (iterator.call(scope, ary[i], i, ary) === false) {
                 break;
             }
         }

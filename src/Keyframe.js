@@ -2,8 +2,8 @@
  * @file keyframe.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
-/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible*/
+/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible KFCompatible*/
+/* define Keyframe */
 
 /**
  * css属性转cssText过滤器
@@ -16,8 +16,9 @@
 function Keyframe(dom, animations, cf) {
     Keyframe.superClass.call(this);
     this._compiler = Compiler.instance();
-    this._compatible = Compatible.instance();
-    this._init(dom);
+    this._compatible = KFCompatible.instance();
+    this._dom = dom;
+    this._animationStatus = {};
     var me = this;
     animations = Util.extend(animations, cf);
     if (!animations) {
@@ -35,6 +36,13 @@ function Keyframe(dom, animations, cf) {
             this._animations = animations;
         }
     }
+    this._listen();
+    return this;
+}
+Util.inherit(Keyframe, EventEmitter);
+
+Keyframe.prototype._listen = function () {
+    var me = this;
     function wrap(eventName) {
         return function (evt) {
             me.emit(eventName, evt);
@@ -93,12 +101,6 @@ function Keyframe(dom, animations, cf) {
             }
         }
     });
-    return this;
-}
-Util.inherit(Keyframe, EventEmitter);
-Keyframe.prototype._init = function (dom) {
-    this._dom = dom;
-    this._animationStatus = {};
 };
 Keyframe.prototype.start = function () {
     var cpt = this._compatible;
@@ -146,7 +148,7 @@ Keyframe.prototype._filter = function () {
 Keyframe.prototype.reflow = function () {
     // -> triggering reflow /* The actual magic */
     var dom = this._dom;
-    this._compatible.requestAnimationFrame(function () {
+    Compatible.requestAnimationFrame(function () {
         dom.offsetWidth = dom.offsetWidth;
     });
     return this;

@@ -2,8 +2,8 @@
  * @file group.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Util Event EventEmitter*/
+/* define Group */
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;

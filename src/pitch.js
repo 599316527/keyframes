@@ -1,9 +1,9 @@
 /**
- * @file pitch.js ~ 2015/08/13 11:47:13
+ * @file Pitch.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker */
+/* define Pitch */
 
 /**
  * css属性转cssText过滤器

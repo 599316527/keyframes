@@ -93,227 +93,61 @@ define('Checker', ['Util'], function (Util) {
 	    }
 	    return this;
 	};
-	return ClassProxy;});define('Compatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter'], function (Pitch, Util, Checker, Event, EventEmitter) {
-	/**
-	 *  浏览器兼容处理
-	 *
-	 * @class
-	 * @extend EventEmitter
-	 */
-	function Compatible() {
-	    Compatible.superClass.call(this);
-	    var pitch = new Pitch();
-	    var me = this;
-	    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
-	        + 'animation-timing-function transform-origin transform-style perspective-origin perspective',
-	        function (key, value) {
-	            if (value === 'transform') {
-	                value = me.prefix + value;
-	            }
-	            return me.prefix + key + ':' + value + ';';
+	return ClassProxy;});define('Compatible', ['Util', 'Event'], function (Util, Event) {
+	var Compatible = {
+	    prefix: (function () {
+	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
+	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
+	        var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
+	        var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
+	            || (userAgent.indexOf('Trident') > -1); // 判断是否IE
+	        var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
+	        var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
+	        var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
+	        var isWebKit = userAgent.indexOf('WebKit') > -1;
+	        if (isIE) {
+	            return '-ms-';
 	        }
-	    );
-	    pitch.use('needAll', 'box-shadow border-radius',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
-	        }
-	    );
-	    // 需要整合到transform中的值，暂存如opt中
-	    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
-	        + 'rotateX rotateY rotateZ rotate rotate3d '
-	        + 'skewX skewY skewZ skew '
-	        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
-	        // + 'perspective',
-	        + 'scaleZ scaleX scaleY scale3d scale ',
-	        function (key, value, opt) {
-	            if ('transform' in opt) {
-	                opt.transform += ' ' + key + '(' + value + ')';
-	            }
-	            else {
-	                opt.transform = key + '(' + value + ')';
-	            }
-	            return '';
-	        }
-	    );
-	    // 直接的transform，需要拼接到opt.transform
-	    pitch.use('transform', 'transform',
-	        function (key, value, opt) {
-	            if ('transform' in opt) {
-	                opt.transform += ' ' + value;
-	            }
-	            else {
-	                opt.transform = value;
-	            }
-	            return '';
-	        });
-	    // class的定义中可能出现
-	    pitch.use('animation', 'animation', function (key, value) {
-	        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
-	    });
-	    pitch.use('specialA', 'background',
-	        function (key, value) {
-	            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
-	        });
-	    pitch.use('specialB', 'mask-image',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
-	        });
-	    pitch.use('rest', '*',
-	        function (key, value) {
-	            return key + ':' + value + ';';
-	        });
-	    this._pitch = pitch;
-	    // 经过_pitch处理，transform聚合到opt中，由_combine处理
-	    this._combine = new Pitch('combine', 'transform',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value + ';';
-	        }
-	    );
-	}
-	Util.inherit(Compatible, EventEmitter);
-	Compatible.prototype.prefix = (function () {
-	    var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
-	    var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
-	    var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-	    var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
-	        || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-	    var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
-	    var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
-	    var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
-	    var isWebKit = userAgent.indexOf('WebKit') > -1;
-	    if (isIE) {
-	        return '-ms-';
-	    }
-	    return (isWebKit || isSafari || isChrome || isMaxthon) ?
-	        '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
-	})();
-	Compatible._keyMap = {
-	    'animation': ['animation'],
-	    'name': ['animationName'],
-	    'duration': ['animationDuration', '1s'],
-	    'function': ['animationTimingFunction', 'linear'],
-	    'delay': ['animationDelay', '0s'],
-	    'count': ['animationIterationCount', 1],
-	    'direction': ['animationDirection', 'normal'],
-	    'state': ['animationPlayState', 'running'],
-	    'mode': ['animationFillMode', 'forwards']
-	};
-	Compatible.prototype.parseAnimation = function (animations) {
-	    if (!Checker.array.check(arguments)) {
-	        animations = [animations];
-	    }
-	    var css;
-	    var csses = [];
-	    var tpl = this.animationTpl();
-	    function regReplace($0, $1) {
-	        if ($1 in css) {
-	            return css[$1];
-	        }
-	        return Compatible._keyMap[$1][1];
-	    }
-	    Util.each(animations, function (animation) {
-	        css = animation;
-	        csses.push(tpl.replace(/<(.*?)>/g, regReplace));
-	    });
-	    return csses.join(',');
-	};
-	Compatible.prototype.animationTpl = function () {
-	    if (!this._animationTpl) {
-	        if (this.prefix === '-moz-') {
-	            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
-	            this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
+	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
+	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
+	    })(),
+	    requestAnimationFrame: (function () {
+	        window.requestAnimFrame = (function () {
+	            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
+	                || function (callback) {
+	                    window.setTimeout(callback, 1000 / 60);
+	                };
+	        })();
+	        return function (fn) {
+	            // 原生requestAnimationFrame执行的scope必须为window
+	            window.requestAnimationFrame(fn);
+	        };
+	    })(),
+	    css: function (dom, key, css, me) {
+	        if (css || css === '') {
+	            this.requestAnimationFrame(function () {
+	                Util.css(dom, key, css);
+	                me.emit(Event.css, dom, key, css);
+	            });
 	        }
 	        else {
-	            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
-	            this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
+	            return Util.css(dom, key);
 	        }
-	    }
-	    return this._animationTpl;
-	};
-	Compatible.prototype.regExp = function (middle) {
-	    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
-	};
-	Compatible.prototype.keyframe = function (keyframe) {
-	    return '@' + this.prefix + 'keyframes ' + keyframe;
-	};
-	Compatible.prototype.percent = function (percent) {
-	    percent = (percent + '').trim();
-	    var percents = percent.split(/\s+/);
-	    return percents.join('%, ') + '%';
-	};
-	Compatible.prototype.patchCombine = function (key, value) {
-	    return this._combine.do(key + ' ', value);
-	};
-	Compatible.prototype.patch = function (key, value, opt) {
-	    return this._pitch.do(key + ' ', value, opt);
-	};
-	Compatible.instance = function () {
-	    if (!Compatible._compatible) {
-	        Compatible._compatible = new Compatible();
-	    }
-	    return Compatible._compatible;
-	};
-	Compatible.prototype.css = function (dom, key, css) {
-	    key = this.parseCSS(key);
-	    var me = this;
-	    if (css || css === '') {
-	        this.requestAnimationFrame(function () {
-	            Util.css(dom, key, css);
-	            me.emit(Event.css, dom, key, css);
-	        });
-	    }
-	    else {
-	        return Util.css(dom, key);
-	    }
-	};
-	// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
-	Compatible.prototype.parseCSS = function (key) {
-	    var p = this.prefix.replace(/-/g, '');
-	    if (p === 'moz') {
-	        Compatible.prototype.parseCSS = function (key) {
-	            if (key in Compatible._keyMap) {
-	                return Compatible._keyMap[key][0];
+	    },
+	    parseEvent: function (lower, upper) {
+	        // animationstart webkitAnimationStart
+	        var p = this.prefix.replace(/-/g, '');
+	        if (p === 'moz') {
+	            return function (key) {
+	                return lower + key.toLowerCase();
 	            }
-	            return key;
+	        }
+	        return function (key) {
+	            return p + upper + key;
 	        };
 	    }
-	    else {
-	        Compatible.prototype.parseCSS = function (key) {
-	            if (key in Compatible._keyMap) {
-	                key = Compatible._keyMap[key][0];
-	                return p + key[0].toUpperCase() + key.substr(1);
-	            }
-	            return key;
-	        };
-	    }
-	    return this.parseCSS(key);
 	};
-	Compatible.prototype.parseEvent = function (key) {
-	    var p = this.prefix.replace(/-/g, '');
-	    if (p === 'moz') {
-	        Compatible.prototype.parseEvent = function (key) {
-	            return 'animation' + key.toLowerCase();
-	        };
-	    }
-	    else {
-	        Compatible.prototype.parseEvent = function (key) {
-	            return p + 'Animation' + key;
-	        };
-	    }
-	    return this.parseEvent(key);
-	};
-	Compatible.prototype.requestAnimationFrame = (function () {
-	    window.requestAnimFrame = (function () {
-	        return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
-	            || function (callback) {
-	                window.setTimeout(callback, 1000 / 60);
-	            };
-	    })();
-	    return function (fn) {
-	        window.requestAnimationFrame(fn);
-	    };
-	})();
-	return Compatible;});define('Compiler', ['Checker', 'Compatible', 'Util', 'Event', 'EventEmitter'], function (Checker, Compatible, Util, Event, EventEmitter) {
+	return Compatible;});define('Compiler', ['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (Checker, KFCompatible, Util, Event, EventEmitter) {
 	/**
 	 * 编译类，根据metaData生成class或者keyframes
 	 *
@@ -328,7 +162,7 @@ define('Checker', ['Util'], function (Util) {
 	    this._classMap = {};
 	    this._keyframeMap = {};
 	    this._keyframeStore = {};
-	    var compatible = Compatible.instance();
+	    var compatible = KFCompatible.instance();
 	    this._compatible = compatible;
 	    this._classId = function (className) {
 	        return 'class(' + className + ')';
@@ -462,10 +296,6 @@ define('Checker', ['Util'], function (Util) {
 	    return Compiler._compiler;
 	};
 	return Compiler;});define('Event', function () {
-	/**
-	 * @file event.js ~ 2015/08/13 11:47:13
-	 * @author tingkl(dingguoliang01@baidu.com)
-	 **/
 	var Event = {
 	    style: 'Style',
 	    css: 'Css',
@@ -730,7 +560,7 @@ define('Checker', ['Util'], function (Util) {
 	    });
 	    return this;
 	};
-	return Group;});define('Keyframe', ['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible'], function (Checker, Util, Compiler, Group, ClassProxy, FrameProxy, Event, EventEmitter, Compatible) {
+	return Group;});define('Keyframe', ['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible', 'KFCompatible'], function (Checker, Util, Compiler, Group, ClassProxy, FrameProxy, Event, EventEmitter, Compatible, KFCompatible) {
 	/**
 	 * css属性转cssText过滤器
 	 *
@@ -742,8 +572,9 @@ define('Checker', ['Util'], function (Util) {
 	function Keyframe(dom, animations, cf) {
 	    Keyframe.superClass.call(this);
 	    this._compiler = Compiler.instance();
-	    this._compatible = Compatible.instance();
-	    this._init(dom);
+	    this._compatible = KFCompatible.instance();
+	    this._dom = dom;
+	    this._animationStatus = {};
 	    var me = this;
 	    animations = Util.extend(animations, cf);
 	    if (!animations) {
@@ -761,6 +592,13 @@ define('Checker', ['Util'], function (Util) {
 	            this._animations = animations;
 	        }
 	    }
+	    this._listen();
+	    return this;
+	}
+	Util.inherit(Keyframe, EventEmitter);
+	
+	Keyframe.prototype._listen = function () {
+	    var me = this;
 	    function wrap(eventName) {
 	        return function (evt) {
 	            me.emit(eventName, evt);
@@ -819,12 +657,6 @@ define('Checker', ['Util'], function (Util) {
 	            }
 	        }
 	    });
-	    return this;
-	}
-	Util.inherit(Keyframe, EventEmitter);
-	Keyframe.prototype._init = function (dom) {
-	    this._dom = dom;
-	    this._animationStatus = {};
 	};
 	Keyframe.prototype.start = function () {
 	    var cpt = this._compatible;
@@ -872,7 +704,7 @@ define('Checker', ['Util'], function (Util) {
 	Keyframe.prototype.reflow = function () {
 	    // -> triggering reflow /* The actual magic */
 	    var dom = this._dom;
-	    this._compatible.requestAnimationFrame(function () {
+	    Compatible.requestAnimationFrame(function () {
 	        dom.offsetWidth = dom.offsetWidth;
 	    });
 	    return this;
@@ -1055,7 +887,179 @@ define('Checker', ['Util'], function (Util) {
 	    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
 	    return frameProxy;
 	};
-	return Keyframe;});define('Pitch', ['Checker'], function (Checker) {
+	return Keyframe;});define('KFCompatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
+	/**
+	 *  浏览器兼容处理
+	 *
+	 * @class
+	 * @extend EventEmitter
+	 */
+	function KFCompatible() {
+	    KFCompatible.superClass.call(this);
+	    var pitch = new Pitch();
+	    var me = this;
+	    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
+	        + 'animation-timing-function transform-origin transform-style perspective-origin perspective',
+	        function (key, value) {
+	            if (value === 'transform') {
+	                value = me.prefix + value;
+	            }
+	            return me.prefix + key + ':' + value + ';';
+	        }
+	    );
+	    pitch.use('needAll', 'box-shadow border-radius',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
+	        }
+	    );
+	    // 需要整合到transform中的值，暂存如opt中
+	    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
+	        + 'rotateX rotateY rotateZ rotate rotate3d '
+	        + 'skewX skewY skewZ skew '
+	        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
+	        // + 'perspective',
+	        + 'scaleZ scaleX scaleY scale3d scale ',
+	        function (key, value, opt) {
+	            if ('transform' in opt) {
+	                opt.transform += ' ' + key + '(' + value + ')';
+	            }
+	            else {
+	                opt.transform = key + '(' + value + ')';
+	            }
+	            return '';
+	        }
+	    );
+	    // 直接的transform，需要拼接到opt.transform
+	    pitch.use('transform', 'transform',
+	        function (key, value, opt) {
+	            if ('transform' in opt) {
+	                opt.transform += ' ' + value;
+	            }
+	            else {
+	                opt.transform = value;
+	            }
+	            return '';
+	        });
+	    // class的定义中可能出现
+	    pitch.use('animation', 'animation', function (key, value) {
+	        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
+	    });
+	    pitch.use('specialA', 'background',
+	        function (key, value) {
+	            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	        });
+	    pitch.use('specialB', 'mask-image',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	        });
+	    pitch.use('rest', '*',
+	        function (key, value) {
+	            return key + ':' + value + ';';
+	        });
+	    this._pitch = pitch;
+	    // 经过_pitch处理，transform聚合到opt中，由_combine处理
+	    this._combine = new Pitch('combine', 'transform',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value + ';';
+	        }
+	    );
+	}
+	Util.inherit(KFCompatible, EventEmitter);
+	KFCompatible.prototype.prefix = Compatible.prefix;
+	KFCompatible._keyMap = {
+	    'animation': ['animation'],
+	    'name': ['animationName'],
+	    'duration': ['animationDuration', '1s'],
+	    'function': ['animationTimingFunction', 'linear'],
+	    'delay': ['animationDelay', '0s'],
+	    'count': ['animationIterationCount', 1],
+	    'direction': ['animationDirection', 'normal'],
+	    'state': ['animationPlayState', 'running'],
+	    'mode': ['animationFillMode', 'forwards']
+	};
+	KFCompatible.prototype.parseAnimation = function (animations) {
+	    if (!Checker.array.check(arguments)) {
+	        animations = [animations];
+	    }
+	    var css;
+	    var csses = [];
+	    var tpl = this.animationTpl();
+	    function regReplace($0, $1) {
+	        if ($1 in css) {
+	            return css[$1];
+	        }
+	        return KFCompatible._keyMap[$1][1];
+	    }
+	    Util.each(animations, function (animation) {
+	        css = animation;
+	        csses.push(tpl.replace(/<(.*?)>/g, regReplace));
+	    });
+	    return csses.join(',');
+	};
+	KFCompatible.prototype.animationTpl = function () {
+	    if (!this._animationTpl) {
+	        if (this.prefix === '-moz-') {
+	            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
+	            this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
+	        }
+	        else {
+	            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
+	            this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
+	        }
+	    }
+	    return this._animationTpl;
+	};
+	KFCompatible.prototype.regExp = function (middle) {
+	    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
+	};
+	KFCompatible.prototype.keyframe = function (keyframe) {
+	    return '@' + this.prefix + 'keyframes ' + keyframe;
+	};
+	KFCompatible.prototype.percent = function (percent) {
+	    percent = (percent + '').trim();
+	    var percents = percent.split(/\s+/);
+	    return percents.join('%, ') + '%';
+	};
+	KFCompatible.prototype.patchCombine = function (key, value) {
+	    return this._combine.do(key + ' ', value);
+	};
+	KFCompatible.prototype.patch = function (key, value, opt) {
+	    return this._pitch.do(key + ' ', value, opt);
+	};
+	KFCompatible.instance = function () {
+	    if (!KFCompatible._compatible) {
+	        KFCompatible._compatible = new KFCompatible();
+	    }
+	    return KFCompatible._compatible;
+	};
+	KFCompatible.prototype.css = function (dom, key, css) {
+	    key = this.parseCSS(key);
+	    return Compatible.css(dom, key, css, this);
+	};
+	// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
+	KFCompatible.prototype.parseCSS = function (key) {
+	    var p = this.prefix.replace(/-/g, '');
+	    if (p === 'moz') {
+	        KFCompatible.prototype.parseCSS = function (key) {
+	            if (key in KFCompatible._keyMap) {
+	                return KFCompatible._keyMap[key][0];
+	            }
+	            return key;
+	        };
+	    }
+	    else {
+	        KFCompatible.prototype.parseCSS = function (key) {
+	            if (key in KFCompatible._keyMap) {
+	                key = KFCompatible._keyMap[key][0];
+	                return p + key[0].toUpperCase() + key.substr(1);
+	            }
+	            return key;
+	        };
+	    }
+	    return this.parseCSS(key);
+	};
+	KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
+	return KFCompatible;});define('Pitch', ['Checker'], function (Checker) {
 	/**
 	 * css属性转cssText过滤器
 	 *
@@ -1090,12 +1094,616 @@ define('Checker', ['Util'], function (Util) {
 	Pitch.prototype.do = function (key, value, opt) {
 	    return this.next(0, key, value, opt);
 	};
-	return Pitch;});define('Util', function () {
-	/**
-	 * @file util.js ~ 2015/08/13 11:47:13
-	 * @author tingkl(dingguoliang01@baidu.com)
-	 **/
+	return Pitch;});define('Transform', ['EventEmitter'], function (EventEmitter) {
+	function Transform(dom, executeInTime) {
+	    Transform.superClass.call(this);
+	    this._dom = dom;
+	    this._executeInTime = executeInTime;
+	    this._steps = [];
+	    this._store = {};
+	    this._index = 0;
+	    this._listen();
+	    return this;
+	};
+	Util.inherit(Transform, EventEmitter);
+	Transform.prototype._combineTransform = function (val, transform) {
+	    var current = Util.css(this._dom, transform);
+	    if (current && current !== 'none') {
+	        return current + ' ' + val.join(' ');
+	    }
+	    return val.join(' ');
+	};
+	Transform._keyMap = {
+	    'duration': 'transitionDuration',
+	    'function': 'transitionTimingFunction',
+	    'delay': 'transitionDelay'
+	};
 	
+	
+	Transform.prototype.setExecuteInTime = function (flag) {
+	    this._executeInTime = flag;
+	};
+	Transform.prototype.moveBy = function (config) {
+	    var apiMap = Transform._apiMap['moveBy'];
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	
+	Transform.prototype.then = function (callback) {
+	    var length = this._steps.length;
+	    if (length > 0) {
+	        var front = this._steps[length - 1];
+	        var next = front['next'];
+	        if (next) {
+	            front['next'] = function () {
+	                next();
+	                callback();
+	            };
+	        }
+	        else {
+	            front['next'] = callback;
+	        }
+	    }
+	    else {
+	        callback();
+	    }
+	    return this;
+	};
+	Transform.prototype._step = function (transition, generator, status) {
+	    var it = Transform;
+	    var me = this;
+	    var step = {};
+	    var length = me._steps.length;
+	    if (length > 0) {
+	        var front = me._steps[length - 1];
+	        var next = front['next'];
+	        if (next) {
+	            front['next'] = function () {
+	                next();
+	                Util.css(me._dom, it._theCore.css['transition'], transition);
+	                Util.css(me._dom, generator());
+	            };
+	            if (me._index === me._steps.length) {
+	                Util.css(me._dom, it._theCore.css['transition'], transition);
+	                Util.css(me._dom, generator());
+	            }
+	        }
+	        else {
+	            front['next'] = function () {
+	                Util.css(me._dom, it._theCore.css['transition'], transition);
+	                Util.css(me._dom, generator());
+	            };
+	            if (me._index === me._steps.length) {
+	                front['next']();
+	            }
+	        }
+	    }
+	    else {
+	        step['execute'] = function () {
+	            Util.css(me._dom, it._theCore.css['transition'], transition);
+	            Util.css(me._dom, generator());
+	        };
+	        if (this._executeInTime) {
+	            step['execute']();
+	        }
+	    }
+	    step['status'] = status;
+	    step['next'] = false;
+	    this._steps.push(step);
+	};
+	/* jshint ignore:start */
+	Transform.prototype.reStore = function () {
+	    Util.css(this._dom, this._store);
+	    var status;
+	    while (this._index > 0) {
+	        this._index--;
+	        status = this._steps[this._index].status;
+	        for (var key in status) {
+	            status[key] = false;
+	        }
+	    }
+	    return this;
+	};
+	/* jshint ignore:end */
+	Transform.prototype._reflow = function () {
+	    // -> triggering reflow /* The actual magic */
+	    // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+	    this._dom.offsetWidth = this._dom.offsetWidth;
+	    return this;
+	};
+	Transform.prototype.reExecute = function () {
+	    this.reStore()._reflow();
+	    return this.execute();
+	};
+	Transform.prototype.execute = function () {
+	    if (this._index < this._steps.length) {
+	        var firstStep = this._steps[this._index];
+	        if ('execute' in firstStep) {
+	            firstStep['execute']();
+	        }
+	    }
+	    return this;
+	};
+	Transform.prototype._transform = function (config, apiMap) {
+	    var me = this;
+	    var it = Transform;
+	    var $transform = me._cssMap('transform');
+	    var val = [];
+	    config = this._fillTransformParams(config, apiMap, val);
+	    var status = {};
+	    status['transform'] = false;
+	    config.transitionProperty = $transform;
+	    this._step(it._parseTransition(config), function () {
+	        // 应当计算上一个动画结束时的transform，所以需要用回调
+	        var css = {};
+	        var transform = it._theCore.css['transform'];
+	        css[transform] = me._combineTransform(val, transform);
+	        return css;
+	    }, status);
+	    return this;
+	};
+	Transform._clone = function (obj, apiMap) {
+	    var me = Transform;
+	    var clone;
+	    if (obj instanceof Array) {
+	        clone = [];
+	        for (var i = 0; i < obj.length; i++) {
+	            clone.push(me._clone(obj[i], apiMap));
+	        }
+	    }
+	    else if (typeof obj === 'object') {
+	        clone = {};
+	        for (var key in obj) {
+	            if (key in me._keyMap) {
+	                clone[me._keyMap[key]] = me._clone(obj[key], apiMap);
+	            }
+	            else if (key in apiMap) {
+	                if (!('api' in clone)) {
+	                    clone['api'] = {};
+	                }
+	                clone['api'][apiMap[key]] = me._clone(obj[key], apiMap);
+	            }
+	        }
+	    }
+	    else {
+	        clone = obj;
+	    }
+	    return clone;
+	};
+	Transform.prototype._fillTransformParams = function (config, apiMap, val) {
+	    var it = Transform;
+	    var transform = it._theCore.css['transform'];
+	    var transition = it._theCore.css['transition'];
+	    config = it._clone(config, apiMap);
+	    /* jshint ignore:start */
+	    var api = config.api;
+	    if (api) {
+	        for (var key in api) {
+	            val.push(key + '(' + api[key] + ')');
+	        }
+	    }
+	    /* jshint ignore:end */
+	    if (!(transform in this._store)) {
+	        this._store[transform] = Util.css(this._dom, transform);
+	    }
+	    if (!(transition in this._store)) {
+	        this._store[transition] = Util.css(this._dom, transition);
+	    }
+	    return config;
+	};
+	Transform.prototype.scaleBy = function (config) {
+	    var apiMap = Transform._apiMap['scaleBy'];
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype._cssMap = function (propertyName) {
+	    var prefix = Transform['_prefix'];
+	    var tmp;
+	    switch (propertyName) {
+	        case 'transform':
+	            if (prefix === '-webkit-') {
+	                tmp =  prefix + propertyName;
+	            }
+	            else {
+	                tmp = propertyName;
+	            }
+	            break;
+	        case 'backgroundColor': tmp = 'background-color';break;
+	        case 'borderRadius': tmp = 'border-radius';break;
+	        case 'fontSize': tmp = 'font-size';break;
+	        case 'color':
+	        case 'top':
+	        case 'bottom':
+	        case 'left':
+	        case 'width':
+	        case 'height':
+	        case 'opacity':
+	        case 'right': tmp = propertyName;break;
+	        default: throw new Error(propertyName + ' not supported!');
+	    }
+	    return tmp;
+	};
+	Transform._apiMap = {
+	    'changeTo': {
+	        'c': 'color',
+	        'bc': 'backgroundColor',
+	        'fs': 'fontSize',
+	        'br': 'borderRadius',
+	        'o': 'opacity',
+	        'l': 'left',
+	        'r': 'right',
+	        't': 'top',
+	        'b': 'bottom',
+	        'w': 'width',
+	        'h': 'height'
+	    },
+	    'moveTo': {
+	        't': 'top', 'l': 'left', 'b': 'bottom', 'r': 'right'
+	    },
+	    'moveBy': {
+	        'x': 'translateX', 'y': 'translateY', 'z': 'translateZ', '2d': 'translate', '3d': 'translate3d'
+	    },
+	    'scaleBy': {
+	        'x': 'scaleX', 'y': 'scaleY', 'z': 'scaleZ', '2d': 'scale', '3d': 'scale3d'
+	    },
+	    'rotateBy': {
+	        'x': 'rotateX', 'y': 'rotateY', 'z': 'rotateZ', '3d': 'rotate3d', '2d': 'rotate'
+	    },
+	    'skewBy': {
+	        // skew没有3d
+	        'x': 'skewX', 'y': 'skewY', '2d': 'skew'
+	    },
+	    'perspective': {
+	        'p': 'perspective'
+	    }
+	};
+	
+	Transform.prototype._css = function (configs, apiMap) {
+	    var transition = [];
+	    var css = {};
+	    var status = {};
+	    this._fillCSSParams(configs, apiMap, transition, css, status);
+	    this._step(transition.join(','), function () {
+	        return css;
+	    }, status);
+	    return this;
+	};
+	Transform.prototype.perspectiveTo = function (config) {
+	    var apiMap = Transform._apiMap['perspective'];
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype.skewBy = function (config) {
+	    var apiMap = Transform._apiMap['skewBy'];
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype.rotateBy = function (config) {
+	    var apiMap = Transform._apiMap['rotateBy'];
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform._extend = function (src, dest) {
+	    for (var key in dest) {
+	        if (!(key in src)) {
+	            src[key] = dest[key];
+	        }
+	    }
+	};
+	Transform.prototype.mix = function (config) {
+	    var it = Transform;
+	    var keyMap = it._keyMap;
+	    var mould = {};
+	    var part;
+	    for (var key in keyMap) {
+	        if (key in config) {
+	            mould[key] = config[key];
+	            config[keyMap[key]] = config[key];
+	        }
+	    }
+	    var transition = [];
+	    var css = {};
+	    var status = {};
+	    var apiMap = it._apiMap;
+	    var _apiMap;
+	    var val = [];
+	    var transformCount = 0;
+	    for (var key in apiMap) {
+	        if (key in config) {
+	            part = config[key];
+	            _apiMap = apiMap[key];
+	            if (key === 'moveTo' || key === 'changeTo') {
+	                if (!(part instanceof Array)) {
+	                    part = [part];
+	                }
+	
+	                for (var i = 0, l = part.length; i < l; i++) {
+	                    it._extend(part[i], mould);
+	                }
+	                this._fillCSSParams(part, _apiMap, transition, css, status);
+	            }
+	            else {
+	                this._fillTransformParams(part, _apiMap, val);
+	                transformCount++;
+	            }
+	        }
+	    }
+	
+	    var me;
+	    if (transformCount > 0) {
+	        me = this;
+	        var $transform = me._cssMap('transform');
+	        status['transform'] = false;
+	        config.transitionProperty = $transform;
+	        transition.push(it._parseTransition(config));
+	    }
+	
+	    this._step(transition.join(','), function () {
+	        if (transformCount > 0) {
+	            var transform = it._theCore.css['transform'];
+	            css[transform] = me._combineTransform(val, transform);
+	        }
+	        return css;
+	    }, status);
+	    return this;
+	};
+	Transform.prototype.moveTo = function (configs) {
+	    var apiMap = Transform._apiMap['moveTo'];
+	    this._css(configs, apiMap);
+	    return this;
+	};
+	Transform.prototype.changeTo = function (configs) {
+	    var apiMap = Transform._apiMap['changeTo'];
+	    this._css(configs, apiMap);
+	    return this;
+	};
+	Transform.prototype._addStatus = function (status, key) {
+	    var keyT = this._cssMap(key);
+	    if (keyT === 'border-radius') {
+	        status['border-bottom-left-radius'] = false;
+	        status['border-top-left-radius'] = false;
+	        status['border-bottom-right-radius'] = false;
+	        status['border-top-right-radius'] = false;
+	    }
+	    else {
+	        status[keyT] = false;
+	    }
+	    return keyT;
+	};
+	/* jshint ignore:start */
+	Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css, status) {
+	    var it = Transform;
+	    var config;
+	    var api;
+	    var keyT;
+	    var _transition = it._theCore.css['transition'];
+	    configs = it._clone(configs, apiMap);
+	    if (!(configs instanceof Array)) {
+	        configs = [configs];
+	    }
+	    for (var m = 0, n = configs.length; m < n; m++) {
+	        config = configs[m];
+	        api = config.api || {};
+	        for (var key in api) {
+	            keyT = this._addStatus(status, key);
+	            css[key] = api[key];
+	            if (!(key in this._store)) {
+	                this._store[key] = Util.css(this._dom, key);
+	            }
+	            if (!(_transition in this._store)) {
+	                this._store[_transition] = Util.css(this._dom, _transition);
+	            }
+	            config.transitionProperty = keyT;
+	            transition.push(it._parseTransition(config));
+	        }
+	    }
+	};
+	/* jshint ignore:end */
+	Transform._parseTransition = function (transition) {
+	    function regReplace($0, $1) {
+	        if ($1 in transition) {
+	            return transition[$1];
+	        }
+	        else {
+	            var value;
+	            switch ($1) {
+	                case 'transitionDuration':
+	                    value = '1s';
+	                    break;
+	                case 'transitionTimingFunction':
+	                    value = 'linear';
+	                    break;
+	                case 'transitionDelay':
+	                    value = '0s';
+	                    break;
+	            }
+	            return value;
+	        }
+	    }
+	    return Transform._transitionTpl.replace(/<(.*?)>/g, regReplace);
+	};
+	/**
+	 * 当前动画状态
+	 */
+	Transform._status = {
+	    'ED': 0,
+	    'ING': 1
+	};
+	
+	/**
+	 * 当前浏览器内核的兼容映射
+	 */
+	Transform._theCore = null;
+	Transform._prefix = '';
+	
+	/**
+	 * 判断当前浏览器内核
+	 */
+	Transform.getCore = function () {
+	    var me = Transform;
+	    if (!me._theCore) {
+	        me['_prefix'] = Compatible.instance().prefix;
+	        me._transitionTpl = '<transitionProperty> <transitionDuration> <transitionTimingFunction> <transitionDelay>';
+	        var p = me['_prefix'].replace(/-/g, '');
+	        me._theCore = {
+	            event: (function () {
+	                if (p === 'moz') {
+	                    return {
+	                        'transitionEnd': 'transitionend',
+	                        'transitionStart': 'transitionstart'
+	                    };
+	                }
+	                else {
+	                    return {
+	                        'transitionEnd': p + 'TransitionEnd',
+	                        'transitionStart': p + 'TransitionStart'
+	                    };
+	                }
+	            })(),
+	            css: (function () {
+	                var fixer;
+	                if (p === 'moz') {
+	                    fixer = function (key) {
+	                        return key;
+	                    };
+	                }
+	                else {
+	                    fixer = function (key) {
+	                        return p + key[0].toUpperCase() + key.substr(1);
+	                    };
+	                }
+	                return {
+	                    'transition': fixer('transition'),
+	                    'transform': fixer('transform'),
+	                    'perspective': fixer('perspective'),
+	                    'transformStyle': fixer('transformStyle'),
+	                    'transformOrigin': fixer('transformOrigin'),
+	                    'backfaceVisibility': fixer('backfaceVisibility')
+	                };
+	            })()
+	        };
+	    }
+	    return me._theCore;
+	};
+	Transform.getCore();
+	
+	
+	/**
+	 * @param {Object} css css配置的json对象
+	 */
+	/* jshint ignore:start */
+	Transform.prototype.compatible = function (css) {
+	    var core = Transform.getCore();
+	    var wrapCss = {};
+	    for (var key in css) {
+	        wrapCss[core.css[key]] = css[key];
+	    }
+	    return wrapCss;
+	};
+	/* jshint ignore:end */
+	
+	/**
+	 * @param {string} name 动画事件名称
+	 * @param {Function} callback 事件回调函数
+	 */
+	Transform.prototype._on = function (name, callback) {
+	    Util.on(this._dom, name, callback);
+	    return this;
+	};
+	
+	/**
+	 * @param {string} name 动画事件名称
+	 * @param {Function} callback 事件回调函数
+	 */
+	Transform.prototype._off = function (name, callback) {
+	    Util.off(this._dom, name, callback);
+	    return this;
+	};
+	
+	Transform.prototype._unListen = function () {
+	    var me = this;
+	    var it = Transform;
+	    if (me._monitorStart) {
+	        this._off(it._theCore.event['transitionStart'], me._monitorStart);
+	    }
+	    if (me._monitorEnd) {
+	        this._off(it._theCore.event['transitionEnd'], me._monitorEnd);
+	    }
+	};
+	/**
+	 * @private
+	 * 动画事件监听逻辑
+	 */
+	Transform.prototype._listen = function () {
+	    var me = this;
+	    function wrap(eventName) {
+	        return function (evt) {
+	            me.emit(eventName, evt);
+	        };
+	    }
+	    // 只有在绑定start end iteration监听时才真正的在dom元素上监听
+	    this.on(Event.on, function (on, eventName) {
+	        if (eventName  === Event.start) {
+	            if (!me._monitorStart) {
+	                me._monitorStart = wrap(eventName);
+	                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorStart);
+	            }
+	        }
+	        else if (eventName  === Event.end) {
+	            if (!me._monitorEnd) {
+	                me._monitorEnd = wrap(eventName);
+	                Util.on(me._dom, me._compatible.parseEvent(eventName), me._monitorEnd);
+	            }
+	        }
+	    });
+	    this.on(Event.end, function (end, evt) {
+	        if (me._index < me._steps.length) {
+	            var step = me._steps[me._index];
+	            var propertyName = evt.propertyName.replace(Transform.prefix, '');
+	            if (propertyName in step.status) {
+	                step.status[propertyName] = true;
+	                var isEnd = true;
+	                var status = step.status;
+	                for (var key in status) {
+	                    if (!status[key]) {
+	                        isEnd = false;
+	                        break;
+	                    }
+	                }
+	                if (isEnd) {
+	                    me._status = it._status.ED;
+	                    me.emit(Event.end, step);
+	                    me._index++;
+	                    if (step['next']) {
+	                        step['next']();
+	                    }
+	                    else {
+	                        me.emit(Event.done, step);
+	                    }
+	                }
+	            }
+	        }
+	        Util.stopPropagation(evt);
+	    });
+	    this.on(Event.start, function (end, evt) {
+	        me._status = Transform._status.ING;
+	    });
+	};
+	
+	
+	Transform.prototype.perspective = function (perspective) {
+	    var it = Transform;
+	    var parentNode = this._dom.parentNode;
+	    if (perspective === false) {
+	        Util.css(parentNode, it._theCore.css['transformStyle'], 'flat');
+	    }
+	    else {
+	        Util.css(parentNode, it._theCore.css['transformStyle'], 'preserve-3d');
+	        Util.css(parentNode, it._theCore.css['perspective'], perspective);
+	    }
+	    return this;
+	};
+	return Transform;});define('Util', function () {
 	var Util = {
 	    forIn: function (obj, handler, scope) {
 	        for (var key in obj) {
