@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -117,7 +118,7 @@
                         notify: 'rotateZ()函数让元素顺时针或逆时针旋转'
                     }, {
                         meta: {'rotate':'120deg'},
-                        notify: '效果和rotate()效果等同,不是在2D平面的旋转'
+                        notify: '与rotateZ()效果等同,不是在2D平面的旋转'
                     }, {
                         meta: {'rotate3d':'1, 1, 1, 120deg'}
                     }]
@@ -202,10 +203,10 @@
                         target: 'ec-audioWave',
                         meta: {
                             'background':'linear-gradient(#9b59be,#9b59b6) 0 50%,' +
-                        'linear-gradient(#3498db,#3498db) 0.625em 50%,' +
-                        'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
-                        'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
-                        'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%',
+                            'linear-gradient(#3498db,#3498db) 0.625em 50%,' +
+                            'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
+                            'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
+                            'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%',
                             'background-repeat': 'no-repeat',
                             'background-size':'0.5em 0.25em, 0.5em 2em, 0.5em 0.25em, 0.5em 0.25em, 0.5em 0.25em',
                             'rotateX':'-90deg'
@@ -216,15 +217,15 @@
                         meta: {
                             'border-radius': '50%',
                             'box-shadow': '1.375em 0em #debf23, ' +
-                        '1.375em 0em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
-                        '2.75em 0.29721em #b8b64c, ' +
-                        '2.75em -0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
-                        '4.125em 0.18368em #92ae75, ' +
-                        '4.125em -0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
-                        '5.5em -0.18368em #6ca59d, ' +
-                        '5.5em 0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
-                        '6.875em -0.29721em #469cc6, ' +
-                        '6.875em 0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52)'
+                            '1.375em 0em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '2.75em 0.29721em #b8b64c, ' +
+                            '2.75em -0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '4.125em 0.18368em #92ae75, ' +
+                            '4.125em -0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '5.5em -0.18368em #6ca59d, ' +
+                            '5.5em 0.18368em 0.625em -0.3125em rgba(0, 0, 0, 0.52), ' +
+                            '6.875em -0.29721em #469cc6, ' +
+                            '6.875em 0.29721em 0.625em -0.3125em rgba(0, 0, 0, 0.52)'
                         }
                     }
                     ]
@@ -277,17 +278,26 @@
     </script>
 </div>
 <script>
+    var _scale, _top;
+    if ($(window).height() > 700) {
+        _scale = '1.3, 1.3';
+        _top = '5%';
+    }
+    else {
+        _scale = '1, 1';
+        _top = '-100px';
+    }
     Keyframe.defineClass('scene', {
         'transform-style': 'preserve-3d',
-        'scale': '1.3, 1.3',
+        'scale': _scale,
         'perspective': '400px',
         'width': '700px',
         'height': '600px',
         //'border': '1px dotted black',
         'perspective-origin': '70% 55%',
         'position': 'fixed',
-        'right': '-150px',
-        'top': '10%',
+        'right': '-230px',
+        'top': _top,
         'transition': 'all 2s'
     });
     Keyframe.defineClass('p3d', {
@@ -356,8 +366,8 @@
         'linear-gradient(#9b59b6, #9b59b6) 1.25em 50%,' +
         'linear-gradient(#9b59b6, #9b59b6) 1.875em 50%,' +
         'linear-gradient(#9b59b6,#9b59b6) 2.5em 50%',
-                'background-repeat': 'no-repeat',
-                'background-size': '0.5em 0.25em, ' +
+        'background-repeat': 'no-repeat',
+        'background-size': '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
         '0.5em 0.25em, ' +
@@ -376,27 +386,27 @@
         'left': '0',
         'background-color': 'yellow',
         'top': '50%',
-        'translateZ': '320px',
+        'translateZ': '340px',
         'rotateX': '90deg',
+        'translateX': '-30px',
         'font-size': '40px'
     });
     Keyframe.compile();
 </script>
 <div class="scene">
-<div class="p3d space">
-    <div class="zuobiao space">
-        <div class="z wall space"><em>Z</em></div>
-        <div class="x wall space"><em class="z90">X</em></div>
-        <div class="y wall space"><em class="x180">Y</em></div>
+    <div class="p3d space">
+        <div class="zuobiao space">
+            <div class="z wall space"><em>Z</em></div>
+            <div class="x wall space"><em class="z90">X</em></div>
+            <div class="y wall space"><em class="x180">Y</em></div>
+        </div>
+        <div class="demo space">
+            <div id="before" class="target space"></div>
+            <div id="after" class="target space"><em>炫动</em></div>
+        </div>
+        <div class="ec-audioWave space"></div>
+        <div class="ec-snake space"></div>
     </div>
-    <div class="demo space">
-        <div id="before" class="target space"></div>
-        <div id="after" class="target space"><em>炫动</em></div>
-    </div>
-    <div class="ec-audioWave space"></div>
-    <div class="ec-snake space"></div>
-</div>
-
 </div>
 </body>
 </html>

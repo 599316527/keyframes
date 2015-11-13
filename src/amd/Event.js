@@ -1,8 +1,4 @@
 define(function () {
-	/**
-	 * @file event.js ~ 2015/08/13 11:47:13
-	 * @author tingkl(dingguoliang01@baidu.com)
-	 **/
 	var Event = {
 	    style: 'Style',
 	    css: 'Css',

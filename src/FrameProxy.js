@@ -2,8 +2,8 @@
  * @file frameproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker Util Compiler*/
+/* define FrameProxy */
 function FrameProxy(frame, metaData, clazz) {
     this._clazz = clazz;
     return this._define(frame, metaData);

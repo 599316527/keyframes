@@ -1,9 +1,9 @@
 /**
- * @file compiler.js ~ 2015/08/13 11:47:13
+ * @file Compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
-/* global Checker Compatible Util Event EventEmitter*/
+/* global Checker KFCompatible Util Event EventEmitter*/
+/* define Compiler */
 
 /**
  * 编译类，根据metaData生成class或者keyframes
@@ -19,7 +19,7 @@ function Compiler() {
     this._classMap = {};
     this._keyframeMap = {};
     this._keyframeStore = {};
-    var compatible = Compatible.instance();
+    var compatible = KFCompatible.instance();
     this._compatible = compatible;
     this._classId = function (className) {
         return 'class(' + className + ')';

@@ -1,9 +1,9 @@
 /**
- * @file classproxy.js ~ 2015/08/13 11:47:13
+ * @file Classproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker Compiler */
+/* define ClassProxy */
 
 /**
  * 样式代理,提供简便调用

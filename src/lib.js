@@ -2,7 +2,7 @@
  * @file util.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
+/* define Util */
 var Util = {
     forIn: function (obj, handler, scope) {
         for (var key in obj) {
@@ -188,6 +188,7 @@ var Util = {
  * @file event.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
+/* define Event */
 var Event = {
     style: 'Style',
     css: 'Css',
@@ -214,7 +215,7 @@ var Event = {
  **/
 
 /* global Checker Event Util*/
-
+/* define EventEmitter */
 function EventEmitter() {
     this._triggers = {};
 }
@@ -383,6 +384,7 @@ EventEmitter.prototype.emit = function (eventName) {
  **/
 
 /* global Util */
+/* define Checker */
 
 /**
  * 参数类型匹配
@@ -429,7 +431,7 @@ Checker.array = new Checker(Array);
  **/
 
 /* global Checker */
-
+/* define Pitch */
 /**
  * css属性转cssText过滤器
  *
@@ -470,16 +472,77 @@ Pitch.prototype.do = function (key, value, opt) {
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Pitch Util Checker Event EventEmitter */
+/* global Util Event */
+/* define Compatible */
+var Compatible = {
+    prefix: (function () {
+        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
+        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
+        var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
+        var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
+            || (userAgent.indexOf('Trident') > -1); // 判断是否IE
+        var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
+        var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
+        var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
+        var isWebKit = userAgent.indexOf('WebKit') > -1;
+        if (isIE) {
+            return '-ms-';
+        }
+        return (isWebKit || isSafari || isChrome || isMaxthon) ?
+            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
+    })(),
+    requestAnimationFrame: (function () {
+        window.requestAnimFrame = (function () {
+            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
+                || function (callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+        })();
+        return function (fn) {
+            // 原生requestAnimationFrame执行的scope必须为window
+            window.requestAnimationFrame(fn);
+        };
+    })(),
+    css: function (dom, key, css, me) {
+        if (css || css === '') {
+            this.requestAnimationFrame(function () {
+                Util.css(dom, key, css);
+                me.emit(Event.css, dom, key, css);
+            });
+        }
+        else {
+            return Util.css(dom, key);
+        }
+    },
+    parseEvent: function (lower, upper) {
+        // animationstart webkitAnimationStart
+        var p = this.prefix.replace(/-/g, '');
+        if (p === 'moz') {
+            return function (key) {
+                return lower + key.toLowerCase();
+            }
+        }
+        return function (key) {
+            return p + upper + key;
+        };
+    }
+};
 
+/**
+ * @file compatible.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+
+/* global Pitch Util Checker Event EventEmitter Compatible*/
+/* define KFCompatible */
 /**
  *  浏览器兼容处理
  *
  * @class
  * @extend EventEmitter
  */
-function Compatible() {
-    Compatible.superClass.call(this);
+function KFCompatible() {
+    KFCompatible.superClass.call(this);
     var pitch = new Pitch();
     var me = this;
     pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
@@ -548,24 +611,9 @@ function Compatible() {
         }
     );
 }
-Util.inherit(Compatible, EventEmitter);
-Compatible.prototype.prefix = (function () {
-    var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
-    var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
-    var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-    var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
-        || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-    var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
-    var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
-    var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
-    var isWebKit = userAgent.indexOf('WebKit') > -1;
-    if (isIE) {
-        return '-ms-';
-    }
-    return (isWebKit || isSafari || isChrome || isMaxthon) ?
-        '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
-})();
-Compatible._keyMap = {
+Util.inherit(KFCompatible, EventEmitter);
+KFCompatible.prototype.prefix = Compatible.prefix;
+KFCompatible._keyMap = {
     'animation': ['animation'],
     'name': ['animationName'],
     'duration': ['animationDuration', '1s'],
@@ -576,7 +624,7 @@ Compatible._keyMap = {
     'state': ['animationPlayState', 'running'],
     'mode': ['animationFillMode', 'forwards']
 };
-Compatible.prototype.parseAnimation = function (animations) {
+KFCompatible.prototype.parseAnimation = function (animations) {
     if (!Checker.array.check(arguments)) {
         animations = [animations];
     }
@@ -587,7 +635,7 @@ Compatible.prototype.parseAnimation = function (animations) {
         if ($1 in css) {
             return css[$1];
         }
-        return Compatible._keyMap[$1][1];
+        return KFCompatible._keyMap[$1][1];
     }
     Util.each(animations, function (animation) {
         css = animation;
@@ -595,7 +643,7 @@ Compatible.prototype.parseAnimation = function (animations) {
     });
     return csses.join(',');
 };
-Compatible.prototype.animationTpl = function () {
+KFCompatible.prototype.animationTpl = function () {
     if (!this._animationTpl) {
         if (this.prefix === '-moz-') {
             this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
@@ -608,57 +656,48 @@ Compatible.prototype.animationTpl = function () {
     }
     return this._animationTpl;
 };
-Compatible.prototype.regExp = function (middle) {
+KFCompatible.prototype.regExp = function (middle) {
     return new RegExp(this._closeReg.start + middle + this._closeReg.end);
 };
-Compatible.prototype.keyframe = function (keyframe) {
+KFCompatible.prototype.keyframe = function (keyframe) {
     return '@' + this.prefix + 'keyframes ' + keyframe;
 };
-Compatible.prototype.percent = function (percent) {
+KFCompatible.prototype.percent = function (percent) {
     percent = (percent + '').trim();
     var percents = percent.split(/\s+/);
     return percents.join('%, ') + '%';
 };
-Compatible.prototype.patchCombine = function (key, value) {
+KFCompatible.prototype.patchCombine = function (key, value) {
     return this._combine.do(key + ' ', value);
 };
-Compatible.prototype.patch = function (key, value, opt) {
+KFCompatible.prototype.patch = function (key, value, opt) {
     return this._pitch.do(key + ' ', value, opt);
 };
-Compatible.instance = function () {
-    if (!Compatible._compatible) {
-        Compatible._compatible = new Compatible();
+KFCompatible.instance = function () {
+    if (!KFCompatible._compatible) {
+        KFCompatible._compatible = new KFCompatible();
     }
-    return Compatible._compatible;
+    return KFCompatible._compatible;
 };
-Compatible.prototype.css = function (dom, key, css) {
+KFCompatible.prototype.css = function (dom, key, css) {
     key = this.parseCSS(key);
-    var me = this;
-    if (css || css === '') {
-        this.requestAnimationFrame(function () {
-            Util.css(dom, key, css);
-            me.emit(Event.css, dom, key, css);
-        });
-    }
-    else {
-        return Util.css(dom, key);
-    }
+    return Compatible.css(dom, key, css, this);
 };
 // 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
-Compatible.prototype.parseCSS = function (key) {
+KFCompatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if (p === 'moz') {
-        Compatible.prototype.parseCSS = function (key) {
-            if (key in Compatible._keyMap) {
-                return Compatible._keyMap[key][0];
+        KFCompatible.prototype.parseCSS = function (key) {
+            if (key in KFCompatible._keyMap) {
+                return KFCompatible._keyMap[key][0];
             }
             return key;
         };
     }
     else {
-        Compatible.prototype.parseCSS = function (key) {
-            if (key in Compatible._keyMap) {
-                key = Compatible._keyMap[key][0];
+        KFCompatible.prototype.parseCSS = function (key) {
+            if (key in KFCompatible._keyMap) {
+                key = KFCompatible._keyMap[key][0];
                 return p + key[0].toUpperCase() + key.substr(1);
             }
             return key;
@@ -666,39 +705,15 @@ Compatible.prototype.parseCSS = function (key) {
     }
     return this.parseCSS(key);
 };
-Compatible.prototype.parseEvent = function (key) {
-    var p = this.prefix.replace(/-/g, '');
-    if (p === 'moz') {
-        Compatible.prototype.parseEvent = function (key) {
-            return 'animation' + key.toLowerCase();
-        };
-    }
-    else {
-        Compatible.prototype.parseEvent = function (key) {
-            return p + 'Animation' + key;
-        };
-    }
-    return this.parseEvent(key);
-};
-Compatible.prototype.requestAnimationFrame = (function () {
-    window.requestAnimFrame = (function () {
-        return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
-            || function (callback) {
-                window.setTimeout(callback, 1000 / 60);
-            };
-    })();
-    return function (fn) {
-        window.requestAnimationFrame(fn);
-    };
-})();
+KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
 
 /**
  * @file compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Checker Compatible Util Event EventEmitter*/
-
+/* global Checker KFCompatible Util Event EventEmitter*/
+/* define Compiler */
 /**
  * 编译类，根据metaData生成class或者keyframes
  *
@@ -713,7 +728,7 @@ function Compiler() {
     this._classMap = {};
     this._keyframeMap = {};
     this._keyframeStore = {};
-    var compatible = Compatible.instance();
+    var compatible = KFCompatible.instance();
     this._compatible = compatible;
     this._classId = function (className) {
         return 'class(' + className + ')';
@@ -853,7 +868,7 @@ Compiler.instance = function () {
  **/
 
 /* global Checker Compiler */
-
+/* define ClassProxy */
 /**
  * 样式代理,提供简便调用
  *
@@ -916,6 +931,7 @@ ClassProxy.prototype.rewrite = function (metaData, pseudo) {
  **/
 
 /* global Checker Util Compiler*/
+/* define FrameProxy */
 function FrameProxy(frame, metaData, clazz) {
     this._clazz = clazz;
     return this._define(frame, metaData);
@@ -973,6 +989,7 @@ FrameProxy.prototype.combine = function (frameProxy) {
  **/
 
 /* global Util Event EventEmitter*/
+/* define Group */
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;
@@ -1010,8 +1027,8 @@ Group.prototype.clear = function () {
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 
-/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible*/
-
+/* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible KFCompatible*/
+/* define Keyframe */
 /**
  * css属性转cssText过滤器
  *
@@ -1023,8 +1040,9 @@ Group.prototype.clear = function () {
 function Keyframe(dom, animations, cf) {
     Keyframe.superClass.call(this);
     this._compiler = Compiler.instance();
-    this._compatible = Compatible.instance();
-    this._init(dom);
+    this._compatible = KFCompatible.instance();
+    this._dom = dom;
+    this._animationStatus = {};
     var me = this;
     animations = Util.extend(animations, cf);
     if (!animations) {
@@ -1042,6 +1060,13 @@ function Keyframe(dom, animations, cf) {
             this._animations = animations;
         }
     }
+    this._listen();
+    return this;
+}
+Util.inherit(Keyframe, EventEmitter);
+
+Keyframe.prototype._listen = function () {
+    var me = this;
     function wrap(eventName) {
         return function (evt) {
             me.emit(eventName, evt);
@@ -1100,12 +1125,6 @@ function Keyframe(dom, animations, cf) {
             }
         }
     });
-    return this;
-}
-Util.inherit(Keyframe, EventEmitter);
-Keyframe.prototype._init = function (dom) {
-    this._dom = dom;
-    this._animationStatus = {};
 };
 Keyframe.prototype.start = function () {
     var cpt = this._compatible;
@@ -1153,7 +1172,7 @@ Keyframe.prototype._filter = function () {
 Keyframe.prototype.reflow = function () {
     // -> triggering reflow /* The actual magic */
     var dom = this._dom;
-    this._compatible.requestAnimationFrame(function () {
+    Compatible.requestAnimationFrame(function () {
         dom.offsetWidth = dom.offsetWidth;
     });
     return this;

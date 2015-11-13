@@ -1,9 +1,9 @@
 /**
- * @file checker.js ~ 2015/08/13 11:47:13
+ * @file Checker.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Util */
+/* define Checker */
 
 /**
  * 参数类型匹配

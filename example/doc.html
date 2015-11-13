@@ -10,32 +10,30 @@
     <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="../lib/require.js"></script>
+    <script src="../lib/cssbeautify.js"></script>
     <style>
         html,
         body {
             height: 100%;
         }
-
         .container {
             width: 96%;
             margin: auto;
             height: 100%;
         }
-
         #jsonEditor {
             width: 49%;
             height: 100%;
             font-size: 16px;
             float: left;
         }
-
         #cssEditor {
             width: 49%;
             font-size: 16px;
             height: 100%;
             float: right;
         }
-
         button {
             float: left;
             width: 40px;
@@ -44,7 +42,6 @@
             border-radius: 5px;
             font-size: 25px;
         }
-
         iframe {
             float: right;
             width: 92%;
@@ -52,7 +49,6 @@
             height: 400px;
             border-radius: 5px;
         }
-
         pre {
             margin: 20px 0;
         }
@@ -71,83 +67,9 @@
 <div class="container">
     <button>c<br/>o<br/>m<br/>p<br/>i<br/>l<br/>e</button>
     <iframe id="env" src="env.html"></iframe>
-<pre id="jsonEditor">
-{
-   "frame1": {
-        "0.6": {
-            "translateY": "0px"
-        },
-        "1.2": {
-            "translateY": "55px",
-            "opacity": 1
-        },
-        "1.8": {
-            "translateY": "55px",
-            "opacity" : 0
-        }
-    },
-   "frame2": {
-       "0": {
-           "scale": 0.2
-       },
-       "1.18": {
-           "opacity": 0
-       },
-       "1.2": {
-           "opacity": 1,
-           "scale": 0.2
-       },
-       "2.1": {
-           "opacity": 0,
-           "scale": 1
-       }
-   },
-   "frame3": {
-       "2.1": {
-           "opacity": 0
-       },
-       "2.3": {
-           "opacity": 0.1
-       },
-       "2.9": {
-           "opacity": 0.5
-       },
-       "3.1": {
-           "opacity": 1
-       }
-   },
-   "frame4@ease-in-out#infinite": {
-       "0": {
-           "opacity": 0
-       },
-       "3.1": {
-           "opacity": 0
-       },
-       "3.12": {
-           "opacity": 1,
-           "translateX":"0px",
-           "rotateZ":"0deg"
-       },
-       "4.32": {
-           "translateX": "-60px",
-           "opacity": 1,
-           "rotateZ":"360deg"
-       }
-   },
-   "frame5": {
-       "3.7": {
-           "opacity": 0
-       },
-       "3.9": {
-           "opacity": 1
-       }
-   }
-}
-</pre>
+    <pre id="jsonEditor"></pre>
     <pre id="cssEditor"></pre>
 </div>
-<script src="../lib/require.js"></script>
-<script src="../lib/cssbeautify.js"></script>
 <script>
     var envWin = document.getElementById('env').contentWindow;
     require.config({paths: {ace: '../ace', ani:'../dist/amd'}});
@@ -157,9 +79,81 @@
             var code = jsonEditor.getValue();
             envWin.postMessage(code, '*');
         });
+        var defaultData =     {
+            'frame1': {
+                '0.6': {
+                    'translateY': '0px'
+                },
+                '1.2': {
+                    'translateY': '55px',
+                    'opacity': 1
+                },
+                '1.8': {
+                    'translateY': '55px',
+                    'opacity' : 0
+                }
+            },
+            'frame2': {
+                '0': {
+                    'scale': 0.2
+                },
+                '1.18': {
+                    'opacity': 0
+                },
+                '1.2': {
+                    'opacity': 1,
+                    'scale': 0.2
+                },
+                '2.1': {
+                    'opacity': 0,
+                    'scale': 1
+                }
+            },
+            'frame3': {
+                '2.1': {
+                    'opacity': 0
+                },
+                '2.3': {
+                    'opacity': 0.1
+                },
+                '2.9': {
+                    'opacity': 0.5
+                },
+                '3.1': {
+                    'opacity': 1
+                }
+            },
+            'frame4@ease-in-out#infinite': {
+                '0': {
+                    'opacity': 0
+                },
+                '3.1': {
+                    'opacity': 0
+                },
+                '3.12': {
+                    'opacity': 1,
+                    'translateX':'0px',
+                    'rotateZ':'0deg'
+                },
+                '4.32': {
+                    'translateX': '-60px',
+                    'opacity': 1,
+                    'rotateZ':'360deg'
+                }
+            },
+            'frame5': {
+                '3.7': {
+                    'opacity': 0
+                },
+                '3.9': {
+                    'opacity': 1
+                }
+            }
+        };
         var jsonEditor = ACE.edit('jsonEditor');
         jsonEditor.session.setMode('ace/mode/json');
         jsonEditor.setTheme('ace/theme/monokai');
+        jsonEditor.setValue(JSON.stringify(defaultData, false, 4));
         var cssEditor = ACE.edit('cssEditor');
         cssEditor.session.setMode('ace/mode/css');
         cssEditor.setTheme('ace/theme/monokai');
