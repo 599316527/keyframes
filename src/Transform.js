@@ -372,8 +372,24 @@ Transform.prototype.mix = function (config) {
 };
 Transform.prototype.moveTo = function (configs) {
     var apiMap = Transform._apiMap.moveTo;
+    this._moveToClear(configs, apiMap);
     this._css(configs, apiMap);
     return this;
+};
+Transform.prototype._moveToClear = function (configs, apiMap) {
+    if (!(configs instanceof Array)) {
+        configs = [configs];
+    }
+    Util.each(configs, function (config) {
+        var patch = {};
+        Util.forKey(apiMap, function (key) {
+            if (!(key in config)) {
+                patch[key] = null;
+            }
+        });
+        console.log(patch);
+        Util.extend(config, patch);
+    });
 };
 Transform.prototype.changeTo = function (configs) {
     var apiMap = Transform._apiMap.changeTo;
@@ -410,6 +426,7 @@ Transform.prototype._css = function (configs, apiMap) {
         return css;
     }, status);
 };
+
 /**
  * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
  *

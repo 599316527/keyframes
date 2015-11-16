@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>API DOC</title>
+    <link rel="SHORTCUT ICON" href="http://www.baidu.com/favicon.ico">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="lib/require.js"></script>
+    <script src="lib/mustache.compiled.js"></script>
+    <script type="text/html" id="template">
+        {{#doc}}
+        <h3>{{{title}}}</h3>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>元数据</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#module}}
+            {{#list}}
+            <tr class="{{class}}" data-title="{{title}}" data-fn="{{fn}}" data-p="{{meta}}" data-target="{{target}}">
+                <th scope="row">{{@index}}</th>
+                <td>{{meta}}</td>
+                <td>{{{notify}}}</td>
+            </tr>
+            {{/list}}
+            {{/module}}
+            </tbody>
+        </table>
+        {{/doc}}
+    </script>
+    <style>
+        .api {
+            margin-left: 30px;
+            width: 950px;
+            min-width: 70%;
+        }
+        .api small {
+            margin-left: 10px;
+            margin-top: 1px;
+        }
+        .api td {
+            cursor: pointer;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        .page-header {
+            text-align: center;
+            width: 96%;
+            margin: auto;
+            border: none;
+        }
+        #target {
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            background: red;
+            border: 1px solid crimson;
+        }
+    </style>
+</head>
+<body>
+<div class="page-header">
+    <h1>Keyframes Animation API DOC<small style="margin-left: 20px;"><a target="_blank" href="example/doc.html" style="cursor: pointer;">write & compile in time</a></small></h1>
+</div>
+<div class="api">
+    <script>
+        var table = {
+            doc: [{
+                title: '1. moveBy',
+                fn: 'moveBy',
+                module: [{
+                    class: 'info',
+                    list: [{
+                        meta: {'x':'50px'}
+                    }, {
+                        meta: {'y':'50px'}
+                    }, {
+                        meta: {'z':'100px'}
+                    }, {
+                        meta: {'2d':'-50px, -50px'}
+                    }, {
+                        meta: {'3d':'50px, 50px, -150px'}
+                    }]
+                }]
+            }, {
+                title: '2. rotateBy',
+                fn: 'rotateBy',
+                module: [{
+                    class: 'success',
+                    list: [{
+                        meta: {'x':'120deg'}
+                    }, {
+                        meta: {'y':'120deg'}
+                    }, {
+                        meta: {'z':'120deg'},
+                        notify: 'rotateZ()函数让元素顺时针或逆时针旋转'
+                    }, {
+                        meta: {'x':'120deg', 'y': '120deg'},
+                        notify: '2d转换请使用x＋y组合'
+                    }, {
+                        meta: {'3d':'1, 1, 1, 120deg'}
+                    }]
+                }]
+            },{
+                title: '3. skewBy',
+                fn: 'skewBy',
+                module: [{
+                    class: 'warning',
+                    list: [{
+                        meta: {'x':'30deg'}
+                    }, {
+                        meta: {'y':'30deg'}
+                    }, {
+                        meta: {'2d':'30deg, 60deg'},
+                        notify: 'skew存在兼容性问题，建议使用skewX＋skewY组合，<br>skew没有3d转换,目前无Z轴倾斜'
+                    }]
+                }]
+            },{
+                title: '4. scaleBy',
+                fn: 'scaleBy',
+                module: [{
+                    class: 'danger',
+                    list: [{
+                        meta: {'x':'2'}
+                    }, {
+                        meta: {'y':'2'}
+                    }, {
+                        meta: {'z':'200'},
+                        notify: '从z轴看去，scaleZ没有效果，从y轴看去scaleY没有效果'
+                    }, {
+                        meta: {'2d':'2, 1.6'},
+                        notify: ''
+                    }, {
+                        meta: {'3d':'1, 1, 2'},
+                        notify: '需要配合其他变形才会有效果'
+                    }]
+                }]
+            },{
+                title: '5. moveTo',
+                fn: 'moveTo',
+                module: [{
+                    class: 'active',
+                    list: [{
+                        meta: {'t':'20px'}
+                    }, {
+                        meta: {'b':'20px'}
+                    }, {
+                        meta: {'l':'20px'},
+                        notify: '从z轴看去，scaleZ没有效果，从y轴看去scaleY没有效果'
+                    }, {
+                        meta: {'r':'20px'},
+                        notify: ''
+                    }, {
+                        meta: {'t':'40px', 'l': '40px'},
+                        notify: '需要配合其他变形才会有效果'
+                    }]
+                }]
+            }]
+        };
+        require.config({baseUrl: 'dist/amd'});
+        require(["Transform", "Event", "Util"], function (Transform, Event, Util) {
+            Util.each(table.doc, function(item) {
+                Util.each(item.module, function(item) {
+                    Util.each(item.list, function(item) {
+                       // item.css = cpl._compileContent(item.meta);
+                        item.meta = JSON.stringify(item.meta, 4).replace(/[{}]/g, '');
+                    });
+                });
+            });
+            $('.api').html(Mustache.render(document.getElementById('template').innerHTML, table));
+            var t = new Transform(document.getElementById('target'), true);
+            t.on(Event.next, function () {
+                console.log(arguments);
+            });
+            t.on(Event.over, function () {
+                console.log(arguments);
+            });
+            $('.api').delegate('tr', 'click', function() {
+                var me = $(this);
+                var fn = me.attr('data-fn');
+                var p = me.attr('data-p');
+                t[fn](JSON.parse('{' + p + '}'));
+            });
+        });
+
+    </script>
+</div>
+<div id="target"></div>
+</body>
+</html>
