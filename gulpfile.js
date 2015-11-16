@@ -67,10 +67,10 @@ gulp.task('amd', function() {
         }
     }
     var generateMap = {
-        'Keyframe': 'lib',
-        'Transform': 'transform.lib'
+        'Keyframe': 'Keyframe',
+        'Transform': 'Transform'
     };
-    function merger (denpendency, parentMoudleName) {
+    function merger (denpendency, parentMoudleName, record) {
         var result = '';
         var moduleName;
         var module;
@@ -79,9 +79,9 @@ gulp.task('amd', function() {
             for (var i = 0; i < denpendency.length; i++) {
                 moduleName = denpendency[i];
                 module = mergeMap[moduleName];
-                if (!module.loaded) {
-                    result += merger(module.dependency, moduleName) + module.content + '\r';
-                    module.loaded = true;
+                if (!record[moduleName]) {
+                    result += merger(module.dependency, moduleName, record) + module.content + '\r';
+                    record[moduleName] = true;
                     console.log(moduleName + ' loadede!!');
                 }
             }
@@ -89,17 +89,17 @@ gulp.task('amd', function() {
         return result;
     }
     for (var key in generateMap) {
-        fs.writeFileSync(path.join('src', 'amd', generateMap[key] + '.js'), merger([key], ''));
+        fs.writeFileSync(path.join('src', 'amd','lib', generateMap[key] + '.js'), merger([key], '', {}));
     }
     return true;
 });
 
 gulp.task('pack', ['concat'], function() {
-    return gulp.src(['src/*.js', 'src/*/*.js'])
+    return gulp.src(['src/*.js', 'src/*/*.js', 'src/*/*/*.js'])
         .pipe(uglify())
         .pipe(rename(function (path) {
             //path.dirname += "/ciao";
-            if (path.dirname==='amd') {
+            if (path.dirname.indexOf('amd') > -1) {
 
             }
             else {

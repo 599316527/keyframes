@@ -1,4 +1,514 @@
-define('TFCompatible', ['Util', 'Event', 'EventEmitter', 'Compatible'], function (Util, Event, EventEmitter, Compatible) {
+define('Util', function () {
+	/**
+	 * @namespace
+	 */
+	var Util = {
+	
+	    /**
+	     * JSON对象遍历函数
+	     *
+	     * @param {Object} obj 要进行遍历的对象
+	     * @param {Function} handler 遍历的处理函数
+	     * @param {?Object} scope 作用域对象
+	     * @return {boolean} 是否完全遍历完了obj对象
+	     */
+	    forIn: function (obj, handler, scope) {
+	        for (var key in obj) {
+	            if (handler.call(scope, key, obj[key]) === false) {
+	                return false;
+	            }
+	        }
+	        return true;
+	    },
+	    forKey: function (obj, handler, scope) {
+	        for (var key in obj) {
+	            if (handler.call(scope, key) === false) {
+	                return false;
+	            }
+	        }
+	        return true;
+	    },
+	
+	    /**
+	     * 重写函数
+	     *
+	     * @param {Object} init 需要重写的对象
+	     * @param {?Object} replace 从replace拿数据重写init
+	     * @return {Object} 重写后的对象
+	     */
+	    rewrite: function (init, replace) {
+	        if (!replace) {
+	            return init;
+	        }
+	        Util.forIn(replace, function (key, item) {
+	            init[key] = item;
+	        });
+	        return init;
+	    },
+	    define: function (namespace) {
+	        namespace = namespace.split('.');
+	        var domain;
+	        var module = window;
+	        while ((domain = namespace.shift())) {
+	            if (!(domain in module)) {
+	                module[domain] = {};
+	            }
+	            module = module[domain];
+	        }
+	    },
+	    // extend 只是拓展没有的属性 rewrite则是重写
+	    extend: function (src, init) {
+	        if (!src) {
+	            return init;
+	        }
+	        if (init) {
+	            Util.forIn(init, function (key, item) {
+	                if (!(key in src)) {
+	                    src[key] = item;
+	                }
+	            });
+	        }
+	        return src;
+	    },
+	    inherit: function (Child, Parent) {
+	        var Clz = new Function();
+	        Clz.prototype = Parent.prototype;
+	        Child.prototype = new Clz();
+	        Child.prototype.constructor = Child;
+	        Child.superClass = Parent;
+	    },
+	
+	    /**
+	     * 查找val在ary中的索引
+	     *
+	     * @param {(number|string)} val 要查找的值
+	     * @param {Array} ary 要查找的数组
+	     * @return {number} 查找到的索引，没找到为-1
+	     */
+	    xInA: function (val, ary) {
+	        var index = -1;
+	        Util.each(ary, function (item, i) {
+	            if (item === val) {
+	                index = i;
+	                return false;
+	            }
+	        });
+	        return index;
+	    },
+	    arg2Ary: function (arg) {
+	        return Array.prototype.slice.call(arg, 0);
+	    },
+	
+	    /**
+	     * 数组遍历函数
+	     *
+	     * @param {Array} ary 要进行遍历的数组
+	     * @param {Function} iterator 遍历的处理函数
+	     * @param {?Object} scope 作用域对象
+	     * @return {boolean} 是否完全遍历完了数组
+	     */
+	    each: function (ary, iterator, scope) {
+	        for (var i = 0, l = ary.length; i < l; i++) {
+	            if (iterator.call(scope, ary[i], i, ary) === false) {
+	                break;
+	            }
+	        }
+	        return i === ary.length;
+	    },
+	    random: {
+	        generator: [
+	            function () {
+	                return String.fromCharCode(48 + Math.round(9 * Math.random()));
+	            },
+	            function () {
+	                return String.fromCharCode(65 + Math.round(25 * Math.random()));
+	            },
+	            function () {
+	                return String.fromCharCode(97 + Math.round(25 * Math.random()));
+	            }],
+	        word: function (index) {
+	            var range;
+	            if (index === 0) {
+	                range = Math.floor(Math.random() * 2) + 1;
+	            }
+	            else {
+	                range = Math.floor(Math.random() * 3);
+	            }
+	            return Util.random.generator[range]();
+	        },
+	        name: function (length) {
+	            length = length || 6;
+	            var name = '';
+	            for (var i = 0; i < length; i++) {
+	                name += Util.random.word(i);
+	            }
+	            return name;
+	        }
+	    },
+	    addClass: function (dom, className) {
+	        if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
+	            dom.className = (dom.className + ' ' + className).trim();
+	        }
+	    },
+	    removeClass: function (dom, className) {
+	        dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
+	    },
+	    css: function (dom, attr, value) {
+	        if (typeof attr === 'string') {
+	            return Util.$css(dom, attr, value);
+	        }
+	        Util.forIn(attr, function (key, item) {
+	            Util.$css(dom, key, item);
+	        });
+	    },
+	    stopPropagation: function (event) {
+	        if (event.stopPropagation) {
+	            Util.stopPropagation = function (event) {
+	                event.stopPropagation();
+	            };
+	        }
+	        else {
+	            Util.stopPropagation = function (event) {
+	                event.cancelBubble = true;
+	            };
+	        }
+	        return Util.stopPropagation(event);
+	    },
+	    $css: function (dom, key, value) {
+	        if (typeof window.getComputedStyle !== 'undefined') { // W3C
+	            Util.$css = function (dom, key, value) {
+	                if (value !== undefined) {
+	                    dom.style[key] = value;
+	                    return value;
+	                }
+	                var tmp = window.getComputedStyle(dom, null)[key];
+	                return !tmp ? dom.style[key] : tmp;
+	            };
+	        }
+	        else if (typeof dom.currentStyle !== 'undefined') {
+	            Util.$css = function (dom, key, value) {
+	                if (value !== undefined) {
+	                    dom.style[key] = value;
+	                    return value;
+	                }
+	                var tmp = dom.currentStyle[key];
+	                return !tmp ? dom.style[key] : tmp;
+	            };
+	        }
+	        return this.$css(dom, key, value);
+	    },
+	    on: function (dom, name, fn) {
+	        if ('addEventListener' in window) {
+	            Util.on = function (dom, name, fn) {
+	                dom.addEventListener(name, fn, false);
+	            };
+	        }
+	        else if ('attachEvent' in window) {
+	            Util.on = function (dom, name, fn) {
+	                dom.attachEvent('on' + name, fn);
+	            };
+	        }
+	        return this.on(dom, name, fn);
+	    },
+	    off: function (dom, name, fn) {
+	        if ('removeEventListener' in window) {
+	            Util.off = function (dom, name, fn) {
+	                dom.removeEventListener(name, fn, false);
+	            };
+	        }
+	        else if ('detachEvent' in window) {
+	            Util.off = function (dom, name, fn) {
+	                dom.detachEvent('on' + name, fn);
+	            };
+	        }
+	        this.off(dom, name, fn);
+	    }
+	};
+	return Util;});define('Checker', ['Util'], function (Util) {
+	/**
+	 * 参数类型匹配
+	 *
+	 * @class
+	 */
+	function Checker() {
+	    this._list = Util.arg2Ary(arguments);
+	}
+	Checker.prototype.check = function (arg) {
+	    var me = this;
+	    if (arg.length !== me._list.length) {
+	        return false;
+	    }
+	    var type;
+	    var typeOf;
+	    var match = Util.each(arg, function (item, i) {
+	        type = me._list[i];
+	        typeOf = typeof type;
+	        if (typeOf === 'string') {
+	            if (typeof item !== type) {
+	                return false;
+	            }
+	        }
+	        else if (typeOf === 'function') {
+	            if (!(item instanceof type)) {
+	                return false;
+	            }
+	        }
+	    });
+	    return match;
+	};
+	Checker.stringObject = new Checker('string', 'object');
+	Checker.objectString = new Checker('object', 'string');
+	Checker.object = new Checker('object');
+	Checker.string = new Checker('string');
+	Checker.ssFunction = new Checker('string', 'string', 'function');
+	Checker.sFunction = new Checker('string', 'function');
+	Checker.array = new Checker(Array);
+	return Checker;});define('Event', function () {
+	var Event = {
+	    style: 'Style',
+	    css: 'CSS',
+	    clear: 'Clear',
+	    beforeStart: 'BeforeStart',
+	    pause: 'Pause',
+	    start: 'Start',
+	    iteration: 'Iteration',
+	    end: 'End',
+	    next: 'Next',
+	    over: 'Over',
+	    on: 'On',
+	    off: 'Off',
+	    stop: 'Stop',
+	    goon: 'Goon',
+	    once: 'Once',
+	    all: 'All',
+	    emit: 'Emit'
+	};
+	return Event;});define('EventEmitter', ['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
+	function EventEmitter() {
+	    this._triggers = {};
+	}
+	EventEmitter.type = {
+	    once: 'once',
+	    all: 'all'
+	};
+	EventEmitter.prototype.on = function (eventName, fn, option) {
+	    if (eventName) {
+	        if (eventName in this._triggers) {
+	            this._triggers[eventName].push({fn: fn, option: option});
+	        }
+	        else {
+	            this._triggers[eventName] = [{fn: fn, option: option}];
+	        }
+	        this.emit(Event.on, eventName, option);
+	    }
+	    else {
+	        throw new Error('undefined event!');
+	    }
+	};
+	EventEmitter.prototype.off = function (eventName, fn) {
+	    if (Checker.string.check(arguments)) {
+	        if (eventName in this._triggers) {
+	            this._triggers[eventName] = [];
+	            this.emit(Event.off, eventName);
+	        }
+	    }
+	    else if (Checker.sFunction.check(arguments)) {
+	        if (eventName in this._triggers) {
+	            var index = -1;
+	            Util.each(this._triggers[eventName], function (item, i) {
+	                if (item.fn === fn) {
+	                    index = i;
+	                    return false;
+	                }
+	            });
+	            if (index > -1) {
+	                this._triggers[eventName].splice(index, 1);
+	                this.emit(Event.off, eventName);
+	            }
+	        }
+	    }
+	    else {
+	        throw new Error('incorrect parameter!');
+	    }
+	};
+	EventEmitter.prototype.once = function (eventName, fn, option) {
+	    if (!option) {
+	        option = {};
+	    }
+	    option.type = EventEmitter.type.once;
+	    this.emit(Event.once, eventName, option);
+	    this.on(eventName, fn, option);
+	};
+	EventEmitter.prototype.callWithScope = function (fn, option, params) {
+	    params = params || [];
+	    if (option && option.hasOwnProperty('scope')) {
+	        fn.apply(option.scope, params);
+	    }
+	    else
+	    {
+	        fn.apply(this, params);
+	    }
+	};
+	EventEmitter.prototype.all = function (dependency, fn, option) {
+	    var record = {};
+	    var results = [];
+	    if (dependency.length === 0) {
+	        this.callWithScope(fn, option);
+	        return;
+	    }
+	    var me = this;
+	    var proxyCallback = function (index) {
+	        return  function (eventName, result) {
+	            if (eventName in record) {
+	                record[eventName] = true;
+	                results[index] = result;
+	            }
+	            var trigger = Util.forIn(record, function (key, item) {
+	                if (item === false) {
+	                    return false;
+	                }
+	            });
+	            if (trigger) {
+	                me.callWithScope(fn, option, results);
+	            }
+	        };
+	    };
+	    Util.each(dependency, function (eventName, i) {
+	        record[eventName] = false;
+	        this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
+	    });
+	    this.emit(Event.all, dependency, option);
+	};
+	EventEmitter.prototype.emit = function (eventName) {
+	    var fns = this._triggers[eventName];
+	    var scope;
+	    var type;
+	    var fn;
+	    var option;
+	    var offs = [];
+	    var args = arguments;
+	    if (fns) {
+	        var me = this;
+	        Util.each(fns, function (itemFn) {
+	            fn = itemFn.fn;
+	            option = itemFn.option;
+	            if (option) {
+	                scope = option.scope;
+	                type = option.type;
+	            }
+	            else {
+	                scope = false;
+	                type = false;
+	            }
+	            if (scope) {
+	                fn.apply(scope, Util.arg2Ary(args));
+	            }
+	            else {
+	                fn.apply(me, Util.arg2Ary(args));
+	            }
+	            if (type) {
+	                // type === EventEmitter.type.once or type === EventEmitter.type.all
+	                offs.push(itemFn);
+	            }
+	        });
+	        if (offs.length > 0) {
+	            var newFns = [];
+	            var fnsIndex = 0;
+	            var offIndex = 0;
+	            var sizeFns = fns.length;
+	            var sizeOffs = offs.length;
+	            var itemOff;
+	            var itemFn;
+	            itemOff = offs[offIndex];
+	            while (fnsIndex < sizeFns) {
+	                itemFn = fns[fnsIndex];
+	                if (itemFn === itemOff) {
+	                    offIndex++;
+	                    if (offIndex < sizeOffs) {
+	                        itemOff = offs[offIndex];
+	                    }
+	                    else {
+	                        itemOff = -1;
+	                    }
+	                }
+	                else {
+	                    newFns.push(itemFn);
+	                }
+	                fnsIndex++;
+	            }
+	            if (newFns.length === 0) {
+	                delete this._triggers[eventName];
+	            }
+	            else {
+	                this._triggers[eventName] = newFns;
+	            }
+	        }
+	    }
+	};
+	return EventEmitter;});define('Compatible', ['Util', 'Event'], function (Util, Event) {
+	/**
+	 * @namespace
+	 */
+	var Compatible = {
+	    prefix: (function () {
+	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
+	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
+	        var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
+	        var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
+	            || (userAgent.indexOf('Trident') > -1); // 判断是否IE
+	        var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
+	        var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
+	        var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
+	        var isWebKit = userAgent.indexOf('WebKit') > -1;
+	        if (isIE) {
+	            return '-ms-';
+	        }
+	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
+	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
+	    })(),
+	    requestAnimationFrame: (function () {
+	        window.requestAnimFrame = (function () {
+	            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
+	                || function (callback) {
+	                    window.setTimeout(callback, 1000 / 60);
+	                };
+	        })();
+	        return function (fn) {
+	            // 原生requestAnimationFrame执行的scope必须为window
+	            window.requestAnimationFrame(fn);
+	        };
+	    })(),
+	    css: function (dom, key, css, me) {
+	        if (css || css === '') {
+	            Compatible.requestAnimationFrame(function () {
+	                Util.css(dom, key, css);
+	                me.emit(Event.css, dom, key, css);
+	            });
+	        }
+	        else {
+	            return Util.css(dom, key);
+	        }
+	    },
+	    // -> triggering reflow /* The actual magic */
+	    reflow: function (dom) {
+	        Compatible.requestAnimationFrame(function () {
+	            dom.offsetWidth = dom.offsetWidth;
+	        });
+	    },
+	    parseEvent: function (lower, upper) {
+	        // animationstart webkitAnimationStart
+	        var p = Compatible.prefix.replace(/-/g, '');
+	        if (p === 'moz') {
+	            return function (key) {
+	                return lower + key.toLowerCase();
+	            };
+	        }
+	        return function (key) {
+	            return p + upper + key;
+	        };
+	    }
+	};
+	return Compatible;});define('TFCompatible', ['Util', 'Event', 'EventEmitter', 'Compatible'], function (Util, Event, EventEmitter, Compatible) {
 	/**
 	 *  浏览器兼容处理
 	 *

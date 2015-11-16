@@ -36,7 +36,7 @@
     <div id="frame1"></div>
 </div>
 <script>
-    require.config({baseUrl: '../src/amd'});
+    require.config({baseUrl: '../dist/amd'});
     require(["Transform", "Event"], function (Transform, Event) {
         var t = new Transform(document.getElementById('frame1'), true);
         t.on(Event.next, function () {
