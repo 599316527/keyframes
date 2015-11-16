@@ -171,7 +171,7 @@
                 }]
             }]
         };
-        require.config({baseUrl: 'dist/amd'});
+        require.config({baseUrl: 'src/amd'});
         require(["Transform", "Event", "Util"], function (Transform, Event, Util) {
             Util.each(table.doc, function(item) {
                 Util.each(item.module, function(item) {

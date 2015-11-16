@@ -404,6 +404,7 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	        return css;
 	    }, status);
 	};
+	
 	/**
 	 * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
 	 *
