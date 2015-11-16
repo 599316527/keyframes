@@ -2,7 +2,7 @@
  * @file TFCompatible.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Pitch Util Checker Event EventEmitter Compatible*/
+/* global Util Event EventEmitter Compatible*/
 /* define TFCompatible */
 
 /**
@@ -72,6 +72,13 @@ TFCompatible.prototype.cssMap = function (propertyName) {
     }
     return tmp;
 };
+
+/**
+ * 对于Transform的mix方法，抽取顶层transform的延迟和变换函数等配置
+ *
+ * @param {Object} config mix配置
+ * @return {Object} 顶层的延迟和变换函数等配置，可用于mix子项
+ */
 TFCompatible.prototype.peelMould = function (config) {
     var mould = {};
     Util.forKey(TFCompatible._keyMap, function (key) {
@@ -81,6 +88,14 @@ TFCompatible.prototype.peelMould = function (config) {
     });
     return mould;
 };
+
+/**
+ * 深拷贝obj对象，并根据apiMap生成api配置项
+ *
+ * @param {Object} obj 变换配置
+ * @param {Object} apiMap 所支持的apiMap
+ * @return {Object} 顶层的延迟和变换函数等配置，可用于mix子项
+ */
 TFCompatible.prototype.clone = function (obj, apiMap) {
     var clone;
     var keyMap = TFCompatible._keyMap;
@@ -118,7 +133,6 @@ TFCompatible.prototype.parseTransition = function (transition) {
     }
     return '<property> <duration> <function> <delay>'.replace(/<(.*?)>/g, regReplace);
 };
-
 TFCompatible.instance = function () {
     if (!TFCompatible._compatible) {
         TFCompatible._compatible = new TFCompatible();

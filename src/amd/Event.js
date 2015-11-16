@@ -1,14 +1,14 @@
 define(function () {
 	var Event = {
 	    style: 'Style',
-	    css: 'Css',
+	    css: 'CSS',
 	    clear: 'Clear',
 	    beforeStart: 'BeforeStart',
 	    pause: 'Pause',
 	    start: 'Start',
 	    iteration: 'Iteration',
 	    end: 'End',
-	    done: 'Done',
+	    next: 'Next',
 	    over: 'Over',
 	    on: 'On',
 	    off: 'Off',

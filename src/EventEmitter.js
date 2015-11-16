@@ -2,6 +2,7 @@
  * @file Eventemitter.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
+/* eslint-disable brace-style */
 /* global Checker Event Util*/
 /* define EventEmitter */
 function EventEmitter() {

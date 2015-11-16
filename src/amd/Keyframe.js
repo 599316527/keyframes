@@ -31,7 +31,6 @@ define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Eve
 	        }
 	    }
 	    this._listen();
-	    return this;
 	}
 	Util.inherit(Keyframe, EventEmitter);
 	
@@ -140,11 +139,7 @@ define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Eve
 	    return $animation.join(',').trim();
 	};
 	Keyframe.prototype.reflow = function () {
-	    // -> triggering reflow /* The actual magic */
-	    var dom = this._dom;
-	    Compatible.requestAnimationFrame(function () {
-	        dom.offsetWidth = dom.offsetWidth;
-	    });
+	    Compatible.reflow(this._dom);
 	    return this;
 	};
 	Keyframe.prototype.restart = function () {

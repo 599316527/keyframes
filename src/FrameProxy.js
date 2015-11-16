@@ -6,7 +6,7 @@
 /* define FrameProxy */
 function FrameProxy(frame, metaData, clazz) {
     this._clazz = clazz;
-    return this._define(frame, metaData);
+    this._define(frame, metaData);
 }
 FrameProxy.prototype._define = function (frame, metaData) {
     this._frame = Compiler.instance().defineKeyframe(frame, metaData);

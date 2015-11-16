@@ -37,7 +37,6 @@ function Keyframe(dom, animations, cf) {
         }
     }
     this._listen();
-    return this;
 }
 Util.inherit(Keyframe, EventEmitter);
 
@@ -146,11 +145,7 @@ Keyframe.prototype._filter = function () {
     return $animation.join(',').trim();
 };
 Keyframe.prototype.reflow = function () {
-    // -> triggering reflow /* The actual magic */
-    var dom = this._dom;
-    Compatible.requestAnimationFrame(function () {
-        dom.offsetWidth = dom.offsetWidth;
-    });
+    Compatible.reflow(this._dom);
     return this;
 };
 Keyframe.prototype.restart = function () {

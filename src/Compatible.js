@@ -4,6 +4,9 @@
  **/
 /* global Util Event */
 /* define Compatible */
+/**
+ * @namespace
+ */
 var Compatible = {
     prefix: (function () {
         var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
@@ -35,7 +38,7 @@ var Compatible = {
     })(),
     css: function (dom, key, css, me) {
         if (css || css === '') {
-            this.requestAnimationFrame(function () {
+            Compatible.requestAnimationFrame(function () {
                 Util.css(dom, key, css);
                 me.emit(Event.css, dom, key, css);
             });
@@ -44,9 +47,15 @@ var Compatible = {
             return Util.css(dom, key);
         }
     },
+    // -> triggering reflow /* The actual magic */
+    reflow: function (dom) {
+        Compatible.requestAnimationFrame(function () {
+            dom.offsetWidth = dom.offsetWidth;
+        });
+    },
     parseEvent: function (lower, upper) {
         // animationstart webkitAnimationStart
-        var p = this.prefix.replace(/-/g, '');
+        var p = Compatible.prefix.replace(/-/g, '');
         if (p === 'moz') {
             return function (key) {
                 return lower + key.toLowerCase();

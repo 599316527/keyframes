@@ -3,7 +3,19 @@
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* define Util */
+/**
+ * @namespace
+ */
 var Util = {
+
+    /**
+     * JSON对象遍历函数
+     *
+     * @param {Object} obj 要进行遍历的对象
+     * @param {Function} handler 遍历的处理函数
+     * @param {?Object} scope 作用域对象
+     * @return {boolean} 是否完全遍历完了obj对象
+     */
     forIn: function (obj, handler, scope) {
         for (var key in obj) {
             if (handler.call(scope, key, obj[key]) === false) {
@@ -20,6 +32,14 @@ var Util = {
         }
         return true;
     },
+
+    /**
+     * 重写函数
+     *
+     * @param {Object} init 需要重写的对象
+     * @param {?Object} replace 从replace拿数据重写init
+     * @return {Object} 重写后的对象
+     */
     rewrite: function (init, replace) {
         if (!replace) {
             return init;
@@ -61,6 +81,14 @@ var Util = {
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
     },
+
+    /**
+     * 查找val在ary中的索引
+     *
+     * @param {(number|string)} val 要查找的值
+     * @param {Array} ary 要查找的数组
+     * @return {number} 查找到的索引，没找到为-1
+     */
     xInA: function (val, ary) {
         var index = -1;
         Util.each(ary, function (item, i) {
@@ -74,6 +102,15 @@ var Util = {
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },
+
+    /**
+     * 数组遍历函数
+     *
+     * @param {Array} ary 要进行遍历的数组
+     * @param {Function} iterator 遍历的处理函数
+     * @param {?Object} scope 作用域对象
+     * @return {boolean} 是否完全遍历完了数组
+     */
     each: function (ary, iterator, scope) {
         for (var i = 0, l = ary.length; i < l; i++) {
             if (iterator.call(scope, ary[i], i, ary) === false) {

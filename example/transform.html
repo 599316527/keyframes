@@ -2,16 +2,10 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>炫动-移动</title>
+    <title>Transform</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
-
-    <script src="../src/Util.js"></script>
-    <script src="../src/Event.js"></script>
-    <script src="../src/EventEmitter.js"></script>
-    <script src="../src/Compatible.js"></script>
-    <script src="../src/TFCompatible.js"></script>
-    <script src="../src/Transform.js"></script>
+    <script src="../lib/require.js"></script>
     <style>
         html, body {
             height: 100%;
@@ -35,203 +29,90 @@
             background: url(http://bs.baidu.com/public03/2e897163616c44fddada5bad03fdcc62.png) no-repeat;
             background-size: 100% 100%;
         }
-        #frame2 {
-            width: 150px;
-            position: absolute;
-            height: 150px;
-            left: 45px;
-            top: 15px;
-            opacity: 0;
-            background: url(http://bs.baidu.com/public03/9dead4c5f9d0f4207faba69eed020959.png) no-repeat;
-            background-size: 100% 100%;
-        }
-        #frame3 {
-            width: 150px;
-            position: absolute;
-            height: 150px;
-            left: 80px;
-            opacity: 0;
-            top: 15px;
-            background: url(http://bs.baidu.com/public03/5f77e9c925ca8814cd779da3127ba576.png) no-repeat;
-            background-size: 100% 100%;
-        }
-        #frame4 {
-            position: absolute;
-            opacity: 0;
-            width: 55px;
-            height: 75px;
-            left: 62px;
-            top: 89px;
-            background: url(http://bs.baidu.com/public03/de7e49534a28de35b65314e8285b1f64.png) no-repeat;
-            background-size: 100% 100%;
-        }
-        #frame5 {
-            width: 180px;
-            position: absolute;
-            height: 140px;
-            left: 0px;
-            top: 15px;
-            opacity: 0;
-            background: url(http://bs.baidu.com/public03/98e241f90a5302ad09c93c06f0a51d99.png) no-repeat;
-            background-size: 100% 100%;
-        }
     </style>
 </head>
 <body>
 <div id="container">
-    <div id="frame5"></div>
-    <div id="frame3"></div>
-    <div id="frame4"></div>
-    <div id="frame2"></div>
     <div id="frame1"></div>
 </div>
 <script>
-    var config = {
-        "frame1": {
-            "0.6": {
-                "translateY": "0px"
-            },
-            "1.2": {
-                "translateY": "55px",
-                "opacity": 1
-            },
-            "1.8": {
-                "translateY": "55px",
-                "opacity" : 0
-            }
-        },
-        "frame2": {
-            "0": {
-                "scale": 0.2
-            },
-            "1.18": {
-                "opacity": 0
-            },
-            "1.2": {
-                "opacity": 1,
-                "scale": 0.2
-            },
-            "2.1": {
-                "opacity": 0,
-                "scale": 1
-            }
-        },
-        "frame3": {
-            "2.1": {
-                "opacity": 0
-            },
-            "2.3": {
-                "opacity": 0.1
-            },
-            "2.9": {
-                "opacity": 0.5
-            },
-            "3.1": {
-                "opacity": 1
-            }
-        },
-        "frame4@ease-in-out#infinite": {
-            "0": {
-                "opacity": 0
-            },
-            "3.1": {
-                "opacity": 0
-            },
-            "3.12": {
-                "opacity": 1,
-                "translateX":"0px",
-                "rotateZ":"0deg"
-            },
-            "4.32": {
-                "translateX": "-60px",
-                "opacity": 1,
-                "rotateZ":"360deg"
-            }
-        },
-        "frame5": {
-            "3.7": {
-                "opacity": 0
-            },
-            "3.9": {
-                "opacity": 1
-            }
-        }
-    };
-    var t = new Transform(document.getElementById('frame1'), true);
-    t.on(Event.next, function () {
-        console.log(arguments);
-    });
-    t.on(Event.over, function () {
-        console.log(arguments);
-    });
-    setTimeout(function() {
-        t.mix({
-            'duration': '2s',
-            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'delay': '0ms',
-            'moveTo': [
-                {
-                    't': '100px'
-                },
-                {
-                    'l': '0px',
-                    'duration': '3s',
-                    'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
-                    'delay': '5s'
-                }
-            ],
-            'moveBy': {
-                'x': '100px',
-                'y': '100px'
-            },
-            'scaleBy': {
-                '2d': '2, 2'
-            },
-            'rotateBy': {
-                'z': '45deg'
-            },
-            'skewBy': {
-                'x': '45deg'
-            }
-        }).rotateBy({
-            'duration': '1.5s',
-            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'z': '30deg'
-        }).then(function() {
-            alert(1);
-        }).skewBy({
-            '2d': '50deg, 30deg'
-        }).scaleBy({
-            '2d': '3, 2'
-        })/*.rotateBy({
-            'z': '45deg',
-            'delay': '1s'
-        }).rotateBy({
-            'z': '45deg',
-            'delay': '1s'
-        })*/;
-        /*t.moveBy({
-            'duration': '1.5s',
-            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            '2d': '100px, 200px'
-        }).then(function() {
-            alert(1);
-        }).then(function() {
-            console.log('rotateBy');
+    require.config({baseUrl: '../src/amd'});
+    require(["Transform", "Event"], function (Transform, Event) {
+        var t = new Transform(document.getElementById('frame1'), true);
+        t.on(Event.next, function () {
+            console.log(arguments);
         });
-        t.rotateBy({
-            'duration': '1.5s',
-            'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'z': '30deg'
-        }).then(function() {
-            console.log('rotateBy');
-        }).skewBy({
-            '2d': '50deg, 30deg'
-        }).scaleBy({
-            '2d': '3, 2'
-        });*/
-    }, 1000);
-
+        t.on(Event.over, function () {
+            console.log(arguments);
+        });
+        setTimeout(function() {
+            t.mix({
+                'duration': '2s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'delay': '0ms',
+                'moveTo': [
+                    {
+                        't': '100px'
+                    },
+                    {
+                        'l': '0px',
+                        'duration': '3s',
+                        'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
+                        'delay': '5s'
+                    }
+                ],
+                'moveBy': {
+                    'x': '100px',
+                    'y': '100px'
+                },
+                'scaleBy': {
+                    '2d': '2, 2'
+                },
+                'rotateBy': {
+                    'z': '45deg'
+                },
+                'skewBy': {
+                    'x': '45deg'
+                }
+            }).rotateBy({
+                'duration': '1.5s',
+                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'z': '30deg'
+            }).then(function() {
+                alert(1);
+            }).skewBy({
+                '2d': '50deg, 30deg'
+            }).scaleBy({
+                '2d': '3, 2'
+            })/*.rotateBy({
+             'z': '45deg',
+             'delay': '1s'
+             }).rotateBy({
+             'z': '45deg',
+             'delay': '1s'
+             })*/;
+            /*t.moveBy({
+             'duration': '1.5s',
+             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+             '2d': '100px, 200px'
+             }).then(function() {
+             alert(1);
+             }).then(function() {
+             console.log('rotateBy');
+             });
+             t.rotateBy({
+             'duration': '1.5s',
+             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+             'z': '30deg'
+             }).then(function() {
+             console.log('rotateBy');
+             }).skewBy({
+             '2d': '50deg, 30deg'
+             }).scaleBy({
+             '2d': '3, 2'
+             });*/
+        }, 1000);
+    });
 </script>
 </body>
 </html>

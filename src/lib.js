@@ -1,9 +1,21 @@
 /**
- * @file util.js ~ 2015/08/13 11:47:13
+ * @file Util.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* define Util */
+/**
+ * @namespace
+ */
 var Util = {
+
+    /**
+     * JSON对象遍历函数
+     *
+     * @param {Object} obj 要进行遍历的对象
+     * @param {Function} handler 遍历的处理函数
+     * @param {?Object} scope 作用域对象
+     * @return {boolean} 是否完全遍历完了obj对象
+     */
     forIn: function (obj, handler, scope) {
         for (var key in obj) {
             if (handler.call(scope, key, obj[key]) === false) {
@@ -12,6 +24,22 @@ var Util = {
         }
         return true;
     },
+    forKey: function (obj, handler, scope) {
+        for (var key in obj) {
+            if (handler.call(scope, key) === false) {
+                return false;
+            }
+        }
+        return true;
+    },
+
+    /**
+     * 重写函数
+     *
+     * @param {Object} init 需要重写的对象
+     * @param {?Object} replace 从replace拿数据重写init
+     * @return {Object} 重写后的对象
+     */
     rewrite: function (init, replace) {
         if (!replace) {
             return init;
@@ -53,6 +81,14 @@ var Util = {
         Child.prototype.constructor = Child;
         Child.superClass = Parent;
     },
+
+    /**
+     * 查找val在ary中的索引
+     *
+     * @param {(number|string)} val 要查找的值
+     * @param {Array} ary 要查找的数组
+     * @return {number} 查找到的索引，没找到为-1
+     */
     xInA: function (val, ary) {
         var index = -1;
         Util.each(ary, function (item, i) {
@@ -66,9 +102,18 @@ var Util = {
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },
-    each: function (ary, iterator) {
+
+    /**
+     * 数组遍历函数
+     *
+     * @param {Array} ary 要进行遍历的数组
+     * @param {Function} iterator 遍历的处理函数
+     * @param {?Object} scope 作用域对象
+     * @return {boolean} 是否完全遍历完了数组
+     */
+    each: function (ary, iterator, scope) {
         for (var i = 0, l = ary.length; i < l; i++) {
-            if (iterator(ary[i], i, ary) === false) {
+            if (iterator.call(scope, ary[i], i, ary) === false) {
                 break;
             }
         }
@@ -185,20 +230,20 @@ var Util = {
 };
 
 /**
- * @file event.js ~ 2015/08/13 11:47:13
+ * @file Event.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* define Event */
 var Event = {
     style: 'Style',
-    css: 'Css',
+    css: 'CSS',
     clear: 'Clear',
     beforeStart: 'BeforeStart',
     pause: 'Pause',
     start: 'Start',
     iteration: 'Iteration',
     end: 'End',
-    done: 'Done',
+    next: 'Next',
     over: 'Over',
     on: 'On',
     off: 'Off',
@@ -210,10 +255,10 @@ var Event = {
 };
 
 /**
- * @file eventemitter.js ~ 2015/08/13 11:47:13
+ * @file Eventemitter.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
+/* eslint-disable brace-style */
 /* global Checker Event Util*/
 /* define EventEmitter */
 function EventEmitter() {
@@ -379,10 +424,9 @@ EventEmitter.prototype.emit = function (eventName) {
 };
 
 /**
- * @file checker.js ~ 2015/08/13 11:47:13
+ * @file Checker.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Util */
 /* define Checker */
 
@@ -426,12 +470,12 @@ Checker.sFunction = new Checker('string', 'function');
 Checker.array = new Checker(Array);
 
 /**
- * @file pitch.js ~ 2015/08/13 11:47:13
+ * @file Pitch.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker */
 /* define Pitch */
+
 /**
  * css属性转cssText过滤器
  *
@@ -468,12 +512,14 @@ Pitch.prototype.do = function (key, value, opt) {
 };
 
 /**
- * @file compatible.js ~ 2015/08/13 11:47:13
+ * @file Compatible.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Util Event */
 /* define Compatible */
+/**
+ * @namespace
+ */
 var Compatible = {
     prefix: (function () {
         var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
@@ -505,7 +551,7 @@ var Compatible = {
     })(),
     css: function (dom, key, css, me) {
         if (css || css === '') {
-            this.requestAnimationFrame(function () {
+            Compatible.requestAnimationFrame(function () {
                 Util.css(dom, key, css);
                 me.emit(Event.css, dom, key, css);
             });
@@ -514,13 +560,19 @@ var Compatible = {
             return Util.css(dom, key);
         }
     },
+    // -> triggering reflow /* The actual magic */
+    reflow: function (dom) {
+        Compatible.requestAnimationFrame(function () {
+            dom.offsetWidth = dom.offsetWidth;
+        });
+    },
     parseEvent: function (lower, upper) {
         // animationstart webkitAnimationStart
-        var p = this.prefix.replace(/-/g, '');
+        var p = Compatible.prefix.replace(/-/g, '');
         if (p === 'moz') {
             return function (key) {
                 return lower + key.toLowerCase();
-            }
+            };
         }
         return function (key) {
             return p + upper + key;
@@ -529,12 +581,12 @@ var Compatible = {
 };
 
 /**
- * @file compatible.js ~ 2015/08/13 11:47:13
+ * @file KFCompatible.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Pitch Util Checker Event EventEmitter Compatible*/
 /* define KFCompatible */
+
 /**
  *  浏览器兼容处理
  *
@@ -708,12 +760,12 @@ KFCompatible.prototype.parseCSS = function (key) {
 KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
 
 /**
- * @file compiler.js ~ 2015/08/13 11:47:13
+ * @file Compiler.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker KFCompatible Util Event EventEmitter*/
 /* define Compiler */
+
 /**
  * 编译类，根据metaData生成class或者keyframes
  *
@@ -863,12 +915,12 @@ Compiler.instance = function () {
 };
 
 /**
- * @file classproxy.js ~ 2015/08/13 11:47:13
+ * @file Classproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker Compiler */
 /* define ClassProxy */
+
 /**
  * 样式代理,提供简便调用
  *
@@ -883,7 +935,6 @@ function ClassProxy(className, metaData) {
     else {
         this._className = className;
     }
-    return this;
 }
 ClassProxy.prototype._define = function (className, metaData) {
     this._className = Compiler.instance().defineClass(className, metaData);
@@ -929,12 +980,11 @@ ClassProxy.prototype.rewrite = function (metaData, pseudo) {
  * @file frameproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker Util Compiler*/
 /* define FrameProxy */
 function FrameProxy(frame, metaData, clazz) {
     this._clazz = clazz;
-    return this._define(frame, metaData);
+    this._define(frame, metaData);
 }
 FrameProxy.prototype._define = function (frame, metaData) {
     this._frame = Compiler.instance().defineKeyframe(frame, metaData);
@@ -987,13 +1037,11 @@ FrameProxy.prototype.combine = function (frameProxy) {
  * @file group.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Util Event EventEmitter*/
 /* define Group */
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;
-    return this;
 }
 Util.inherit(Group, EventEmitter);
 Group.prototype.onEnd = function (fn, option) {
@@ -1026,9 +1074,9 @@ Group.prototype.clear = function () {
  * @file keyframe.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-
 /* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible KFCompatible*/
 /* define Keyframe */
+
 /**
  * css属性转cssText过滤器
  *
@@ -1061,7 +1109,6 @@ function Keyframe(dom, animations, cf) {
         }
     }
     this._listen();
-    return this;
 }
 Util.inherit(Keyframe, EventEmitter);
 
@@ -1170,11 +1217,7 @@ Keyframe.prototype._filter = function () {
     return $animation.join(',').trim();
 };
 Keyframe.prototype.reflow = function () {
-    // -> triggering reflow /* The actual magic */
-    var dom = this._dom;
-    Compatible.requestAnimationFrame(function () {
-        dom.offsetWidth = dom.offsetWidth;
-    });
+    Compatible.reflow(this._dom);
     return this;
 };
 Keyframe.prototype.restart = function () {

@@ -19,7 +19,6 @@ function ClassProxy(className, metaData) {
     else {
         this._className = className;
     }
-    return this;
 }
 ClassProxy.prototype._define = function (className, metaData) {
     this._className = Compiler.instance().defineClass(className, metaData);

@@ -7,7 +7,6 @@
 function Group(frames) {
     Group.superClass.call(this);
     this._frames = frames;
-    return this;
 }
 Util.inherit(Group, EventEmitter);
 Group.prototype.onEnd = function (fn, option) {
