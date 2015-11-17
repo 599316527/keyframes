@@ -49,6 +49,10 @@
             margin: auto;
             width: 96%;
         }
+        pre {
+            width: 96%;
+            margin: 0 auto 20px;
+        }
         .api small {
             margin-left: 10px;
             margin-top: 1px;
@@ -77,7 +81,7 @@
 
         }
         #target em {
-            left: 60px;
+            left: 10px;
             top: 80px;
             position: absolute;
         }
@@ -174,7 +178,7 @@
                     }]
                 }]
             },{
-                title: '5. moveTo<em>(如果变换top，则top必须有初始值，不能为auto，否则触发不了变换；没有初始值的自动赋值为0，left right bottom类同)</em>',
+                title: '5. moveTo<em>(如果变换top，则top必须有初始值，不能为auto，否则触发不了变换；没有初始值的自动赋初始值为0，left right bottom类同)</em>',
                 fn: 'moveTo',
                 module: [{
                     class: 'active',
@@ -264,7 +268,7 @@
                                 'fs': '45px'
                             }]
                         },
-                        notify: 't & b不可同时存在'
+                        notify: ''
                     }]
                 }]
             }]
@@ -388,6 +392,56 @@
         });
     </script>
 </div>
+<pre>
+    所有的变换，可以函数链式调用，只有在上一个变换完成后，才会开始下一个变换，比如：
+    var t = new Transform(document.getElementById('frame1'), true);
+    t.on(Event.next, function() {
+        // 下一个变换开始时触发
+        console.log(arguments);
+    });
+    t.on(Event.over, function() {
+        // 所有的变换完成后触发
+        console.log(arguments);
+    });
+    t.mix({
+        'duration': '2s',
+        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'delay': '0ms',
+        'moveTo': [{
+            't': '100px'
+        }, {
+            'l': '0px',
+            'duration': '3s',
+            'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
+            'delay': '5s'
+        }],
+        'moveBy': {
+            'x': '100px',
+            'y': '100px'
+        },
+        'scaleBy': {
+            '2d': '2, 2'
+        },
+        'rotateBy': {
+            'z': '45deg'
+        },
+        'skewBy': {
+            'x': '45deg'
+        }
+    }).rotateBy({
+        'duration': '1.5s',
+        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'z': '30deg'
+    }).then(function() {
+        alert(1);
+    }).skewBy({
+        '2d': '50deg, 30deg'
+    }).scaleBy({
+        '2d': '3, 2'
+    });
+
+    then函数可以将回调插入变换队列中执行。
+</pre>
 <div id="fake"></div>
 <div class="scene">
     <div class="p3d space">

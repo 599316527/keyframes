@@ -95,7 +95,7 @@ gulp.task('amd', function() {
     }
     return true;
 });
-
+//window['define'] = typeof ESL_define === "function" ? ESL_define : window['define'];
 gulp.task('pack', ['concat'], function() {
     return gulp.src(['src/*.js', 'src/*/*.js', 'src/*/*/*.js'])
         .pipe(uglify())
