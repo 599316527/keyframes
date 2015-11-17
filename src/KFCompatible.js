@@ -16,7 +16,8 @@ function KFCompatible() {
     var pitch = new Pitch();
     var me = this;
     pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
-        + 'animation-timing-function transform-origin transform-style perspective-origin perspective background-clip background-origin',
+        + 'animation-timing-function transform-origin transform-style perspective-origin perspective '
+        + 'background-clip background-origin',
         function (key, value) {
             if (value === 'transform') {
                 value = me.prefix + value;

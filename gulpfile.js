@@ -3,7 +3,11 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var rename = require("gulp-rename");
 var jshint = require('gulp-jshint');
-
+var mergeMap = {};
+var generateMap = {
+    'Keyframe': [],
+    'Transform': []
+};
 gulp.task('lint',['concat'], function() {
     return gulp.src(['src/*.js', 'src/*/*.js'])
         // This is available for modules like jshint-jsx, which
@@ -12,17 +16,17 @@ gulp.task('lint',['concat'], function() {
         .pipe(jshint()).pipe(jshint.reporter('default'));
 });
 
-gulp.task('concat', function() {
-    return gulp.src(['src/Util.js', 'src/Event.js', 'src/EventEmitter.js', 'src/Checker.js', 'src/Pitch.js', 'src/Compatible.js', 'src/KFCompatible.js', 'src/Compiler.js', 'src/ClassProxy.js','src/FrameProxy.js','src/Group.js','src/Keyframe.js'])
-        .pipe(concat('lib.js'))
-        .pipe(gulp.dest('src/'));
+gulp.task('concat', ['amd'],  function() {
+    for (var key in generateMap) {
+        gulp.src(generateMap[key]).pipe(concat(key + '.js')).pipe(gulp.dest('src/lib'));
+    }
+    return true;
 });
 gulp.task('amd', function() {
     var fs = require('fs');
     var path = require('path');
     var files = fs.readdirSync('src');
     //var combine = [];
-    var mergeMap = {};
     for(var i in files)
     {
         var domain = files[i];
@@ -44,7 +48,7 @@ gulp.task('amd', function() {
                     /*combine.push("define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
                         return '\n\t';
                     }) + 'return ' + domain + ';\r});');*/
-                    mergeMap[domain] = {dependency: dependency.trim().split(/\s+/), content: "define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
+                    mergeMap[domain] = {path: fName, dependency: dependency.trim().split(/\s+/), content: "define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
                         return '\n\t';
                     }) + 'return ' + domain + ';\r});'};
                     content = "define(['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
@@ -55,7 +59,7 @@ gulp.task('amd', function() {
                     /*combine.push("define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
                         return  '\n\t';
                     }) + 'return ' + domain + ';\r});');*/
-                    mergeMap[domain] = {content: "define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
+                    mergeMap[domain] = {path: fName, content: "define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
                         return  '\n\t';
                     }) + 'return ' + domain + ';\r});'};
                     content = "define(function () {\r\n\t" + content.replace(/\n/g, function($0) {
@@ -66,11 +70,8 @@ gulp.task('amd', function() {
             }
         }
     }
-    var generateMap = {
-        'Keyframe': 'Keyframe',
-        'Transform': 'Transform'
-    };
-    function merger (denpendency, parentMoudleName, record) {
+
+    function merger (denpendency, parentMoudleName, record, order) {
         var result = '';
         var moduleName;
         var module;
@@ -80,8 +81,9 @@ gulp.task('amd', function() {
                 moduleName = denpendency[i];
                 module = mergeMap[moduleName];
                 if (!record[moduleName]) {
-                    result += merger(module.dependency, moduleName, record) + module.content + '\r';
+                    result += merger(module.dependency, moduleName, record, order) + module.content + '\r';
                     record[moduleName] = true;
+                    order.push(module.path);
                     console.log(moduleName + ' loadede!!');
                 }
             }
@@ -89,7 +91,7 @@ gulp.task('amd', function() {
         return result;
     }
     for (var key in generateMap) {
-        fs.writeFileSync(path.join('src', 'amd','lib', generateMap[key] + '.js'), merger([key], '', {}));
+        fs.writeFileSync(path.join('src', 'amd','lib', key + '.js'), merger([key], '', {}, generateMap[key]));
     }
     return true;
 });
@@ -110,5 +112,5 @@ gulp.task('pack', ['concat'], function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', ['amd', 'pack'], function () {
+gulp.task('default', ['pack'], function () {
 });

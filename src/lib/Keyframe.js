@@ -230,6 +230,94 @@ var Util = {
 };
 
 /**
+ * @file Checker.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+/* global Util */
+/* define Checker */
+
+/**
+ * 参数类型匹配
+ *
+ * @class
+ */
+function Checker() {
+    this._list = Util.arg2Ary(arguments);
+}
+Checker.prototype.check = function (arg) {
+    var me = this;
+    if (arg.length !== me._list.length) {
+        return false;
+    }
+    var type;
+    var typeOf;
+    var match = Util.each(arg, function (item, i) {
+        type = me._list[i];
+        typeOf = typeof type;
+        if (typeOf === 'string') {
+            if (typeof item !== type) {
+                return false;
+            }
+        }
+        else if (typeOf === 'function') {
+            if (!(item instanceof type)) {
+                return false;
+            }
+        }
+    });
+    return match;
+};
+Checker.stringObject = new Checker('string', 'object');
+Checker.objectString = new Checker('object', 'string');
+Checker.object = new Checker('object');
+Checker.string = new Checker('string');
+Checker.ssFunction = new Checker('string', 'string', 'function');
+Checker.sFunction = new Checker('string', 'function');
+Checker.array = new Checker(Array);
+
+/**
+ * @file Pitch.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+/* global Checker */
+/* define Pitch */
+
+/**
+ * css属性转cssText过滤器
+ *
+ * @param {string} name  pitch的别名.
+ * @param {string} keys 补丁属性集合.
+ * @param {Function} handler 补丁函数.
+ * @class
+ */
+function Pitch(name, keys, handler) {
+    this._router = [];
+    if (Checker.ssFunction.check(arguments)) {
+        this.use(name, keys, handler);
+    }
+}
+Pitch.prototype.use = function (name, keys, handler) {
+    this._router.push({name: name, keys: keys + ' ', handler: handler});
+    return this;
+};
+Pitch.prototype.next = function (index, key, value, opt) {
+    var middleware = this._router[index];
+    if (middleware) {
+        if (middleware.keys.trim() === '*') {
+            return middleware.handler(key.trim(), value, opt);
+        }
+        if (middleware.keys.indexOf(key) > -1) {
+            return middleware.handler(key.trim(), value, opt);
+        }
+        return this.next(index + 1, key, value, opt);
+    }
+    return '';
+};
+Pitch.prototype.do = function (key, value, opt) {
+    return this.next(0, key, value, opt);
+};
+
+/**
  * @file Event.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
@@ -424,94 +512,6 @@ EventEmitter.prototype.emit = function (eventName) {
 };
 
 /**
- * @file Checker.js ~ 2015/08/13 11:47:13
- * @author tingkl(dingguoliang01@baidu.com)
- **/
-/* global Util */
-/* define Checker */
-
-/**
- * 参数类型匹配
- *
- * @class
- */
-function Checker() {
-    this._list = Util.arg2Ary(arguments);
-}
-Checker.prototype.check = function (arg) {
-    var me = this;
-    if (arg.length !== me._list.length) {
-        return false;
-    }
-    var type;
-    var typeOf;
-    var match = Util.each(arg, function (item, i) {
-        type = me._list[i];
-        typeOf = typeof type;
-        if (typeOf === 'string') {
-            if (typeof item !== type) {
-                return false;
-            }
-        }
-        else if (typeOf === 'function') {
-            if (!(item instanceof type)) {
-                return false;
-            }
-        }
-    });
-    return match;
-};
-Checker.stringObject = new Checker('string', 'object');
-Checker.objectString = new Checker('object', 'string');
-Checker.object = new Checker('object');
-Checker.string = new Checker('string');
-Checker.ssFunction = new Checker('string', 'string', 'function');
-Checker.sFunction = new Checker('string', 'function');
-Checker.array = new Checker(Array);
-
-/**
- * @file Pitch.js ~ 2015/08/13 11:47:13
- * @author tingkl(dingguoliang01@baidu.com)
- **/
-/* global Checker */
-/* define Pitch */
-
-/**
- * css属性转cssText过滤器
- *
- * @param {string} name  pitch的别名.
- * @param {string} keys 补丁属性集合.
- * @param {Function} handler 补丁函数.
- * @class
- */
-function Pitch(name, keys, handler) {
-    this._router = [];
-    if (Checker.ssFunction.check(arguments)) {
-        this.use(name, keys, handler);
-    }
-}
-Pitch.prototype.use = function (name, keys, handler) {
-    this._router.push({name: name, keys: keys + ' ', handler: handler});
-    return this;
-};
-Pitch.prototype.next = function (index, key, value, opt) {
-    var middleware = this._router[index];
-    if (middleware) {
-        if (middleware.keys.trim() === '*') {
-            return middleware.handler(key.trim(), value, opt);
-        }
-        if (middleware.keys.indexOf(key) > -1) {
-            return middleware.handler(key.trim(), value, opt);
-        }
-        return this.next(index + 1, key, value, opt);
-    }
-    return '';
-};
-Pitch.prototype.do = function (key, value, opt) {
-    return this.next(0, key, value, opt);
-};
-
-/**
  * @file Compatible.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
@@ -598,7 +598,8 @@ function KFCompatible() {
     var pitch = new Pitch();
     var me = this;
     pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
-        + 'animation-timing-function transform-origin transform-style perspective-origin perspective background-clip background-origin',
+        + 'animation-timing-function transform-origin transform-style perspective-origin perspective '
+        + 'background-clip background-origin',
         function (key, value) {
             if (value === 'transform') {
                 value = me.prefix + value;
@@ -915,6 +916,43 @@ Compiler.instance = function () {
 };
 
 /**
+ * @file group.js ~ 2015/08/13 11:47:13
+ * @author tingkl(dingguoliang01@baidu.com)
+ **/
+/* global Util Event EventEmitter*/
+/* define Group */
+function Group(frames) {
+    Group.superClass.call(this);
+    this._frames = frames;
+}
+Util.inherit(Group, EventEmitter);
+Group.prototype.onEnd = function (fn, option) {
+    this.on(Event.end, fn, option);
+    return this;
+};
+Group.prototype.start = function () {
+    var status = [];
+    var me = this;
+    function over(evt, st) {
+        status.push(st);
+        if (status.length === me._frames.length) {
+            me.emit(Event.end, status);
+        }
+    }
+    Util.each(this._frames, function (frame) {
+        frame.start();
+        frame.on(Event.over, over);
+    });
+    return this;
+};
+Group.prototype.clear = function () {
+    Util.each(this._frames, function (frame) {
+        frame.stop();
+    });
+    return this;
+};
+
+/**
  * @file Classproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
@@ -1030,43 +1068,6 @@ FrameProxy.prototype.combine = function (frameProxy) {
     if (configs) {
         this._configs = this._configs.concat(configs);
     }
-    return this;
-};
-
-/**
- * @file group.js ~ 2015/08/13 11:47:13
- * @author tingkl(dingguoliang01@baidu.com)
- **/
-/* global Util Event EventEmitter*/
-/* define Group */
-function Group(frames) {
-    Group.superClass.call(this);
-    this._frames = frames;
-}
-Util.inherit(Group, EventEmitter);
-Group.prototype.onEnd = function (fn, option) {
-    this.on(Event.end, fn, option);
-    return this;
-};
-Group.prototype.start = function () {
-    var status = [];
-    var me = this;
-    function over(evt, st) {
-        status.push(st);
-        if (status.length === me._frames.length) {
-            me.emit(Event.end, status);
-        }
-    }
-    Util.each(this._frames, function (frame) {
-        frame.start();
-        frame.on(Event.over, over);
-    });
-    return this;
-};
-Group.prototype.clear = function () {
-    Util.each(this._frames, function (frame) {
-        frame.stop();
-    });
     return this;
 };
 
