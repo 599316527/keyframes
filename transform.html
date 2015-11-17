@@ -49,7 +49,7 @@
             margin: auto;
             width: 96%;
         }
-        pre {
+        h4, pre {
             width: 96%;
             margin: 0 auto 20px;
         }
@@ -300,15 +300,15 @@
             });
             Keyframe.defineClass('p3d', {
                 'transform-style': 'preserve-3d',
-                'width': '500px',
-                'height': '500px',
+                'width': '350px',
+                'height': '350px',
                 'rotateX': '90deg',
                 'translateZ': '-300px',
                 'translateX': '100px'
             });
             Keyframe.defineClass('zuobiao', {
-                'width': '500px',
-                'height': '500px',
+                'width': '350px',
+                'height': '350px',
                 'transform-style': 'preserve-3d',
                 'backface-visibility': 'visible'
             });
@@ -441,8 +441,10 @@
     });
 
     then函数可以将回调插入变换队列中执行。
+    A: rotateX 90deg + translateZ 100px
+    B: translateZ 100px  + rotateX 90deg
+    A !== B, A是在旋转之后为基准去变换
 </pre>
-<div id="fake"></div>
 <div class="scene">
     <div class="p3d space">
         <div class="zuobiao space">
@@ -452,6 +454,12 @@
         </div>
         <div id="target" class="target space"><em>transform</em></div>
     </div>
+</div>
+<div id="fake">
+    <h4>打包好的Transform.js地址(AMD)：<a target="_blank" href="dist/amd/lib/Transform.js">bs.baidu.com/public01/keyframes/dist/amd/lib/Transform.js</a></h4>
+    <h4>未打包的Transform.js地址(AMD)：<a target="_blank" href="dist/amd/Transform.js">bs.baidu.com/public01/keyframes/dist/amd/Transform.js</a></h4>
+    <h4>打包好的Transform.js地址(非AMD)：<a target="_blank" href="dist/lib/Transform.min.js">bs.baidu.com/public01/keyframes/dist/lib/Transform.min.js</a></h4>
+    <h4>源代码:<a target="_blank" href="https://github.com/tingkl/keyframes">https://github.com/tingkl/keyframes</a></h4>
 </div>
 </body>
 </html>
