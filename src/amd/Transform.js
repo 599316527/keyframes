@@ -73,22 +73,6 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	/**
 	 * 合并当前transform与变换transform，不破坏之前的状态
 	 *
-	 * @private
-	 * @param {Array.<string>} val 要新设置的transform值
-	 * @param {string} transform transform的css属性名，例如webkitTransform
-	 * @return {string} 合并后的transform值
-	 */
-	Transform.prototype._combineTransform = function (val, transform) {
-	    var current = Util.css(this._dom, transform);
-	    if (current && current !== 'none') {
-	        return current + ' ' + val.join(' ');
-	    }
-	    return val.join(' ');
-	};
-	
-	/**
-	 * 合并当前transform与变换transform，不破坏之前的状态
-	 *
 	 * @param {boolean} flag 是否为即刻执行模式
 	 * @return {Transform} 对象本身
 	 */
@@ -96,84 +80,8 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	    this._executeInTime = flag;
 	    return this;
 	};
-	Transform.prototype.moveBy = function (config) {
-	    var apiMap = Transform._apiMap.moveBy;
-	    this._transform(config, apiMap);
-	    return this;
-	};
-	Transform.prototype.then = function (callback) {
-	    var length = this._steps.length;
-	    if (length > 0) {
-	        var front = this._steps[length - 1];
-	        var next = front.next;
-	        if (next) {
-	            front.next = function () {
-	                next();
-	                callback();
-	            };
-	        }
-	        else {
-	            front.next = callback;
-	        }
-	    }
-	    else {
-	        callback();
-	    }
-	    return this;
-	};
-	
-	/**
-	 * 新状态
-	 *
-	 * @private
-	 * @param {Object} transition transition键值对象
-	 * @param {Function} generator css键值对象，包括transform
-	 * @param {Object} status 需要监听的属性变化对象，包括transform以及其他css属性
-	 */
-	Transform.prototype._step = function (transition, generator, status) {
-	    var me = this;
-	    var cpt = me._compatible;
-	    var step = {};
-	    var length = me._steps.length;
-	    if (length > 0) {
-	        var front = me._steps[length - 1];
-	        var next = front.next;
-	        if (next) {
-	            front.next = function () {
-	                next();
-	                Util.css(me._dom, cpt.parseCSS('transition'), transition);
-	                Util.css(me._dom, generator());
-	            };
-	            if (me._index === me._steps.length) {
-	                Util.css(me._dom, cpt.parseCSS('transition'), transition);
-	                Util.css(me._dom, generator());
-	            }
-	        }
-	        else {
-	            front.next = function () {
-	                Util.css(me._dom, cpt.parseCSS('transition'), transition);
-	                Util.css(me._dom, generator());
-	            };
-	            if (me._index === me._steps.length) {
-	                front.next();
-	            }
-	        }
-	    }
-	    else {
-	        step.execute = function () {
-	            Util.css(me._dom, cpt.parseCSS('transition'), transition);
-	            Util.css(me._dom, generator());
-	        };
-	        if (this._executeInTime) {
-	            step.execute();
-	        }
-	    }
-	    step.status = status;
-	    step.next = false;
-	    this._steps.push(step);
-	};
 	Transform.prototype.reStore = function () {
-	    Util.css(this._dom, this._store);
+	    Compatible.css(this._dom, this._store, '', this);
 	    var status;
 	    while (this._index > 0) {
 	        this._index--;
@@ -205,68 +113,6 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	            firstStep.execute();
 	        }
 	    }
-	    return this;
-	};
-	
-	/**
-	 * transform相关变化的css，status，transition生成逻辑
-	 *
-	 * @private
-	 * @param {Object}  config 变换配置对象
-	 * @param {Object} apiMap  所支持的相应变化
-	 */
-	Transform.prototype._transform = function (config, apiMap) {
-	    var me = this;
-	    var cpt = me._compatible;
-	    var $transform = cpt.cssMap('transform');
-	    var val = [];
-	    config = this._fillTransformParams(config, apiMap, val);
-	    var status = {};
-	    status.transform = false;
-	    config.property = $transform;
-	    this._step(cpt.parseTransition(config), function () {
-	        // 应当计算上一个动画结束时的transform，所以需要用回调
-	        var css = {};
-	        var transform = cpt.parseCSS('transform');
-	        css[transform] = me._combineTransform(val, transform);
-	        return css;
-	    }, status);
-	};
-	
-	/**
-	 * 只在transform相关时才会调用，根据apiMap填充config配置以及要进行的transform变换
-	 *
-	 * @private
-	 * @param {Object} config 变换配置
-	 * @param {Object} apiMap 所支持的相应变化
-	 * @param {Array.<string>} val 根据config生成的transform变换值
-	 * @return {Object} 返回添加过api的配置对象，用于产出transition值，用不到api，只是方便调用
-	 */
-	Transform.prototype._fillTransformParams = function (config, apiMap, val) {
-	    var cpt = this._compatible;
-	    var transform = cpt.parseCSS('transform');
-	    var transition = cpt.parseCSS('transition');
-	    config = cpt.clone(config, apiMap);
-	    var api = config.api;
-	    if (api) {
-	        Util.forIn(api, function (key, value) {
-	            val.push(key + '(' + value + ')');
-	        });
-	    }
-	    else {
-	        throw new Error('不健全的配置项！');
-	    }
-	    if (!(transform in this._store)) {
-	        this._store[transform] = Util.css(this._dom, transform);
-	    }
-	    if (!(transition in this._store)) {
-	        this._store[transition] = Util.css(this._dom, transition);
-	    }
-	    return config;
-	};
-	Transform.prototype.scaleBy = function (config) {
-	    var apiMap = Transform._apiMap.scaleBy;
-	    this._transform(config, apiMap);
 	    return this;
 	};
 	Transform._apiMap = {
@@ -311,68 +157,127 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	    this._transform(config, apiMap);
 	    return this;
 	};*/
-	Transform.prototype.skewBy = function (config) {
-	    var apiMap = Transform._apiMap.skewBy;
-	    this._transform(config, apiMap);
-	    return this;
-	};
-	Transform.prototype.rotateBy = function (config) {
-	    var apiMap = Transform._apiMap.rotateBy;
-	    this._transform(config, apiMap);
-	    return this;
-	};
-	Transform.prototype.mix = function (config) {
-	    var mould = this._compatible.peelMould(config);
-	    var part;
-	    var transition = [];
-	    var css = {};
-	    var status = {};
-	    var val = [];
-	    var transformCount = 0;
-	    Util.forIn(Transform._apiMap, function (key, $apiMap) {
-	        if (key in config) {
-	            part = config[key];
-	            if (key === 'moveTo' || key === 'changeTo') {
-	                if (!(part instanceof Array)) {
-	                    part = [part];
-	                }
-	                Util.each(part, function (item) {
-	                    Util.extend(item, mould);
-	                });
-	                this._fillCSSParams(part, $apiMap, transition, css, status);
-	            }
-	            else {
-	                this._fillTransformParams(part, $apiMap, val);
-	                transformCount++;
-	            }
-	        }
-	    }, this);
+	
+	/**
+	 * 新状态
+	 *
+	 * @private
+	 * @param {Object} transition transition键值对象
+	 * @param {Function} generator css键值对象，包括transform
+	 * @param {Object} status 需要监听的属性变化对象，包括transform以及其他css属性
+	 */
+	Transform.prototype._step = function (transition, generator, status) {
 	    var me = this;
 	    var cpt = me._compatible;
-	    if (transformCount > 0) {
-	        var $transform = cpt.cssMap('transform');
-	        status.transform = false;
-	        config.property = $transform;
-	        transition.push(cpt.parseTransition(config));
-	    }
-	    this._step(transition.join(','), function () {
-	        if (transformCount > 0) {
-	            var transform = cpt.parseCSS('transform');
-	            css[transform] = me._combineTransform(val, transform);
+	    var step = {};
+	    var length = me._steps.length;
+	    if (length > 0) {
+	        var front = me._steps[length - 1];
+	        var next = front.next;
+	        if (next) {
+	            front.next = function () {
+	                next();
+	                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
+	                Compatible.css(me._dom, generator(), '', me);
+	            };
+	            if (me._index === me._steps.length) {
+	                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
+	                Compatible.css(me._dom, generator(), '', me);
+	            }
 	        }
+	        else {
+	            front.next = function () {
+	                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
+	                Compatible.css(me._dom, generator(), '', me);
+	            };
+	            if (me._index === me._steps.length) {
+	                front.next();
+	            }
+	        }
+	    }
+	    else {
+	        step.execute = function () {
+	            Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
+	            Compatible.css(me._dom, generator(), '', me);
+	        };
+	        if (this._executeInTime) {
+	            step.execute();
+	        }
+	    }
+	    step.status = status;
+	    step.next = false;
+	    this._steps.push(step);
+	};
+	
+	/**
+	 * 合并当前transform与变换transform，不破坏之前的状态
+	 *
+	 * @private
+	 * @param {Array.<string>} val 要新设置的transform值
+	 * @param {string} transform transform的css属性名，例如webkitTransform
+	 * @return {string} 合并后的transform值
+	 */
+	Transform.prototype._combineTransform = function (val, transform) {
+	    var current = Util.css(this._dom, transform);
+	    if (current && current !== 'none') {
+	        return current + ' ' + val.join(' ');
+	    }
+	    return val.join(' ');
+	};
+	
+	/**
+	 * 只在transform相关时才会调用，根据apiMap填充config配置以及要进行的transform变换
+	 *
+	 * @private
+	 * @param {Object} config 变换配置
+	 * @param {Object} apiMap 所支持的相应变化
+	 * @param {Array.<string>} val 根据config生成的transform变换值
+	 */
+	Transform.prototype._fillTransformParams = function (config, apiMap, val) {
+	    var cpt = this._compatible;
+	    var transform = cpt.parseCSS('transform');
+	    var transition = cpt.parseCSS('transition');
+	    config = cpt.clone(config, apiMap);
+	    var api = config.api;
+	    if (api) {
+	        Util.forIn(api, function (key, value) {
+	            val.push(key + '(' + value + ')');
+	        });
+	    }
+	    else {
+	        throw new Error('不健全的配置项！');
+	    }
+	    if (!(transform in this._store)) {
+	        this._store[transform] = Util.css(this._dom, transform);
+	    }
+	    if (!(transition in this._store)) {
+	        this._store[transition] = Util.css(this._dom, transition);
+	    }
+	};
+	
+	/**
+	 * transform相关变化的css，status，transition生成逻辑
+	 *
+	 * @private
+	 * @param {Object}  config 变换配置对象
+	 * @param {Object} apiMap  所支持的相应变化
+	 */
+	Transform.prototype._transform = function (config, apiMap) {
+	    var me = this;
+	    var cpt = me._compatible;
+	    var $transform = cpt.cssMap('transform');
+	    var val = [];
+	    this._fillTransformParams(config, apiMap, val);
+	    var status = {};
+	    status.transform = false;
+	    config.property = $transform;
+	    this._step(cpt.parseTransition(config), function () {
+	        // 应当计算上一个动画结束时的transform，所以需要用回调
+	        var css = {};
+	        var transform = cpt.parseCSS('transform');
+	        css[transform] = me._combineTransform(val, transform);
 	        return css;
 	    }, status);
-	    return this;
-	};
-	Transform.prototype.moveTo = function (configs) {
-	    var apiMap = Transform._apiMap.moveTo;
-	    this._css(configs, apiMap);
-	    return this;
-	};
-	Transform.prototype.changeTo = function (configs) {
-	    var apiMap = Transform._apiMap.changeTo;
-	    this._css(configs, apiMap);
-	    return this;
 	};
 	Transform.prototype._addStatus = function (status, key) {
 	    var keyT = this._compatible.cssMap(key);
@@ -394,27 +299,10 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	 * @private
 	 * @param {(Object|Array.<Object>)} configs 由于为非transform变换，所以不共享transform，可以有多个配置
 	 * @param {Object} apiMap 所支持的相应变化
-	 */
-	Transform.prototype._css = function (configs, apiMap) {
-	    var transition = [];
-	    var css = {};
-	    var status = {};
-	    this._fillCSSParams(configs, apiMap, transition, css, status);
-	    this._step(transition.join(','), function () {
-	        return css;
-	    }, status);
-	};
-	
-	/**
-	 * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
-	 *
-	 * @private
-	 * @param {(Object|Array.<Object>)} configs 由于为非transform变换，所以不共享transform，可以有多个配置
-	 * @param {Object} apiMap 所支持的相应变化
 	 * @param {Array.<string>} transition css属性transition集合
 	 * @param {Object} css css变换键值对
 	 * @param {Object} status 状态监听对象
-	 *
+	 * @return {Object} 返回添加过api的配置对象，用于产出transition值，用不到api，只是方便调用
 	 */
 	Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css, status) {
 	    var keyT;
@@ -443,6 +331,202 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	            throw new Error('不健全的配置！');
 	        }
 	    });
+	    return configs;
+	};
+	
+	/**
+	 * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
+	 *
+	 * @private
+	 * @param {(Object|Array.<Object>)} configs 由于为非transform变换，所以不共享transform，可以有多个配置
+	 * @param {Object} apiMap 所支持的相应变化
+	 */
+	Transform.prototype._css = function (configs, apiMap) {
+	    var transition = [];
+	    var css = {};
+	    var status = {};
+	    this._fillCSSParams(configs, apiMap, transition, css, status);
+	    this._step(transition.join(','), function () {
+	        return css;
+	    }, status);
+	};
+	Transform.prototype.moveTo = function (configs) {
+	    var apiMap = Transform._apiMap.moveTo;
+	    configs = this._patchMoveTo(configs, apiMap);
+	    this._css(configs, apiMap);
+	    return this;
+	};
+	
+	/**
+	 * left top bottom right 必须有初始值，auto值不触发变换
+	 *
+	 * @private
+	 * @param {(Object|Array.<Object>)} configs 由于为非transform变换，所以不共享transform，可以有多个配置
+	 * @param {Object} apiMap 所支持的相应变化
+	 * @return {Array.<Object>} 设置初始值后，返回数组configs
+	 */
+	Transform.prototype._patchMoveTo = function (configs, apiMap) {
+	    if (!(configs instanceof Array)) {
+	        configs = [configs];
+	    }
+	    var dom = this._dom;
+	    var val;
+	    var atr;
+	    var patch = {};
+	    Util.each(configs, function (config) {
+	        Util.forKey(config, function (key) {
+	            if (key in apiMap) {
+	                atr = apiMap[key];
+	                val = Util.css(dom, atr);
+	                if (!val || val === 'auto') {
+	                    patch[atr] = 0;
+	                }
+	            }
+	        });
+	    });
+	    // 极低可能下在同一个requestAnimationFrame下，不起作用，需要reflow，这里先不做处理
+	    Util.forIn(patch, function (key, val) {
+	        Util.css(dom, key, val);
+	    });
+	    return configs;
+	};
+	Transform.prototype.changeTo = function (configs) {
+	    var apiMap = Transform._apiMap.changeTo;
+	    configs = this._patchMoveTo(configs, Transform._apiMap.moveTo);
+	    this._css(configs, apiMap);
+	    return this;
+	};
+	Transform.prototype.moveBy = function (config) {
+	    var apiMap = Transform._apiMap.moveBy;
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype.scaleBy = function (config) {
+	    var apiMap = Transform._apiMap.scaleBy;
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype.skewBy = function (config) {
+	    var apiMap = Transform._apiMap.skewBy;
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	
+	Transform.prototype.rotateBy = function (config) {
+	    var apiMap = Transform._apiMap.rotateBy;
+	    this._transform(config, apiMap);
+	    return this;
+	};
+	Transform.prototype.mock = function (method, config) {
+	    var apiMap = Transform._apiMap[method];
+	    var css = {};
+	    var status = {};
+	    var transition = [];
+	    if ('moveTo changeTo'.indexOf(method) > -1) {
+	        this._fillCSSParams(config, apiMap, transition, css, status);
+	        return [transition.join(','), css, status];
+	    }
+	    var cpt = this._compatible;
+	    var transform = cpt.parseCSS('transform');
+	    var val = [];
+	    var $transform = cpt.cssMap('transform');
+	    if (method === 'mix') {
+	        var mould = this._compatible.peelMould(config);
+	        var part;
+	        var transformCount = 0;
+	        Util.forIn(Transform._apiMap, function (key, $apiMap) {
+	            if (key in config) {
+	                part = config[key];
+	                if (key === 'moveTo' || key === 'changeTo') {
+	                    part = this._patchMoveTo(part, Transform._apiMap.moveTo);
+	                    Util.each(part, function (item) {
+	                        Util.extend(item, mould);
+	                    });
+	                    this._fillCSSParams(part, $apiMap, transition, css, status);
+	                }
+	                else {
+	                    this._fillTransformParams(part, $apiMap, val);
+	                    transformCount++;
+	                }
+	            }
+	        }, this);
+	        if (transformCount > 0) {
+	            status.transform = false;
+	            config.property = $transform;
+	            transition.push(cpt.parseTransition(config));
+	        }
+	        if (transformCount > 0) {
+	            transform = cpt.parseCSS('transform');
+	            css[transform] = 'old+, ' + val.join(' ');
+	        }
+	        return [transition.join(','), css, status];
+	    }
+	    this._fillTransformParams(config, apiMap, val);
+	    status.transform = false;
+	    config.property = $transform;
+	    css[transform] = 'old+, ' + val.join(' ');
+	    return [cpt.parseTransition(config), css, status];
+	};
+	Transform.prototype.mix = function (config) {
+	    var mould = this._compatible.peelMould(config);
+	    var part;
+	    var transition = [];
+	    var css = {};
+	    var status = {};
+	    var val = [];
+	    var transformCount = 0;
+	    Util.forIn(Transform._apiMap, function (key, $apiMap) {
+	        if (key in config) {
+	            part = config[key];
+	            if (key === 'moveTo' || key === 'changeTo') {
+	                part = this._patchMoveTo(part, Transform._apiMap.moveTo);
+	                Util.each(part, function (item) {
+	                    Util.extend(item, mould);
+	                });
+	                this._fillCSSParams(part, $apiMap, transition, css, status);
+	            }
+	            else {
+	                this._fillTransformParams(part, $apiMap, val);
+	                transformCount++;
+	            }
+	        }
+	    }, this);
+	    var me = this;
+	    var cpt = me._compatible;
+	    if (transformCount > 0) {
+	        var $transform = cpt.cssMap('transform');
+	        status.transform = false;
+	        config.property = $transform;
+	        transition.push(cpt.parseTransition(config));
+	    }
+	    this._step(transition.join(','), function () {
+	        if (transformCount > 0) {
+	            var transform = cpt.parseCSS('transform');
+	            css[transform] = me._combineTransform(val, transform);
+	        }
+	        return css;
+	    }, status);
+	    return this;
+	};
+	Transform.prototype.then = function (callback) {
+	    var length = this._steps.length;
+	    if (length > 0) {
+	        var front = this._steps[length - 1];
+	        var next = front.next;
+	        if (next) {
+	            front.next = function () {
+	                next();
+	                callback();
+	            };
+	        }
+	        else {
+	            front.next = callback;
+	        }
+	    }
+	    else {
+	        callback();
+	    }
+	    return this;
 	};
 	
 	/**
@@ -478,11 +562,11 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	    var cpt = this._compatible;
 	    var parentNode = this._dom.parentNode;
 	    if (perspective === false) {
-	        Util.css(parentNode, cpt.parseCSS('transformStyle'), 'flat');
+	        Compatible.css(parentNode, cpt.parseCSS('transformStyle'), 'flat', this);
 	    }
 	    else {
-	        Util.css(parentNode, cpt.parseCSS('transformStyle'), 'preserve-3d');
-	        Util.css(parentNode, cpt.parseCSS('perspective'), perspective);
+	        Compatible.css(parentNode, cpt.parseCSS('transformStyle'), 'preserve-3d', this);
+	        Compatible.css(parentNode, cpt.parseCSS('perspective'), perspective, this);
 	    }
 	    return this;
 	};
