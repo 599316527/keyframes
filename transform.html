@@ -118,6 +118,9 @@
                         meta: {'z':'100px'},
                         notify: 'function默认linear'
                     }, {
+                        meta: {'z':'-100px'},
+                        notify: 'function默认linear'
+                    }, {
                         meta: {'2d':'-50px, -50px'},
                         notify: 'delay默认0s'
                     }, {
@@ -360,7 +363,11 @@
                         item._meta = JSON.stringify(item.meta, 4);
                         mock = fake.mock(fn, item.meta);
                         item.transition = mock[0];
-                        item.css = JSON.stringify(mock[1]).replace(/[{}]/g, '').replace(/,/g, ';');
+                        var css = [];
+                        Util.forIn(mock[1], function (key, val) {
+                            css.push(key + ':' + val);
+                        });
+                        item.css = css.join(';');
                         item.status = JSON.stringify(mock[2]);
                         item.ijk = 'doc[' + i + '].module[' + j + '].list[' + k + ']';
                     });

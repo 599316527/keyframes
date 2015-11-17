@@ -662,6 +662,7 @@ define('Util', function () {
 	    this._steps = [];
 	    this._store = {};
 	    this._index = 0;
+	    this._transformRecord = '';
 	    this._compatible = TFCompatible.instance();
 	    this._listen();
 	}
@@ -862,15 +863,18 @@ define('Util', function () {
 	 *
 	 * @private
 	 * @param {Array.<string>} val 要新设置的transform值
-	 * @param {string} transform transform的css属性名，例如webkitTransform
 	 * @return {string} 合并后的transform值
 	 */
-	Transform.prototype._combineTransform = function (val, transform) {
-	    var current = Util.css(this._dom, transform);
+	//  * @param {string} transform transform的css属性名，例如webkitTransform
+	Transform.prototype._combineTransform = function (val) {
+	    // 如果加入z轴变换，发现 matrix3d(...,offsetX, offsetY, offsetZ, 1) + translateZ(-offsetZ)在z方向不为0
+	    /* var current = Util.css(this._dom, transform);
 	    if (current && current !== 'none') {
 	        return current + ' ' + val.join(' ');
 	    }
-	    return val.join(' ');
+	    return val.join(' ');*/
+	    this._transformRecord += val.join(' ');
+	    return this._transformRecord;
 	};
 	
 	/**
@@ -923,7 +927,7 @@ define('Util', function () {
 	        // 应当计算上一个动画结束时的transform，所以需要用回调
 	        var css = {};
 	        var transform = cpt.parseCSS('transform');
-	        css[transform] = me._combineTransform(val, transform);
+	        css[transform] = me._combineTransform(val);
 	        return css;
 	    }, status);
 	};
@@ -1105,14 +1109,14 @@ define('Util', function () {
 	        }
 	        if (transformCount > 0) {
 	            transform = cpt.parseCSS('transform');
-	            css[transform] = 'old+, ' + val.join(' ');
+	            css[transform] = 'old+; ' + val.join(' ');
 	        }
 	        return [transition.join(','), css, status];
 	    }
 	    this._fillTransformParams(config, apiMap, val);
 	    status.transform = false;
 	    config.property = $transform;
-	    css[transform] = 'old+, ' + val.join(' ');
+	    css[transform] = 'old+; ' + val.join(' ');
 	    return [cpt.parseTransition(config), css, status];
 	};
 	Transform.prototype.mix = function (config) {
