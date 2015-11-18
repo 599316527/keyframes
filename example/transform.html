@@ -32,6 +32,7 @@
     </style>
 </head>
 <body>
+<button id="restart">restart</button>
 <div id="container">
     <div id="frame1"></div>
 </div>
@@ -45,6 +46,9 @@
         t.on(Event.over, function () {
             console.log(arguments);
         });
+        document.getElementById('restart').onclick = function () {
+            t.reExecute();
+        };
         setTimeout(function() {
             t.mix({
                 'duration': '2s',

@@ -91,6 +91,7 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event'], function
 	            status[key] = false;
 	        });
 	    }
+	    this._transformRecord = '';
 	    return this;
 	};
 	Transform.prototype.reflow = function () {
