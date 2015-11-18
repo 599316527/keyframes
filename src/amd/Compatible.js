@@ -51,7 +51,7 @@ define(['Util', 'Event'], function (Util, Event) {
 	    parseEvent: function (lower, upper) {
 	        // animationstart webkitAnimationStart
 	        var p = Compatible.prefix.replace(/-/g, '');
-	        if (p === 'moz') {
+	        if ('moz ms'.indexOf(p) > -1) {
 	            return function (key) {
 	                return lower + key.toLowerCase();
 	            };

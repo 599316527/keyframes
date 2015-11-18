@@ -43,12 +43,27 @@
             </tbody>
         </table>
         {{/doc}}
+        {{#compatible}}
+        <h3>{{{title}}}</h3>
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#list}}
+            <tr class="{{class}}">
+                <th scope="row">{{@index}}</th>
+                <td>{{{notify}}}</td>
+            </tr>
+            {{/list}}
+            </tbody>
+        </table>
+        {{/compatible}}
     </script>
     <style>
-        .api {
-            margin: auto;
-            width: 96%;
-        }
         h4, pre {
             width: 96%;
             margin: 0 auto 20px;
@@ -116,9 +131,6 @@
                         notify: 'duration默认1s'
                     }, {
                         meta: {'z':'100px'},
-                        notify: 'function默认linear'
-                    }, {
-                        meta: {'z':'-100px'},
                         notify: 'function默认linear'
                     }, {
                         meta: {'2d':'-50px, -50px'},
@@ -274,7 +286,16 @@
                         notify: ''
                     }]
                 }]
-            }]
+            }],
+            compatible: {
+                title: '8. 浏览器兼容性问题',
+                class: 'warning',
+                list: [{
+                    notify: 'IE10,11不支持transform-style：preserve-3d,但是支持2d平面变换'
+                },{
+                    notify: '使用skewX + skewY 替代skew，skew存在一些问题'
+                }]
+            }
         };
         require.config({baseUrl: 'dist/amd'});
         require(["Transform", "Event", "Util", "Keyframe"], function (Transform, Event, Util, Keyframe) {
@@ -393,7 +414,9 @@
                     var fn = me.attr('data-fn');
                     var ijk = me.attr('data-ijk');
                     var cf = eval('table.' + ijk);
-                    t[fn](cf.meta);
+                    if (fn) {
+                        t[fn](cf.meta);
+                    }
                 }
             });
         });

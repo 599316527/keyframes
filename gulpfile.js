@@ -95,7 +95,7 @@ gulp.task('amd', function() {
     }
     return true;
 });
-//window['define'] = typeof ESL_define === "function" ? ESL_define : window['define'];
+
 gulp.task('pack', ['concat'], function() {
     return gulp.src(['src/*.js', 'src/*/*.js', 'src/*/*/*.js'])
         .pipe(uglify())
@@ -113,4 +113,28 @@ gulp.task('pack', ['concat'], function() {
 });
 
 gulp.task('default', ['pack'], function () {
+});
+gulp.task('define', function () {
+    var fs = require('fs');
+    var content = fs.readFileSync('dist\\amd\\lib\\Transform.js').toString();
+    fs.writeFileSync('dist\\amd\\lib\\Transform.js', "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
+    return true;
+});
+gulp.task('upload', function() {
+    var exec = require('child_process').exec;
+    exec('edp bcs dist\\amd bs://public01/keyframes/dist/amd',
+        function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            console.log(stdout);
+        });
+    exec('edp bcs dist\\lib\\ bs://public01/keyframes/dist/lib',
+        function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            console.log(stdout);
+        });
+    return true;
 });

@@ -27,7 +27,7 @@ TFCompatible._keyMap = {
 // 其他加入兼容性前缀：transition -->webkitTransition
 TFCompatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
-    if (p === 'moz') {
+    if ('moz ms'.indexOf(p) > -1) {
         TFCompatible.prototype.parseCSS = function (key) {
             if (key in TFCompatible._keyMap) {
                 return TFCompatible._keyMap[key][0];
