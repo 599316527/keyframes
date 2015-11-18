@@ -67,12 +67,35 @@ TFCompatible.prototype.cssMap = function (propertyName) {
         case 'width':
         case 'height':
         case 'opacity':
+        case 'border':
         case 'right': tmp = propertyName; break;
         default: throw new Error(propertyName + ' not supported!');
     }
     return tmp;
 };
-
+TFCompatible.prototype.addStatus = function (status, key) {
+    var keyT = this.cssMap(key);
+    if (keyT === 'border-radius') {
+        status['border-bottom-left-radius'] = false;
+        status['border-top-left-radius'] = false;
+        status['border-bottom-right-radius'] = false;
+        status['border-top-right-radius'] = false;
+    }
+    else if (keyT === 'border') {
+        status['border-left-width'] = false;
+        status['border-top-width'] = false;
+        status['border-right-width'] = false;
+        status['border-bottom-width'] = false;
+        status['border-left-color'] = false;
+        status['border-top-color'] = false;
+        status['border-right-color'] = false;
+        status['border-bottom-color'] = false;
+    }
+    else {
+        status[keyT] = false;
+    }
+    return keyT;
+};
 /**
  * 对于Transform的mix方法，抽取顶层transform的延迟和变换函数等配置
  *

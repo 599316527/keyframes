@@ -3,118 +3,138 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Transform</title>
-    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
     <script src="../lib/require.js"></script>
     <style>
         html, body {
             height: 100%;
-            margin: 0;
-            overflow: hidden;
         }
-        #container {
-            width: 230px;
-            height: 165px;
-            position: relative;
-            margin: -85px auto 0;
-            top: 50%;
-        }
-        #frame1 {
-            width: 25px;
+        #demo {
+            height: 150px;
+            line-height: 150px;
             position: absolute;
-            height: 60px;
-            left: 108px;
-            top: 0px;
-            opacity: 1;
-            background: url(http://bs.baidu.com/public03/2e897163616c44fddada5bad03fdcc62.png) no-repeat;
-            background-size: 100% 100%;
+            left: 50%;
+            top: 50%;
+            margin-left: -2em;
+            margin-top: -1.5em;
+            font-size: 75px;
+            text-align: center;
+            color: #d12;
+        }
+        pre {
+            position: absolute;
+            top: 100px;
         }
     </style>
 </head>
-<body>
-<button id="restart">restart</button>
-<div id="container">
-    <div id="frame1"></div>
-</div>
+<body class="bg">
+<button id="restart" class="btn">restart</button>
+<pre>
+    t.mix({
+        'duration': '2s',
+        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'delay': '0ms',
+        'moveBy': {
+            'x': '100px',
+            'y': '100px'
+        },
+        'scaleBy': {
+            '2d': '1.2, 1.2'
+        },
+        'changeTo': {
+            'bc': 'blue'
+        }
+    }).rotateBy({
+        'duration': '1.5s',
+        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'x': '180deg'
+    }).then(function () {
+        alert(1);
+    }).moveBy({
+        'x': '100px',
+        'y': '100px'
+    }).scaleBy({
+        '2d': '0.5, 0.5'
+    }).changeTo({
+        'br': '50%',
+        'bo': '10px solid red'
+    }).rotateBy({
+        'z': '-30deg'
+    }).rotateBy({
+        'z': '45deg'
+    });
+</pre>
+<div id="demo" class="mask">Transform</div>
 <script>
     require.config({baseUrl: '../dist/amd'});
-    require(["Transform", "Event"], function (Transform, Event) {
-        var t = new Transform(document.getElementById('frame1'), true);
+    require(["Transform", "Event", "Keyframe"], function (Transform, Event, Keyframe) {
+        var btn = Keyframe.defineClass('btn', {
+            'background-color': '#000000',
+            'color': '#ffffff',
+            'border': '2px solid #808080',
+            'padding': '2px',
+            'width': '80px',
+            'margin-top': '10px',
+            'opacity': 0.5,
+            'font-size': '15px',
+            'transition': 'all 1s'
+        });
+        btn.hover({
+            'opacity': 0.7
+        });
+        Keyframe.defineClass('bg', {
+            'background': 'linear-gradient(90deg, #1d2b64 10%, #f8cdda 90%) repeat scroll 0 0 rgba(0, 0, 0, 0)',
+            'overflow': 'hidden'
+        });
+        Keyframe.compile();
+        var t = new Transform(document.getElementById('demo'), true);
         t.on(Event.next, function () {
             console.log(arguments);
         });
         t.on(Event.over, function () {
             console.log(arguments);
         });
+        t.on(Event.end, function (a,b) {
+            console.log(b.propertyName);
+        });
         document.getElementById('restart').onclick = function () {
             t.reExecute();
         };
-        setTimeout(function() {
+        setTimeout(function () {
             t.mix({
                 'duration': '2s',
                 'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
                 'delay': '0ms',
-                'moveTo': [
-                    {
-                        't': '100px'
-                    },
-                    {
-                        'l': '0px',
-                        'duration': '3s',
-                        'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
-                        'delay': '5s'
-                    }
-                ],
                 'moveBy': {
                     'x': '100px',
                     'y': '100px'
                 },
                 'scaleBy': {
-                    '2d': '2, 2'
+                    '2d': '1.2, 1.2'
                 },
-                'rotateBy': {
-                    'z': '45deg'
-                },
-                'skewBy': {
-                    'x': '45deg'
+                'changeTo': {
+                    'bc': 'blue'
                 }
             }).rotateBy({
                 'duration': '1.5s',
                 'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-                'z': '30deg'
-            }).then(function() {
+                'x': '180deg'
+            }).then(function () {
                 alert(1);
-            }).skewBy({
-                '2d': '50deg, 30deg'
+            }).moveBy({
+                'x': '100px',
+                'y': '100px'
             }).scaleBy({
-                '2d': '3, 2'
-            })/*.rotateBy({
-             'z': '45deg',
-             'delay': '1s'
-             }).rotateBy({
-             'z': '45deg',
-             'delay': '1s'
-             })*/;
-            /*t.moveBy({
-             'duration': '1.5s',
-             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-             '2d': '100px, 200px'
-             }).then(function() {
-             alert(1);
-             }).then(function() {
-             console.log('rotateBy');
-             });
-             t.rotateBy({
-             'duration': '1.5s',
-             'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-             'z': '30deg'
-             }).then(function() {
-             console.log('rotateBy');
-             }).skewBy({
-             '2d': '50deg, 30deg'
-             }).scaleBy({
-             '2d': '3, 2'
-             });*/
+                '2d': '0.5, 0.5'
+            }).changeTo({
+                'br': '50%',
+                'bo': '10px solid red'
+            }).rotateBy({
+                'z': '-30deg'
+            }).rotateBy({
+                'z': '45deg'
+            });
         }, 1000);
     });
 </script>

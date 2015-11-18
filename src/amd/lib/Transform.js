@@ -571,12 +571,35 @@ define('Util', function () {
 	        case 'width':
 	        case 'height':
 	        case 'opacity':
+	        case 'border':
 	        case 'right': tmp = propertyName; break;
 	        default: throw new Error(propertyName + ' not supported!');
 	    }
 	    return tmp;
 	};
-	
+	TFCompatible.prototype.addStatus = function (status, key) {
+	    var keyT = this.cssMap(key);
+	    if (keyT === 'border-radius') {
+	        status['border-bottom-left-radius'] = false;
+	        status['border-top-left-radius'] = false;
+	        status['border-bottom-right-radius'] = false;
+	        status['border-top-right-radius'] = false;
+	    }
+	    else if (keyT === 'border') {
+	        status['border-left-width'] = false;
+	        status['border-top-width'] = false;
+	        status['border-right-width'] = false;
+	        status['border-bottom-width'] = false;
+	        status['border-left-color'] = false;
+	        status['border-top-color'] = false;
+	        status['border-right-color'] = false;
+	        status['border-bottom-color'] = false;
+	    }
+	    else {
+	        status[keyT] = false;
+	    }
+	    return keyT;
+	};
 	/**
 	 * 对于Transform的mix方法，抽取顶层transform的延迟和变换函数等配置
 	 *
@@ -771,6 +794,7 @@ define('Util', function () {
 	        bc: 'backgroundColor',
 	        fs: 'fontSize',
 	        br: 'borderRadius',
+	        bo: 'border',
 	        o: 'opacity',
 	        l: 'left',
 	        r: 'right',
@@ -932,19 +956,6 @@ define('Util', function () {
 	        return css;
 	    }, status);
 	};
-	Transform.prototype._addStatus = function (status, key) {
-	    var keyT = this._compatible.cssMap(key);
-	    if (keyT === 'border-radius') {
-	        status['border-bottom-left-radius'] = false;
-	        status['border-top-left-radius'] = false;
-	        status['border-bottom-right-radius'] = false;
-	        status['border-top-right-radius'] = false;
-	    }
-	    else {
-	        status[keyT] = false;
-	    }
-	    return keyT;
-	};
 	
 	/**
 	 * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
@@ -968,7 +979,7 @@ define('Util', function () {
 	    Util.each(configs, function (config) {
 	        if (config.api) {
 	            Util.forIn(config.api, function (key, item) {
-	                keyT = this._addStatus(status, key);
+	                keyT = this._compatible.addStatus(status, key);
 	                css[key] = item;
 	                if (!(key in this._store)) {
 	                    this._store[key] = Util.css(this._dom, key);

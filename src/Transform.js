@@ -130,6 +130,7 @@ Transform._apiMap = {
         bc: 'backgroundColor',
         fs: 'fontSize',
         br: 'borderRadius',
+        bo: 'border',
         o: 'opacity',
         l: 'left',
         r: 'right',
@@ -291,19 +292,6 @@ Transform.prototype._transform = function (config, apiMap) {
         return css;
     }, status);
 };
-Transform.prototype._addStatus = function (status, key) {
-    var keyT = this._compatible.cssMap(key);
-    if (keyT === 'border-radius') {
-        status['border-bottom-left-radius'] = false;
-        status['border-top-left-radius'] = false;
-        status['border-bottom-right-radius'] = false;
-        status['border-top-right-radius'] = false;
-    }
-    else {
-        status[keyT] = false;
-    }
-    return keyT;
-};
 
 /**
  * 只在非相关时才会调用，根据apiMap填充configs配置以及要进行的css变换
@@ -327,7 +315,7 @@ Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css,
     Util.each(configs, function (config) {
         if (config.api) {
             Util.forIn(config.api, function (key, item) {
-                keyT = this._addStatus(status, key);
+                keyT = this._compatible.addStatus(status, key);
                 css[key] = item;
                 if (!(key in this._store)) {
                     this._store[key] = Util.css(this._dom, key);
