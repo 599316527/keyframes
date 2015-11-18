@@ -236,7 +236,10 @@
                         notify: ''
                     },{
                         meta: {'br':'50%'},
-                        notify: 'borderRadius变换会拆分成4个事件'
+                        notify: 'borderRadius变换会拆分成4个事件,safari则只有一个事件'
+                    },{
+                        meta: {'bo':'10p solid red'},
+                        notify: 'borderRadius变换会拆分成4个事件,safari则只有一个事件'
                     },{
                         meta: {'fs':'50px'},
                         notify: ''
@@ -399,6 +402,9 @@
             setTimeout(function () {
                 t = new Transform(document.getElementById('target'), true);
                 t.on(Event.next, function () {
+                    console.log(arguments);
+                });
+                t.on(Event.end, function () {
                     console.log(arguments);
                 });
                 t.on(Event.over, function () {

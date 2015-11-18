@@ -96,6 +96,7 @@ TFCompatible.prototype.addStatus = function (status, key) {
     }
     return keyT;
 };
+
 /**
  * 对于Transform的mix方法，抽取顶层transform的延迟和变换函数等配置
  *
