@@ -17,9 +17,28 @@ gulp.task('lint',['concat'], function() {
 });
 
 gulp.task('concat', ['amd'],  function() {
+    function contains(a, obj) {
+        var i = a.length;
+        while (i--) {
+            if (a[i] === obj) {
+                return true;
+            }
+        }
+        return false;
+    }
+    var all = [];
     for (var key in generateMap) {
         gulp.src(generateMap[key]).pipe(concat(key + '.js')).pipe(gulp.dest('src/lib'));
+        for (var i = 0; i< generateMap[key].length; i++) {
+            if (contains(all, generateMap[key][i])) {
+
+            }
+            else {
+                all.push(generateMap[key][i]);
+            }
+        }
     }
+    gulp.src(all).pipe(concat('lib.js')).pipe(gulp.dest('src/'));
     return true;
 });
 gulp.task('amd', function() {

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Animation Index Page</title>
+    <style>
+        ul {
+            text-transform: capitalize;
+            width: 200px;
+            margin-top: 0;
+            padding-top: 10px;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 20px;
+            padding-top: 0px;
+        }
+        ul li {
+            list-style: none;
+            -webkit-transition: font-size 1s;
+            -moz-transition: font-size 1s;
+            transition: font-size 1s;
+            color: #ffffff;
+            opacity: 0.3;
+            line-height: 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        ul li:hover {
+            opacity: 1;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+        iframe {
+            height: 600px;
+            width: 65%;
+            float: left;
+            border: 0;
+        }
+        #list {
+            float: left;
+            width: 30%;
+            min-width: 300px;
+            -webkit-column-count:2;
+            -webkit-column-gap:1em;
+            -moz-column-count: 2;
+            -moz-column-gap:1em;
+            columns: 180px 2;
+            cloumn-gap:1em;
+        }
+        div {
+            overflow: hidden;
+            margin: auto;
+        }
+        #container {
+            width: 90%;
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1>Animation Index</h1>
+<div id="container">
+<iframe id="frame"></iframe>
+<div id="list">
+<ul>
+    attention<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/bounce.html')">bounce</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/flash.html')">flash</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/pulse.html')">pulse</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/rubber.html')">rubber</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/shake.html')">shake</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/swing.html')">swing</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/tada.html')">tada</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './attention/wobble.html')">wobble</li>
+</ul>
+<ul>
+    bounce<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceIn.html')">bounceIn</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceInDown.html')">bounceInDown</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceInLeft.html')">bounceInLeft</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceInRight.html')">bounceInRight</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceInUp.html')">bounceInUp</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceOut.html')">bounceOut</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceOutDown.html')">bounceOutDown</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceOutLeft.html')">bounceOutLeft</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceOutRight.html')">bounceOutRight</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './bounce/bounceOutUp.html')">bounceOutUp</li>
+</ul>
+<ul>
+    custom<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './custom/blaze.html')">blaze</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './custom/flame.html')">flame</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './custom/hover.html')">hover</li>
+</ul>
+<ul>
+    demo<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './demo/run.html')">run</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './demo/scale_a.html')">scale_a</li>
+</ul>
+<ul>
+    flipper<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './flipper/flip.html')">flip</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './flipper/flipInX.html')">flipInX</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './flipper/flipInY.html')">flipInY</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './flipper/flipOutX.html')">flipOutX</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './flipper/flipOutY.html')">flipOutY</li>
+</ul>
+<ul>
+    loading<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './loading/audioWave.html')">audioWave</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './loading/circSquare.html')">circSquare</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './loading/gw.html')">gw</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './loading/snake.html')">snake</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './loading/spinDisc.html')">spinDisc</li>
+</ul>
+<ul>
+    special<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './special/hinge.html')">hinge</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './special/rollIn.html')">rollIn</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './special/rollOut.html')">rollOut</li>
+</ul>
+<ul>
+    speed<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './speed/speedIn.html')">speedIn</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './speed/speedOut.html')">speedOut</li>
+</ul>
+<ul>
+    zoom<br/>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomIn.html')">zoomIn</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomInDown.html')">zoomInDown</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomInLeft.html')">zoomInLeft</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomInRight.html')">zoomInRight</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomInUp.html')">zoomInUp</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomOut.html')">zoomOut</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomOutDown.html')">zoomOutDown</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomOutLeft.html')">zoomOutLeft</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomOutRight.html')">zoomOutRight</li>
+    <li onclick="document.getElementById('frame').setAttribute('src', './zoom/zoomOutUp.html')">zoomOutUp</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
