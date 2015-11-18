@@ -415,6 +415,7 @@
                     var ijk = me.attr('data-ijk');
                     var cf = eval('table.' + ijk);
                     if (fn) {
+                        console.log(fn, cf.meta);
                         t[fn](cf.meta);
                     }
                 }
