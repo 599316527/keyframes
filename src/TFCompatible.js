@@ -73,26 +73,31 @@ TFCompatible.prototype.cssMap = function (propertyName) {
     }
     return tmp;
 };
+TFCompatible.prototype.eventMap = {
+    'border-radius': [
+        'border-bottom-left-radius',
+        'border-top-left-radius',
+        'border-bottom-right-radius',
+        'border-top-right-radius'
+    ],
+    'border': [
+        'border-left-width',
+        'border-top-width',
+        'border-right-width',
+        'border-bottom-width',
+        'border-left-color',
+        'border-top-color',
+        'border-right-color',
+        'border-bottom-color'
+    ]
+};
 TFCompatible.prototype.addStatus = function (status, key) {
     var keyT = this.cssMap(key);
-    if (keyT === 'border-radius') {
-        status['border-bottom-left-radius'] = false;
-        status['border-top-left-radius'] = false;
-        status['border-bottom-right-radius'] = false;
-        status['border-top-right-radius'] = false;
-    }
-    else if (keyT === 'border') {
-        status['border-left-width'] = false;
-        status['border-top-width'] = false;
-        status['border-right-width'] = false;
-        status['border-bottom-width'] = false;
-        status['border-left-color'] = false;
-        status['border-top-color'] = false;
-        status['border-right-color'] = false;
-        status['border-bottom-color'] = false;
+    if (keyT in this.eventMap) {
+        status.add(keyT, this.eventMap[keyT]);
     }
     else {
-        status[keyT] = false;
+        status.add(keyT);
     }
     return keyT;
 };

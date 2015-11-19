@@ -3,7 +3,7 @@
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* eslint-disable no-loop-func */
-/* global EventEmitter Util Compatible TFCompatible Event */
+/* global EventEmitter Util Compatible TFCompatible Event Status */
 /* define Transform */
 
 /**
@@ -54,23 +54,15 @@ Transform.prototype._listen = function () {
         if (me._index < me._steps.length) {
             var step = me._steps[me._index];
             var propertyName = evt.propertyName.replace(cpt.prefix, '');
-            if (propertyName in step.status) {
-                step.status[propertyName] = true;
-                var status = step.status;
-                var isEnd = Util.forIn(status, function (key, value) {
-                    if (!value) {
-                        return false;
-                    }
-                });
-                if (isEnd) {
-                    me._index++;
-                    if (step.next) {
-                        me.emit(Event.next, step);
-                        step.next();
-                    }
-                    else {
-                        me.emit(Event.over, step);
-                    }
+            step.status.digest(propertyName);
+            if (step.status.isDone()) {
+                me._index++;
+                if (step.next) {
+                    me.emit(Event.next, step);
+                    step.next();
+                }
+                else {
+                    me.emit(Event.over, step);
                 }
             }
         }
@@ -94,9 +86,7 @@ Transform.prototype.reStore = function () {
     while (this._index > 0) {
         this._index--;
         status = this._steps[this._index].status;
-        Util.forKey(status, function (key) {
-            status[key] = false;
-        });
+        status.reset();
     }
     this._transformRecord = '';
     return this;
@@ -174,7 +164,7 @@ Transform._apiMap = {
  * @private
  * @param {Object} transition transition键值对象
  * @param {Function} generator css键值对象，包括transform
- * @param {Object} status 需要监听的属性变化对象，包括transform以及其他css属性
+ * @param {Status} status 需要监听的属性变化对象，包括transform以及其他css属性
  */
 Transform.prototype._step = function (transition, generator, status) {
     var me = this;
@@ -281,8 +271,8 @@ Transform.prototype._transform = function (config, apiMap) {
     var $transform = cpt.cssMap('transform');
     var val = [];
     this._fillTransformParams(config, apiMap, val);
-    var status = {};
-    status.transform = false;
+    var status = new Status();
+    status.add('transform');
     config.property = $transform;
     this._step(cpt.parseTransition(config), function () {
         // 应当计算上一个动画结束时的transform，所以需要用回调
@@ -301,7 +291,7 @@ Transform.prototype._transform = function (config, apiMap) {
  * @param {Object} apiMap 所支持的相应变化
  * @param {Array.<string>} transition css属性transition集合
  * @param {Object} css css变换键值对
- * @param {Object} status 状态监听对象
+ * @param {Status} status 状态监听对象
  * @return {Object} 返回添加过api的配置对象，用于产出transition值，用不到api，只是方便调用
  */
 Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css, status) {
@@ -344,7 +334,7 @@ Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css,
 Transform.prototype._css = function (configs, apiMap) {
     var transition = [];
     var css = {};
-    var status = {};
+    var status = new Status();
     this._fillCSSParams(configs, apiMap, transition, css, status);
     this._step(transition.join(','), function () {
         return css;
@@ -420,7 +410,7 @@ Transform.prototype.rotateBy = function (config) {
 Transform.prototype.mock = function (method, config) {
     var apiMap = Transform._apiMap[method];
     var css = {};
-    var status = {};
+    var status = new Status();
     var transition = [];
     if ('moveTo changeTo'.indexOf(method) > -1) {
         this._fillCSSParams(config, apiMap, transition, css, status);
@@ -451,7 +441,7 @@ Transform.prototype.mock = function (method, config) {
             }
         }, this);
         if (transformCount > 0) {
-            status.transform = false;
+            status.add('transform');
             config.property = $transform;
             transition.push(cpt.parseTransition(config));
         }
@@ -462,7 +452,7 @@ Transform.prototype.mock = function (method, config) {
         return [transition.join(','), css, status];
     }
     this._fillTransformParams(config, apiMap, val);
-    status.transform = false;
+    status.add('transform');
     config.property = $transform;
     css[transform] = 'old+; ' + val.join(' ');
     return [cpt.parseTransition(config), css, status];
@@ -472,7 +462,7 @@ Transform.prototype.mix = function (config) {
     var part;
     var transition = [];
     var css = {};
-    var status = {};
+    var status = new Status();
     var val = [];
     var transformCount = 0;
     Util.forIn(Transform._apiMap, function (key, $apiMap) {
@@ -495,7 +485,7 @@ Transform.prototype.mix = function (config) {
     var cpt = me._compatible;
     if (transformCount > 0) {
         var $transform = cpt.cssMap('transform');
-        status.transform = false;
+        status.add('transform');
         config.property = $transform;
         transition.push(cpt.parseTransition(config));
     }

@@ -35,7 +35,7 @@
                 <td>{{_meta}}</td>
                 <td>{{transition}}</td>
                 <td>{{css}}</td>
-                <td>{{status}}</td>
+                <td>{{{status}}}</td>
                 <td>{{{notify}}}</td>
             </tr>
             {{/list}}
@@ -238,8 +238,8 @@
                         meta: {'br':'50%'},
                         notify: 'borderRadius变换会拆分成4个事件,safari则只有一个事件'
                     },{
-                        meta: {'bo':'10p solid red'},
-                        notify: 'borderRadius变换会拆分成4个事件,safari则只有一个事件'
+                        meta: {'bo':'10px solid red'},
+                        notify: 'border变换会拆分成8个事件,safari则只有一个事件,已做兼容'
                     },{
                         meta: {'fs':'50px'},
                         notify: ''
@@ -392,7 +392,14 @@
                             css.push(key + ':' + val);
                         });
                         item.css = css.join(';');
-                        item.status = JSON.stringify(mock[2]);
+                        var tmp = '';
+                        Util.forIn(mock[2].once, function (key, val) {
+                            tmp += val + '</br>'
+                        });
+                        if (tmp) {
+                            tmp = '</br>' + tmp;
+                        }
+                        item['status'] = JSON.stringify(mock[2].all).replace(/[{}]/g, '') + tmp;
                         item.ijk = 'doc[' + i + '].module[' + j + '].list[' + k + ']';
                     });
                 });
