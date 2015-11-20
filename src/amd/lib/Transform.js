@@ -694,10 +694,10 @@ define('Util', function () {
 	 */
 	function Status() {
 	    this.init();
-	    this.sep = '|';
 	    this.size = 0;
 	    this.store = [];
 	}
+	Status.sep = '|';
 	Status.prototype.init = function () {
 	    this.all = {};
 	    this.once = {};
@@ -713,7 +713,7 @@ define('Util', function () {
 	 */
 	Status.prototype.add = function (all, once, isReset) {
 	    this.all[all] = false;
-	    var sep = this.sep;
+	    var sep = Status.sep;
 	    if (once) {
 	        this.once[all] = sep + once.join(sep + sep) + sep;
 	    }
@@ -740,7 +740,7 @@ define('Util', function () {
 	Status.prototype.digest = function (pName) {
 	    var all = this.all;
 	    var once = this.once;
-	    var sep = this.sep;
+	    var sep = Status.sep;
 	    if (pName in all) {
 	        all[pName] = true;
 	        delete once[pName];

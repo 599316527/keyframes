@@ -135,20 +135,23 @@ gulp.task('default', ['pack'], function () {
 });
 gulp.task('define', function () {
     var fs = require('fs');
-    var content = fs.readFileSync('dist\\amd\\lib\\Transform.js').toString();
-    fs.writeFileSync('dist\\amd\\lib\\Transform.js', "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
+    var path = require('path');
+    //console.log(path.join('dist', 'amd', 'lib', 'Transform.js'));
+    var content = fs.readFileSync(path.join('dist', 'amd', 'lib', 'Transform.js')).toString();
+    fs.writeFileSync(path.join('dist', 'amd', 'lib', 'Transform.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
     return true;
 });
 gulp.task('upload', function() {
+    var path = require('path');
     var exec = require('child_process').exec;
-    exec('edp bcs dist\\amd bs://public01/keyframes/dist/amd',
+    exec('edp bcs dist' + path.sep + 'amd bs://public01/keyframes/dist/amd',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
             console.log(stdout);
         });
-    exec('edp bcs dist\\lib\\ bs://public01/keyframes/dist/lib',
+    exec('edp bcs dist' + path.sep + 'lib bs://public01/keyframes/dist/lib',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
