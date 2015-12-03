@@ -49,11 +49,11 @@
         'duration': '1.5s',
         'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
         'x': '180deg'
-    }).then(function () {
-        alert(1);
     }).moveBy({
         'x': '100px',
         'y': '100px'
+    }).then(function () {
+        alert(1);
     }).scaleBy({
         '2d': '0.5, 0.5'
     }).changeTo({
@@ -63,6 +63,8 @@
         'z': '-30deg'
     }).rotateBy({
         'z': '45deg'
+    }).then(function () {
+        alert('finish');
     });
 </pre>
 <div id="demo" class="mask">Transform</div>
@@ -120,11 +122,11 @@
                 'duration': '1.5s',
                 'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
                 'x': '180deg'
-            }).then(function () {
-                alert(1);
             }).moveBy({
                 'x': '100px',
                 'y': '100px'
+            }).then(function () {
+                alert(1);
             }).scaleBy({
                 '2d': '0.5, 0.5'
             }).changeTo({
@@ -134,6 +136,8 @@
                 'z': '-30deg'
             }).rotateBy({
                 'z': '45deg'
+            }).then(function () {
+                alert('finish');
             });
         }, 1000);
     });
