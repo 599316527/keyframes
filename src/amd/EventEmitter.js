@@ -91,7 +91,7 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	    Util.each(dependency, function (eventName, i) {
 	        record[eventName] = false;
 	        this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
-	    });
+	    }, me);
 	    this.emit(Event.all, dependency, option);
 	};
 	EventEmitter.prototype.emit = function (eventName) {

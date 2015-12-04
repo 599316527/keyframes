@@ -6,6 +6,8 @@
 /**
  * @namespace
  */
+// transform ie 9
+// transition keyframe ie 10, 所以不需要考虑ie9之下
 var Util = {
 
     /**
@@ -120,16 +122,10 @@ var Util = {
         return i === ary.length;
     },
     random: {
-        generator: [
-            function () {
-                return String.fromCharCode(48 + Math.round(9 * Math.random()));
-            },
-            function () {
-                return String.fromCharCode(65 + Math.round(25 * Math.random()));
-            },
-            function () {
-                return String.fromCharCode(97 + Math.round(25 * Math.random()));
-            }],
+        seed: [[48, 9], [65, 25], [97, 25]],
+        generator: function (seed) {
+            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
+        },
         word: function (index) {
             var range;
             if (index === 0) {
@@ -138,13 +134,13 @@ var Util = {
             else {
                 range = Math.floor(Math.random() * 3);
             }
-            return Util.random.generator[range]();
+            return this.generator(this.seed[range]);
         },
         name: function (length) {
             length = length || 6;
             var name = '';
             for (var i = 0; i < length; i++) {
-                name += Util.random.word(i);
+                name += this.word(i);
             }
             return name;
         }
@@ -166,66 +162,24 @@ var Util = {
         });
     },
     stopPropagation: function (event) {
-        if (event.stopPropagation) {
-            Util.stopPropagation = function (event) {
-                event.stopPropagation();
-            };
-        }
-        else {
-            Util.stopPropagation = function (event) {
-                event.cancelBubble = true;
-            };
-        }
-        return Util.stopPropagation(event);
+        // stopPropagation ie 9 support
+        event.stopPropagation();
     },
     $css: function (dom, key, value) {
-        if (typeof window.getComputedStyle !== 'undefined') { // W3C
-            Util.$css = function (dom, key, value) {
-                if (value !== undefined) {
-                    dom.style[key] = value;
-                    return value;
-                }
-                var tmp = window.getComputedStyle(dom, null)[key];
-                return !tmp ? dom.style[key] : tmp;
-            };
+        if (value !== undefined) {
+            dom.style[key] = value;
+            return value;
         }
-        else if (typeof dom.currentStyle !== 'undefined') {
-            Util.$css = function (dom, key, value) {
-                if (value !== undefined) {
-                    dom.style[key] = value;
-                    return value;
-                }
-                var tmp = dom.currentStyle[key];
-                return !tmp ? dom.style[key] : tmp;
-            };
-        }
-        return this.$css(dom, key, value);
+        // getComputedStyle ie 9 support
+        var tmp = window.getComputedStyle(dom, null)[key];
+        return !tmp ? dom.style[key] : tmp;
     },
+    // addEventListener ie 9 support
     on: function (dom, name, fn) {
-        if ('addEventListener' in window) {
-            Util.on = function (dom, name, fn) {
-                dom.addEventListener(name, fn, false);
-            };
-        }
-        else if ('attachEvent' in window) {
-            Util.on = function (dom, name, fn) {
-                dom.attachEvent('on' + name, fn);
-            };
-        }
-        return this.on(dom, name, fn);
+        dom.addEventListener(name, fn, false);
     },
     off: function (dom, name, fn) {
-        if ('removeEventListener' in window) {
-            Util.off = function (dom, name, fn) {
-                dom.removeEventListener(name, fn, false);
-            };
-        }
-        else if ('detachEvent' in window) {
-            Util.off = function (dom, name, fn) {
-                dom.detachEvent('on' + name, fn);
-            };
-        }
-        this.off(dom, name, fn);
+        dom.removeEventListener(name, fn, false);
     }
 };
 
@@ -441,7 +395,7 @@ EventEmitter.prototype.all = function (dependency, fn, option) {
     Util.each(dependency, function (eventName, i) {
         record[eventName] = false;
         this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
-    });
+    }, me);
     this.emit(Event.all, dependency, option);
 };
 EventEmitter.prototype.emit = function (eventName) {

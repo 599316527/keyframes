@@ -97,7 +97,7 @@ EventEmitter.prototype.all = function (dependency, fn, option) {
     Util.each(dependency, function (eventName, i) {
         record[eventName] = false;
         this.on(eventName, proxyCallback(i), {type: EventEmitter.type.all});
-    });
+    }, me);
     this.emit(Event.all, dependency, option);
 };
 EventEmitter.prototype.emit = function (eventName) {

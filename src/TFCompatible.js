@@ -46,6 +46,7 @@ TFCompatible.prototype.parseCSS = function (key) {
     }
     return this.parseCSS(key);
 };
+// 用于设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
 TFCompatible.prototype.cssMap = function (propertyName) {
     var tmp;
     switch (propertyName) {
