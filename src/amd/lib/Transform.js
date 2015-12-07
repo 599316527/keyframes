@@ -607,16 +607,14 @@ define('Util', function () {
 	    else if (typeof obj === 'object') {
 	        clone = {};
 	        Util.forIn(obj, function (key, value) {
-	            if (value) {
-	                if (key in keyMap) {
-	                    clone[key] = this.clone(value, apiMap);
+	            if (key in keyMap) {
+	                clone[key] = this.clone(value, apiMap);
+	            }
+	            else if (key in apiMap) {
+	                if (!('api' in clone)) {
+	                    clone.api = {};
 	                }
-	                else if (key in apiMap) {
-	                    if (!('api' in clone)) {
-	                        clone.api = {};
-	                    }
-	                    clone.api[apiMap[key]] = this.clone(value, apiMap);
-	                }
+	                clone.api[apiMap[key]] = this.clone(value, apiMap);
 	            }
 	        }, this);
 	    }

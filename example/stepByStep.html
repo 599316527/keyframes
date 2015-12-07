@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>炫动-移动</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
+    <script src="../dist/lib/Keyframe.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+        #container {
+            width: 230px;
+            height: 165px;
+            position: relative;
+            margin: -85px auto 0;
+            top: 50%;
+        }
+        #frame1 {
+           width: 180px;
+           height: 300px;
+           background: url(images/run.png) 0 0 no-repeat;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="frame1"></div>
+</div>
+<script>
+    var config = {
+        "frame1@step-start#infinite": {
+            "0": {
+                "background-position": "0 0"
+            },
+            "0.3": {
+                "background-position": "-180px 0"
+            },
+            "0.6": {
+                "background-position": "-360px 0"
+            },
+            "0.9": {
+                "background-position": "-540px 0"
+            },
+            "1.2": {
+                "background-position": "-720px 0"
+            },
+            "1.5": {
+                "background-position": "-900px 0"
+            },
+            "1.8": {
+                "background-position": "-1080px 0"
+            }
+        }
+    };
+    var group = Keyframe.group(config);
+    group.onEnd(function() {
+        console.log('finished');
+    });
+    group.start();
+</script>
+</body>
+</html>

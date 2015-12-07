@@ -136,7 +136,6 @@ gulp.task('default', ['pack'], function () {
 gulp.task('define', function () {
     var fs = require('fs');
     var path = require('path');
-    //console.log(path.join('dist', 'amd', 'lib', 'Transform.js'));
     var content = fs.readFileSync(path.join('dist', 'amd', 'lib', 'Transform.js')).toString();
     fs.writeFileSync(path.join('dist', 'amd', 'lib', 'Transform.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
     return true;
