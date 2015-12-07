@@ -14,60 +14,118 @@
             height: 150px;
             line-height: 150px;
             position: absolute;
-            left: 50%;
-            top: 50%;
+            left: 30%;
+            top: 40%;
             margin-left: -2em;
             margin-top: -1.5em;
             font-size: 75px;
             text-align: center;
             color: #d12;
+            opacity: 0;
         }
         pre {
             position: absolute;
-            top: 100px;
+            right: 100px;
+            top: 5%;
+            height: 80%;
+            overflow-y: scroll;
+            display: block;
+            padding: 9.5px;
+            margin: 0 0 10px;
+            font-size: 13px;
+            line-height: 1.42857143;
+            background-color: #333;
+            word-break: break-all;
+            word-wrap: break-word;
+            color: #f5f5f5;
+            border: 1px solid black;
+            border-radius: 4px;
+            font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
         }
     </style>
 </head>
 <body class="bg">
 <button id="restart" class="btn">restart</button>
+<div id="demo" class="mask">Transform</div>
 <pre>
     t.mix({
-        'duration': '2s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0ms',
-        'moveBy': {
-            'x': '100px',
-            'y': '100px'
-        },
+        'duration': '0.1s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
         'scaleBy': {
-            '2d': '1.2, 1.2'
+            '2d': '2'
+        },
+        'rotateBy': {
+            'z': '120deg'
         },
         'changeTo': {
-            'bc': 'blue'
+            'br': '5px',
+            'bc': 'black'
         }
-    }).rotateBy({
-        'duration': '1.5s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'x': '180deg'
+    }).mix({
+        'duration': '1.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.35'
+        },
+        'rotateBy': {
+            'z': '-110deg'
+        },
+        'changeTo': {
+            'br': '20px',
+            'o': 0.7
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '2.2'
+        },
+        'rotateBy': {
+            'z': '-10deg'
+        },
+        'changeTo': {
+            'o': 0.8
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.5'
+        },
+        'changeTo': {
+            'o': 0.9
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '1.5'
+        },
+        'changeTo': {
+            'o': 0.95
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.8'
+        },
+        'changeTo': {
+            'o': 1
+        }
     }).moveBy({
         'x': '100px',
         'y': '100px'
     }).then(function () {
         alert(1);
-    }).scaleBy({
-        '2d': '0.5, 0.5'
     }).changeTo({
         'br': '50%',
-        'bo': '10px solid red'
-    }).rotateBy({
-        'z': '-30deg'
-    }).rotateBy({
-        'z': '45deg'
+        'bo': '10px solid red',
+        'bc': 'transparent'
     }).then(function () {
         alert('finish');
     });
 </pre>
-<div id="demo" class="mask">Transform</div>
 <script>
     require.config({baseUrl: '../dist/amd'});
     require(["Transform", "Event", "Keyframe"], function (Transform, Event, Keyframe) {
@@ -106,37 +164,79 @@
 
         setTimeout(function () {
             t.mix({
-                'duration': '2s',
-                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-                'delay': '0ms',
-                'moveBy': {
-                    'x': '100px',
-                    'y': '100px'
-                },
+                'duration': '0.1s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
                 'scaleBy': {
-                    '2d': '1.2, 1.2'
+                    '2d': '2'
+                },
+                'rotateBy': {
+                    'z': '120deg'
                 },
                 'changeTo': {
-                    'bc': 'blue'
+                    'br': '5px',
+                    'bc': 'black'
                 }
-            }).rotateBy({
-                'duration': '1.5s',
-                'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-                'x': '180deg'
+            }).mix({
+                'duration': '1.2s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'scaleBy': {
+                    '2d': '0.35'
+                },
+                'rotateBy': {
+                    'z': '-110deg'
+                },
+                'changeTo': {
+                    'br': '20px',
+                    'o': 0.7
+                }
+            }).mix({
+                'duration': '0.2s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'scaleBy': {
+                    '2d': '2.2'
+                },
+                'rotateBy': {
+                    'z': '-10deg'
+                },
+                'changeTo': {
+                    'o': 0.8
+                }
+            }).mix({
+                'duration': '0.2s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'scaleBy': {
+                    '2d': '0.5'
+                },
+                'changeTo': {
+                    'o': 0.9
+                }
+            }).mix({
+                'duration': '0.2s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'scaleBy': {
+                    '2d': '1.5'
+                },
+                'changeTo': {
+                    'o': 0.95
+                }
+            }).mix({
+                'duration': '0.2s',
+                'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+                'scaleBy': {
+                    '2d': '0.8'
+                },
+                'changeTo': {
+                    'o': 1
+                }
             }).moveBy({
                 'x': '100px',
                 'y': '100px'
             }).then(function () {
                 alert(1);
-            }).scaleBy({
-                '2d': '0.5, 0.5'
             }).changeTo({
                 'br': '50%',
-                'bo': '10px solid red'
-            }).rotateBy({
-                'z': '-30deg'
-            }).rotateBy({
-                'z': '45deg'
+                'bo': '10px solid red',
+                'bc': 'transparent'
             }).then(function () {
                 alert('finish');
             });

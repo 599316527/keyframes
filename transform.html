@@ -64,7 +64,7 @@
         {{/compatible}}
     </script>
     <style>
-        h4, pre {
+        h4, pre, .api{
             width: 96%;
             margin: 0 auto 20px;
         }
@@ -444,52 +444,90 @@
     所有的变换，可以函数链式调用，只有在上一个变换完成后，才会开始下一个变换，比如：
     var t = new Transform(document.getElementById('frame1'), true);
     t.on(Event.next, function() {
-        // 下一个变换开始时触发
-        console.log(arguments);
+        console.log(arguments); // 下一个变换开始时触发
     });
     t.on(Event.over, function() {
-        // 所有的变换完成后触发
-        console.log(arguments);
+        console.log(arguments); // 所有的变换完成后触发
     });
     t.mix({
-        'duration': '2s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'delay': '0ms',
-        'moveTo': [{
-            't': '100px'
-        }, {
-            'l': '0px',
-            'duration': '3s',
-            'function': 'linear', // ease,linear,ease-in,ease-out,ease-in-out cub
-            'delay': '5s'
-        }],
-        'moveBy': {
-            'x': '100px',
-            'y': '100px'
-        },
+        'duration': '0.1s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
         'scaleBy': {
-            '2d': '2, 2'
+            '2d': '2'
         },
         'rotateBy': {
-            'z': '45deg'
+            'z': '120deg'
         },
-        'skewBy': {
-            'x': '45deg'
+        'changeTo': {
+            'br': '5px',
+            'bc': 'black'
         }
-    }).rotateBy({
-        'duration': '1.5s',
-        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
-        'z': '30deg'
-    }).then(function() {
+    }).mix({
+        'duration': '1.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.35'
+        },
+        'rotateBy': {
+            'z': '-110deg'
+        },
+        'changeTo': {
+            'br': '20px',
+            'o': 0.7
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '2.2'
+        },
+        'rotateBy': {
+            'z': '-10deg'
+        },
+        'changeTo': {
+            'o': 0.8
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.5'
+        },
+        'changeTo': {
+            'o': 0.9
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '1.5'
+        },
+        'changeTo': {
+            'o': 0.95
+        }
+    }).mix({
+        'duration': '0.2s',
+        'function': 'ease', // ease,linear,ease-in,ease-out,ease-in-out cub
+        'scaleBy': {
+            '2d': '0.8'
+        },
+        'changeTo': {
+            'o': 1
+        }
+    }).moveBy({
+        'x': '100px',
+        'y': '100px'
+    }).then(function () {  // then函数可以将回调插入变换队列中执行
         alert(1);
-    }).skewBy({
-        '2d': '50deg, 30deg'
-    }).scaleBy({
-        '2d': '3, 2'
+    }).changeTo({
+        'br': '50%',
+        'bo': '10px solid red',
+        'bc': 'transparent'
+    }).then(function () {
+        alert('finish');
     });
 
-    then函数可以将回调插入变换队列中执行。
-    reExecute函数重写执行所有变换，<a href="example/transform.html" target="_blank">试一试</a>。
+    reExecute函数重新执行所有变换，<a href="example/transform.html" target="_blank">试一试</a>。
     A: rotateX 90deg + translateZ 100px
     B: translateZ 100px  + rotateX 90deg
     A !== B, A是在旋转之后为基准去变换

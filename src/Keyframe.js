@@ -231,15 +231,14 @@ Keyframe.defineKeyframe = function (frame, metaData) {
     throw new Error('incorrect parameters!');
 };
 Keyframe.defineClass = function (className, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        className = Util.random.name(8);
-    }
     if (Checker.stringObject.check(arguments)) {
         return new ClassProxy(className, metaData);
     }
     else if (Checker.string.check(arguments)) {
         return new ClassProxy(className);
+    }
+    else if (Checker.object.check(arguments)) {
+        return new ClassProxy(Util.random.name(8), className);
     }
     throw new Error('incorrect parameters!');
 };
