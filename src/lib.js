@@ -1319,6 +1319,12 @@ Keyframe.compile = function () {
 Keyframe.group = function (group) {
     var frames = [];
     var frameProxy;
+    if ('class' in group) {
+        Util.forIn(group['class'], function (className, cssText) {
+            Keyframe.defineClass(className, cssText);
+        });
+        delete group['class'];
+    }
     Util.forIn(group, function (dom, item) {
         frameProxy = Keyframe.timeLine(item);
         frames.push(frameProxy.keyframe(dom));
@@ -1344,9 +1350,9 @@ Keyframe.timeLine = function (timeLine) {
     var duration = parseFloat(max - min).toFixed(3);
     var percent = -1;
     Util.forIn(map, function (time, item) {
-        percent = parseInt(Math.round((item - min) * 100 / duration), 10);
+        percent = ((item - min) * 100 / duration).toFixed(2);
         while (percent in adjust) {
-            percent = percent + 1;
+            percent = percent + 0.01;
         }
         adjust[percent] = true;
         map[time] = percent;
