@@ -1260,30 +1260,30 @@ define('Util', function () {
 	    var times = [];
 	    var map = {};
 	    var adjust = {};
+	    var float;
 	    Util.forIn(timeLine, function (time) {
 	        Util.each(time.split(/\s+/), function (data) {
-	            map[data] = parseFloat(data);
+	            float = parseFloat(data);
+	            map[data] = float;
+	            times.push(float);
 	        });
-	    });
-	    Util.forIn(map, function (time, item) {
-	        times.push(item);
 	    });
 	    times.sort();
 	    var min = times[0];
 	    var max = times[times.length - 1];
 	    var duration = parseFloat(max - min).toFixed(3);
-	    var percent = -1;
+	    var percent;
 	    Util.forIn(map, function (time, item) {
 	        percent = ((item - min) * 100 / duration).toFixed(2);
 	        while (percent in adjust) {
 	            percent = percent + 0.01;
 	        }
 	        adjust[percent] = true;
-	        map[time] = percent;
+	        map[time] = String(percent).replace(/\.0+$/, '');
 	    });
 	    var percentLine = {};
 	    Util.forIn(timeLine, function (time, item) {
-	        percent = []
+	        percent = [];
 	        Util.each(time.split(/\s+/), function (data) {
 	            percent.push(map[data]);
 	        });
