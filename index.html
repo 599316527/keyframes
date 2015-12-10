@@ -109,7 +109,22 @@
     </style>
 </head>
 <body>
-<div class="page-header">
+<div class="scene">
+    <div class="p3d space">
+        <div class="zuobiao space">
+            <div class="z wall space"><em>Z</em></div>
+            <div class="x wall space"><em class="z90">X</em></div>
+            <div class="y wall space"><em class="x180">Y</em></div>
+        </div>
+        <div class="demo space">
+            <div id="before" class="target space"></div>
+            <div id="after" class="target space"><em>炫动</em></div>
+        </div>
+        <div class="ec-audioWave space"></div>
+        <div class="ec-snake space"></div>
+    </div>
+</div>
+<div class="page-header z-top">
     <h1>Keyframes Animation API DOC<small style="margin-left: 20px;"><a target="_blank" href="example/doc.html" style="cursor: pointer;">write & compile in time</a></small></h1>
 </div>
 <div class="api">
@@ -322,6 +337,9 @@
         _scale = '1, 1';
         _top = '-100px';
     }
+    Keyframe.defineClass('z-top', {
+        'translateZ': '10000px'
+    });
     Keyframe.defineClass('scene', {
         'transform-style': 'preserve-3d',
         'scale': _scale,
@@ -429,21 +447,6 @@
     });
     Keyframe.compile();
 </script>
-<div class="scene">
-    <div class="p3d space">
-        <div class="zuobiao space">
-            <div class="z wall space"><em>Z</em></div>
-            <div class="x wall space"><em class="z90">X</em></div>
-            <div class="y wall space"><em class="x180">Y</em></div>
-        </div>
-        <div class="demo space">
-            <div id="before" class="target space"></div>
-            <div id="after" class="target space"><em>炫动</em></div>
-        </div>
-        <div class="ec-audioWave space"></div>
-        <div class="ec-snake space"></div>
-    </div>
-</div>
 <h4>动画样例：<a target="_blank" href="example/index.html">bs.baidu.com/public01/keyframes/example/index.html</a></h4>
 <h4>打包好的Keyframe.js地址(AMD)：<a target="_blank" href="dist/amd/lib/Keyframe.js">bs.baidu.com/public01/keyframes/dist/amd/lib/Keyframe.js</a></h4>
 <h4>未打包的Keyframe.js地址(AMD)：<a target="_blank" href="dist/amd/Keyframe.js">bs.baidu.com/public01/keyframes/dist/amd/Keyframe.js</a></h4>
