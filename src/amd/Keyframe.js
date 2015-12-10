@@ -311,7 +311,7 @@ define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Eve
 	            percent = percent + 0.01;
 	        }
 	        adjust[percent] = true;
-	        map[time] = String(percent).replace(/\.0+$/, '');
+	        map[time] = String(percent).replace(/\.?0+$/, '');
 	    });
 	    var percentLine = {};
 	    Util.forIn(timeLine, function (time, item) {
