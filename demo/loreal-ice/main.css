@@ -1,0 +1,141 @@
+/**
+ * @file 动画样式
+ * @author Xinlei Zhao (zhaoxinlei01@baidu.com)
+ */
+
+/* 默认样式 */
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+img {
+    display: block;
+}
+
+body {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#entry {
+    width: 375px;
+}
+
+#container {
+    background-color: #EEE;
+    width: 363px;
+    padding: 0 6px;
+}
+
+#ret-imgs {
+    position: absolute;
+    left: 20px;
+    width: 335px;
+    height: 167.5px;
+    background-color: black;
+
+    z-index: 5;
+}
+
+#ret-imgs div {
+    float: left;
+    width: 25%;
+    height: 50%;
+    overflow: hidden;
+    position: relative;
+}
+#ret-imgs img {
+    width: 167.5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+div#ret-img-1 {
+    width: 50%;
+    height: 100%;
+}
+#ret-img-1 img {
+    width: 670px;
+}
+
+#ret-img-3 img {
+    left: -100%;
+}
+#ret-img-4 img {
+    top: -100%;
+}
+#ret-img-5 img {
+    top: -100%;
+    left: -100%;
+}
+
+#bg-2 {
+    background-color: white;
+    padding-top: 167.5px;
+}
+
+#mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0;
+    z-index: 1;
+}
+
+div#highlight-border {
+    position: absolute;
+    width: 458.8px;
+    height: 200px;
+    top: -17px;
+    left: -221px;
+}
+img#highlight-image {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+#mid-anim {
+    width: 375px;
+    height: 204px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    top: 248px;
+    margin-left: -187.5px;
+    z-index: 7;
+    opacity: 0;
+}
+#mid-anim-img {
+    position: absolute;
+    width: 1500px;
+}
+
+#paper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 9;
+    opacity: 0;
+}
+#paper-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5250px;
+}
+
+

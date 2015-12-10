@@ -321,11 +321,11 @@ Keyframe.timeLine = function (timeLine) {
     });
     var percentLine = {};
     Util.forIn(timeLine, function (time, item) {
-        percent = time;
+        percent = []
         Util.each(time.split(/\s+/), function (data) {
-            percent = percent.replace(data, map[data]);
+            percent.push(map[data]);
         });
-        percentLine[percent] = item;
+        percentLine[percent.join(' ')] = item;
     });
     var frameProxy = Keyframe.defineKeyframe(percentLine);
     frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
