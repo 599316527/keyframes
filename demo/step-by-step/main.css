@@ -1,0 +1,19 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+#container {
+    width: 180px;
+    height: 280px;
+    position: absolute;
+    margin: -140px 0 0 -90px;
+    top: 50%;
+    left: 50%;
+}
+#frame1 {
+
+    width: 180px;
+    height: 300px;
+    background: url(image/run.png) 0 0 no-repeat;
+}

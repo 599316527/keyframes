@@ -1,0 +1,63 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+#container {
+    width: 230px;
+    height: 165px;
+    position: absolute;
+    margin: -85px 0 0 -115px;
+    top: 50%;
+    left: 50%;
+}
+#frame1 {
+    width: 25px;
+    position: absolute;
+    height: 60px;
+    left: 108px;
+    top: 0px;
+    opacity: 1;
+    background: url(image/1.png) no-repeat;
+    background-size: 100% 100%;
+}
+#frame2 {
+    width: 150px;
+    position: absolute;
+    height: 150px;
+    left: 45px;
+    top: 15px;
+    opacity: 0;
+    background: url(image/2.png) no-repeat;
+    background-size: 100% 100%;
+}
+#frame3 {
+    width: 150px;
+    position: absolute;
+    height: 150px;
+    left: 80px;
+    opacity: 0;
+    top: 15px;
+    background: url(image/3.png) no-repeat;
+    background-size: 100% 100%;
+}
+#frame4 {
+    position: absolute;
+    opacity: 0;
+    width: 55px;
+    height: 75px;
+    left: 62px;
+    top: 89px;
+    background: url(image/4.png) no-repeat;
+    background-size: 100% 100%;
+}
+#frame5 {
+    width: 180px;
+    position: absolute;
+    height: 140px;
+    left: 0px;
+    top: 15px;
+    opacity: 0;
+    background: url(image/5.png) no-repeat;
+    background-size: 100% 100%;
+}

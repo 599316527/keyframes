@@ -3,14 +3,11 @@ html, body {
     margin: 0;
     overflow: hidden;
 }
-img {
-    display: block;
-}
+
 #container {
     width: 355px;
     height: 355px;
     position: absolute;
-    margin: 0;
     top: 0;
 }
 #frame1 {
@@ -19,7 +16,6 @@ img {
     position: absolute;
     left: 0;
     top: 0;
-    z-index: 10;
     opacity: 0;
     background-size: 100% 100%;
 }
@@ -30,7 +26,6 @@ img {
     left: 0;
     top: 32px;
     opacity: 0;
-    z-index: 12;
     background-size: 100% 100%;
 }
 
@@ -41,7 +36,6 @@ img {
     left: 77px;
     top: 0;
     opacity: 0;
-    z-index: 13;
     background-size: 100% 100%;
 }
 #frame4 {
@@ -51,6 +45,5 @@ img {
     left: 224px;
     top: 0;
     opacity: 0;
-    z-index: 13;
     background-size: 100% 100%;
 }
