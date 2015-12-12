@@ -255,7 +255,7 @@ var timeline = {
         }
     },
     'container@step-start': {
-        '7.3': {
+        '0 7.3': {
             opacity: 1
         },
         '8.9': {

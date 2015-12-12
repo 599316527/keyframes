@@ -115,7 +115,7 @@ gulp.task('amd', function() {
     return true;
 });
 
-gulp.task('pack', ['concat'], function() {
+gulp.task('default', ['concat'], function() {
     return gulp.src(['src/*.js', 'src/*/*.js', 'src/*/*/*.js'])
         .pipe(uglify())
         .pipe(rename(function (path) {
@@ -131,7 +131,54 @@ gulp.task('pack', ['concat'], function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', ['pack'], function () {
+gulp.task('cdn', [], function () {
+    var http = require('http');
+    var fs = require('fs');
+
+    function walk(path, floor, handleFile) {
+        floor++;
+        var files = fs.readdirSync(path);
+        files.forEach(function(item) {
+            var tmpPath = path + '/' + item;
+            var stats = fs.statSync(tmpPath);
+            if (stats.isDirectory()) {
+                walk(tmpPath, floor, handleFile);
+            } else {
+                handleFile(tmpPath, floor);
+            }
+        });
+    }
+    var array = [];
+    var cwd = process.cwd();
+    var path = require('path');
+    walk(cwd + '/dist', 0, function (path) {
+        array.push(path.replace(cwd, ''));
+    });
+    walk(cwd + '/demo', 0, function (path) {
+        array.push(path.replace(cwd, ''));
+    });
+    walk(cwd + '/example', 0, function (path) {
+        array.push(path.replace(cwd, ''));
+    });
+//http://ecma.bdimg.com/public03/zhidao_native/-dev.app.js
+    var url = "http://cp01-ocean-1312.epc.baidu.com:8033/bcs/delete.php?p=bcs&s=";
+    var fixed = encodeURIComponent('http://ecma.bdimg.com/public03/keyframes');
+    function clearCDN(current, dev) {
+        if (current < array.length) {
+            setTimeout(function () {
+                http.get(url + fixed + array[current], function(res) {
+                    console.log("Got response: " + res.statusCode);
+                    res.on('data', function(data) {
+                        console.log(array[current] + dev + " got data: " + data);
+                    });
+                    clearCDN(current + 1, dev);
+                }).on('error', function(e) {
+                    console.log("Got error: " + e.message);
+                });
+            }, 2000);
+        }
+    }
+    clearCDN(0, '');
 });
 gulp.task('define', function () {
     var fs = require('fs');
