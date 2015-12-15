@@ -19,7 +19,7 @@ var getPaperOffsetX = function (i) {
 };
 // 自动缩放
 var defaultEntryWidth = 375;
-var suposeScreenWidth = 600;
+var suposeScreenWidth = 320;
 /**
  * 动画描述
  * 使用方法见：http://bs.baidu.com/public01/keyframes/index.html
@@ -34,33 +34,29 @@ var timeline = {
         }
     },
     'highlight-image@step-end': {
-        '0 4.8': {
-            'transform-origin': 'left top'
-        },
         '0 0.4 4.8': {
-            opacity: 0
+            'transform-origin': 'left top'
         },
         '0.7 4.6': {
             opacity: 1
         },
-        '2.9': {
+        '3.1': {
             translateY: '83.5px',
             translateX: '167px',
             scale: 0.5
-
         },
-        '3.2': {
+        '3.4': {
             translateY: '83.5px',
             translateX: '250.5px',
             //先translate后scale
             scale: 0.5
         },
-        '3.7': {
+        '3.9': {
             translateY: '0',
             translateX: '250.5px',
             scale: 0.5
         },
-        '4.1 4.8': {
+        '4.3 4.6': {
             translateY: '0',
             translateX: '167px',
             scale: 0.5
@@ -189,11 +185,13 @@ var timeline = {
         }
     },
     'mid-anim': {
-        '0 4.8': {
-            scale: .5,
-            opacity: 0
+        '0': {
+            opacity: 0,
+            scale: .5
         },
         '4.8': {
+            opacity: 0,
+            scale: .5,
             translate: '39%, -177%'
         },
         '5.4': {
@@ -203,54 +201,54 @@ var timeline = {
         }
     },
     'mid-anim-img@step-start': {
-        '5.1': {
+        '5.4': {
             translateY: getMidImgOffsetY(0),
             translateX: getMidImgOffsetX(0)
         },
-        '5.3': {
+        '5.6': {
             translateY: getMidImgOffsetY(0),
             translateX: getMidImgOffsetX(1)
         },
-        '5.5': {
+        '5.8': {
             translateY: getMidImgOffsetY(0),
             translateX: getMidImgOffsetX(2)
         },
-        '5.7': {
+        '5.9': {
             translateY: getMidImgOffsetY(0),
             translateX: getMidImgOffsetX(3)
-        },
-        '5.9': {
-            translateY: getMidImgOffsetY(1),
-            translateX: getMidImgOffsetX(0)
         },
         '6.1': {
             translateY: getMidImgOffsetY(1),
-            translateX: getMidImgOffsetX(1)
+            translateX: getMidImgOffsetX(0)
         },
         '6.3': {
             translateY: getMidImgOffsetY(1),
-            translateX: getMidImgOffsetX(2)
+            translateX: getMidImgOffsetX(1)
         },
         '6.5': {
             translateY: getMidImgOffsetY(1),
-            translateX: getMidImgOffsetX(3)
+            translateX: getMidImgOffsetX(2)
         },
         '6.7': {
-            translateY: getMidImgOffsetY(2),
-            translateX: getMidImgOffsetX(0)
+            translateY: getMidImgOffsetY(1),
+            translateX: getMidImgOffsetX(3)
         },
         '6.9': {
             translateY: getMidImgOffsetY(2),
-            translateX: getMidImgOffsetX(1)
+            translateX: getMidImgOffsetX(0)
         },
         '7.1': {
             translateY: getMidImgOffsetY(2),
-            translateX: getMidImgOffsetX(2)
+            translateX: getMidImgOffsetX(1)
         },
         '7.3': {
-            opacity: 1
+            translateY: getMidImgOffsetY(2),
+            translateX: getMidImgOffsetX(2)
         },
         '7.5': {
+            opacity: 1
+        },
+        '7.7': {
             opacity: 0
         }
     },
@@ -258,59 +256,59 @@ var timeline = {
         '0 7.3': {
             opacity: 1
         },
-        '8.9': {
+        '7.5': {
             opacity: 0
         }
     },
-    'paper': {
-        '0 7.1': {
+    'paper@ease': {
+        '0 7.2': {
             opacity: 0
         },
-        '7.3': {
+        '7.3 8.9': {
             opacity: 1
         }
     },
     'paper-img@step-start': {
-        '7.3': {
+        '7.5': {
             translateX: getPaperOffsetX(0)
         },
-        '7.4': {
+        '7.6': {
             translateX: getPaperOffsetX(1)
         },
-        '7.5': {
+        '7.7': {
             translateX: getPaperOffsetX(2)
         },
-        '7.6': {
+        '7.8': {
             translateX: getPaperOffsetX(3)
         },
-        '7.7': {
+        '7.9': {
             translateX: getPaperOffsetX(4)
         },
-        '7.8': {
+        '8': {
             translateX: getPaperOffsetX(5)
         },
-        '7.9': {
+        '8.1': {
             translateX: getPaperOffsetX(6)
         },
-        '8': {
+        '8.2': {
             translateX: getPaperOffsetX(7)
         },
-        '8.1': {
+        '8.3': {
             translateX: getPaperOffsetX(8)
         },
-        '8.2': {
+        '8.4': {
             translateX: getPaperOffsetX(9)
         },
-        '8.3': {
+        '8.5': {
             translateX: getPaperOffsetX(10)
         },
-        '8.5': {
+        '8.6': {
             translateX: getPaperOffsetX(11)
         },
-        '8.6': {
+        '8.7': {
             translateX: getPaperOffsetX(12)
         },
-        '8.7': {
+        '8.8': {
             translateX: getPaperOffsetX(13)
         }
     }

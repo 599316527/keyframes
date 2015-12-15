@@ -151,31 +151,32 @@ gulp.task('cdn', [], function () {
     var array = [];
     var cwd = process.cwd();
     var path = require('path');
-    walk(cwd + '/dist', 0, function (path) {
+/*    walk(cwd + '/dist', 0, function (path) {
         array.push(path.replace(cwd, ''));
-    });
+    });*/
     walk(cwd + '/demo', 0, function (path) {
         array.push(path.replace(cwd, ''));
     });
-    walk(cwd + '/example', 0, function (path) {
-        array.push(path.replace(cwd, ''));
-    });
+    //walk(cwd + '/example', 0, function (path) {
+    //    array.push(path.replace(cwd, ''));
+    //});
+    //array.push('example/doc.html');
 //http://ecma.bdimg.com/public03/zhidao_native/-dev.app.js
     var url = "http://cp01-ocean-1312.epc.baidu.com:8033/bcs/delete.php?p=bcs&s=";
-    var fixed = encodeURIComponent('http://ecma.bdimg.com/public03/keyframes');
+    var fixed = 'http://ecma.bdimg.com/public01/keyframes';
     function clearCDN(current, dev) {
         if (current < array.length) {
             setTimeout(function () {
-                http.get(url + fixed + array[current], function(res) {
+                http.get(url + encodeURIComponent(fixed + array[current]), function(res) {
                     console.log("Got response: " + res.statusCode);
                     res.on('data', function(data) {
-                        console.log(array[current] + dev + " got data: " + data);
+                        console.log(fixed + array[current] + " got data: " + data);
                     });
                     clearCDN(current + 1, dev);
                 }).on('error', function(e) {
                     console.log("Got error: " + e.message);
                 });
-            }, 2000);
+            }, 1000);
         }
     }
     clearCDN(0, '');
