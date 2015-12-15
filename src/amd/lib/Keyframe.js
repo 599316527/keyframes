@@ -1268,7 +1268,7 @@ define('Util', function () {
 	            times.push(float);
 	        });
 	    });
-	    times.sort();
+	    times.sort(function(a,b){return a>b?1:-1});
 	    var min = times[0];
 	    var max = times[times.length - 1];
 	    var duration = parseFloat(max - min).toFixed(3);
