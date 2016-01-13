@@ -176,6 +176,7 @@
             jsEditor.setValue(item['_main.js']);
             htmlEditor.setValue(item['dom.html']);
             cssEditor.setValue(item['main.css']);
+            keyframeEditor.setValue('');
             if (domain) {
                 item.domain = domain;
             }
@@ -211,6 +212,7 @@
             }
             var item = config[currentNode.text];
             if (item.domain) {
+                keyframeEditor.setValue('');
                 var _item = {domain: item.domain, 'dom.html': htmlEditor.getValue(), 'main.css': cssEditor.getValue(), '_main.js': jsEditor.getValue()};
                 envWin.postMessage(_item, '*');
             }
