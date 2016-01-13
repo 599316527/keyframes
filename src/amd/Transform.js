@@ -37,8 +37,8 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event', 'Status']
 	    this.on(Event.on, function (on, eventName) {
 	        if (eventName  === Event.end) {
 	            if (!me._monitorEnd) {
-	                me._monitorEnd = wrap(eventName);
-	                me._on(cpt.parseEvent(eventName), me._monitorEnd);
+	                me._monitor = wrap(eventName);
+	                me._on(cpt.parseEvent(eventName), me._monitor);
 	            }
 	        }
 	    });
@@ -534,9 +534,6 @@ define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event', 'Status']
 	    Util.off(this._dom, name, callback);
 	};
 	Transform.prototype._unListen = function () {
-	    if (this._monitorStart) {
-	        this._off(this._compatible.parseEvent(Event.start), this._monitorStart);
-	    }
 	    if (this._monitorEnd) {
 	        this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
 	    }

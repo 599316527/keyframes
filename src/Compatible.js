@@ -25,23 +25,34 @@ var Compatible = {
             '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
     })(),
     requestAnimationFrame: (function () {
-        var timer;
-        var queue = [];
         window.requestAnimationFrame = window.requestAnimationFrame
-        || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
-        || function (callback) {
-            queue.push(callback);
-            if (!timer) {
-                timer = window.setTimeout(function () {
-                    Util.each(queue, function (cb) {
+        || window.webkitRequestAnimationFrame
+        || window.mozRequestAnimationFrame;
+        if (!window.requestAnimationFrame) {
+            var timer;
+            var queue = [];
+            var digestQueue = function () {
+                Util.each(
+                    queue,
+                    function (cb) {
                         cb();
-                    });
-                    clearTimeout(timer);
-                    timer = false;
-                    queue = [];
-                }, 1000 / 60);
-            }
-        };
+                    }
+                );
+                clearTimeout(timer);
+                timer = false;
+                queue = [];
+            };
+            var mock = function (callback) {
+                queue.push(callback);
+                if (!timer) {
+                    timer = window.setTimeout(
+                        digestQueue,
+                        1000 / 60
+                    );
+                }
+            };
+            window.requestAnimationFrame = mock;
+        }
         return function (fn) {
             // 原生requestAnimationFrame执行的scope必须为window
             window.requestAnimationFrame(fn);

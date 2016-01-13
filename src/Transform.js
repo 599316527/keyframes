@@ -44,8 +44,8 @@ Transform.prototype._listen = function () {
     this.on(Event.on, function (on, eventName) {
         if (eventName  === Event.end) {
             if (!me._monitorEnd) {
-                me._monitorEnd = wrap(eventName);
-                me._on(cpt.parseEvent(eventName), me._monitorEnd);
+                me._monitor = wrap(eventName);
+                me._on(cpt.parseEvent(eventName), me._monitor);
             }
         }
     });
@@ -541,9 +541,6 @@ Transform.prototype._off = function (name, callback) {
     Util.off(this._dom, name, callback);
 };
 Transform.prototype._unListen = function () {
-    if (this._monitorStart) {
-        this._off(this._compatible.parseEvent(Event.start), this._monitorStart);
-    }
     if (this._monitorEnd) {
         this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
     }

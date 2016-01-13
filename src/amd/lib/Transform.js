@@ -421,23 +421,34 @@ define('Util', function () {
 	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 	    })(),
 	    requestAnimationFrame: (function () {
-	        var timer;
-	        var queue = [];
 	        window.requestAnimationFrame = window.requestAnimationFrame
-	        || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame
-	        || function (callback) {
-	            queue.push(callback);
-	            if (!timer) {
-	                timer = window.setTimeout(function () {
-	                    Util.each(queue, function (cb) {
+	        || window.webkitRequestAnimationFrame
+	        || window.mozRequestAnimationFrame;
+	        if (!window.requestAnimationFrame) {
+	            var timer;
+	            var queue = [];
+	            var digestQueue = function () {
+	                Util.each(
+	                    queue,
+	                    function (cb) {
 	                        cb();
-	                    });
-	                    clearTimeout(timer);
-	                    timer = false;
-	                    queue = [];
-	                }, 1000 / 60);
-	            }
-	        };
+	                    }
+	                );
+	                clearTimeout(timer);
+	                timer = false;
+	                queue = [];
+	            };
+	            var mock = function (callback) {
+	                queue.push(callback);
+	                if (!timer) {
+	                    timer = window.setTimeout(
+	                        digestQueue,
+	                        1000 / 60
+	                    );
+	                }
+	            };
+	            window.requestAnimationFrame = mock;
+	        }
 	        return function (fn) {
 	            // 原生requestAnimationFrame执行的scope必须为window
 	            window.requestAnimationFrame(fn);
@@ -751,8 +762,8 @@ define('Util', function () {
 	    this.on(Event.on, function (on, eventName) {
 	        if (eventName  === Event.end) {
 	            if (!me._monitorEnd) {
-	                me._monitorEnd = wrap(eventName);
-	                me._on(cpt.parseEvent(eventName), me._monitorEnd);
+	                me._monitor = wrap(eventName);
+	                me._on(cpt.parseEvent(eventName), me._monitor);
 	            }
 	        }
 	    });
@@ -1248,9 +1259,6 @@ define('Util', function () {
 	    Util.off(this._dom, name, callback);
 	};
 	Transform.prototype._unListen = function () {
-	    if (this._monitorStart) {
-	        this._off(this._compatible.parseEvent(Event.start), this._monitorStart);
-	    }
 	    if (this._monitorEnd) {
 	        this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
 	    }
