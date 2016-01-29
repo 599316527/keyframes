@@ -443,7 +443,7 @@ define('Util', function () {
 	                if (!timer) {
 	                    timer = window.setTimeout(
 	                        digestQueue,
-	                        1000 / 60
+	                        16
 	                    );
 	                }
 	            };
@@ -650,7 +650,368 @@ define('Util', function () {
 	    return TFCompatible._compatible;
 	};
 	TFCompatible.prototype.parseEvent = Compatible.parseEvent('transition', 'Transition');
-	return TFCompatible;});define('Status', ['Util'], function (Util) {
+	return TFCompatible;});define('Pitch', ['Checker'], function (Checker) {
+	/**
+	 * css属性转cssText过滤器
+	 *
+	 * @param {string} name  pitch的别名.
+	 * @param {string} keys 补丁属性集合.
+	 * @param {Function} handler 补丁函数.
+	 * @class
+	 */
+	function Pitch(name, keys, handler) {
+	    this._router = [];
+	    if (Checker.ssFunction.check(arguments)) {
+	        this.use(name, keys, handler);
+	    }
+	}
+	Pitch.prototype.use = function (name, keys, handler) {
+	    this._router.push({name: name, keys: keys + ' ', handler: handler});
+	    return this;
+	};
+	Pitch.prototype.next = function (index, key, value, opt) {
+	    var middleware = this._router[index];
+	    if (middleware) {
+	        if (middleware.keys.trim() === '*') {
+	            return middleware.handler(key.trim(), value, opt);
+	        }
+	        if (middleware.keys.indexOf(key) > -1) {
+	            return middleware.handler(key.trim(), value, opt);
+	        }
+	        return this.next(index + 1, key, value, opt);
+	    }
+	    return '';
+	};
+	Pitch.prototype.do = function (key, value, opt) {
+	    return this.next(0, key, value, opt);
+	};
+	return Pitch;});define('KFCompatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
+	/**
+	 *  浏览器兼容处理
+	 *
+	 * @class
+	 * @extend EventEmitter
+	 */
+	function KFCompatible() {
+	    KFCompatible.superClass.call(this);
+	    var pitch = new Pitch();
+	    var me = this;
+	    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
+	        + 'animation-timing-function transform-origin transform-style perspective-origin perspective '
+	        + 'background-clip background-origin',
+	        function (key, value) {
+	            if (value === 'transform') {
+	                value = me.prefix + value;
+	            }
+	            return me.prefix + key + ':' + value + ';';
+	        }
+	    );
+	    pitch.use('needAll', 'box-shadow border-radius',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
+	        }
+	    );
+	    // 需要整合到transform中的值，暂存如opt中
+	    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
+	        + 'rotateX rotateY rotateZ rotate rotate3d '
+	        + 'skewX skewY skewZ skew '
+	        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
+	        // + 'perspective',
+	        + 'scaleZ scaleX scaleY scale3d scale ',
+	        function (key, value, opt) {
+	            if ('transform' in opt) {
+	                opt.transform += ' ' + key + '(' + value + ')';
+	            }
+	            else {
+	                opt.transform = key + '(' + value + ')';
+	            }
+	            return '';
+	        }
+	    );
+	    // 直接的transform，需要拼接到opt.transform
+	    pitch.use('transform', 'transform',
+	        function (key, value, opt) {
+	            if ('transform' in opt) {
+	                opt.transform += ' ' + value;
+	            }
+	            else {
+	                opt.transform = value;
+	            }
+	            return '';
+	        });
+	    // class的定义中可能出现
+	    pitch.use('animation', 'animation', function (key, value) {
+	        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
+	    });
+	    pitch.use('specialA', 'background',
+	        function (key, value) {
+	            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	        });
+	    pitch.use('specialB', 'mask-image',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	        });
+	    pitch.use('rest', '*',
+	        function (key, value) {
+	            return key + ':' + value + ';';
+	        });
+	    this._pitch = pitch;
+	    // 经过_pitch处理，transform聚合到opt中，由_combine处理
+	    this._combine = new Pitch('combine', 'transform',
+	        function (key, value) {
+	            return me.prefix + key + ':' + value + ';';
+	        }
+	    );
+	}
+	Util.inherit(KFCompatible, EventEmitter);
+	KFCompatible.prototype.prefix = Compatible.prefix;
+	KFCompatible._keyMap = {
+	    'animation': ['animation'],
+	    'name': ['animationName'],
+	    'duration': ['animationDuration', '1s'],
+	    'function': ['animationTimingFunction', 'linear'],
+	    'delay': ['animationDelay', '0s'],
+	    'count': ['animationIterationCount', 1],
+	    'direction': ['animationDirection', 'normal'],
+	    'state': ['animationPlayState', 'running'],
+	    'mode': ['animationFillMode', 'forwards']
+	};
+	KFCompatible.prototype.parseAnimation = function (animations) {
+	    if (!Checker.array.check(arguments)) {
+	        animations = [animations];
+	    }
+	    var css;
+	    var csses = [];
+	    var tpl = this.animationTpl();
+	    function regReplace($0, $1) {
+	        if ($1 in css) {
+	            return css[$1];
+	        }
+	        return KFCompatible._keyMap[$1][1];
+	    }
+	    Util.each(animations, function (animation) {
+	        css = animation;
+	        csses.push(tpl.replace(/<(.*?)>/g, regReplace));
+	    });
+	    return csses.join(',');
+	};
+	KFCompatible.prototype.animationTpl = function () {
+	    if (!this._animationTpl) {
+	        if (this.prefix === '-moz-') {
+	            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
+	            this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
+	        }
+	        else {
+	            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
+	            this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
+	        }
+	    }
+	    return this._animationTpl;
+	};
+	KFCompatible.prototype.regExp = function (middle) {
+	    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
+	};
+	KFCompatible.prototype.keyframe = function (keyframe) {
+	    return '@' + this.prefix + 'keyframes ' + keyframe;
+	};
+	KFCompatible.prototype.percent = function (percent) {
+	    percent = (percent + '').trim();
+	    var percents = percent.split(/\s+/);
+	    return percents.join('%, ') + '%';
+	};
+	KFCompatible.prototype.patchCombine = function (key, value) {
+	    return this._combine.do(key + ' ', value);
+	};
+	KFCompatible.prototype.patch = function (key, value, opt) {
+	    return this._pitch.do(key + ' ', value, opt);
+	};
+	KFCompatible.instance = function () {
+	    if (!KFCompatible._compatible) {
+	        KFCompatible._compatible = new KFCompatible();
+	    }
+	    return KFCompatible._compatible;
+	};
+	KFCompatible.prototype.css = function (dom, key, css) {
+	    key = this.parseCSS(key);
+	    return Compatible.css(dom, key, css, this);
+	};
+	// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
+	KFCompatible.prototype.parseCSS = function (key) {
+	    var p = this.prefix.replace(/-/g, '');
+	    if (p === 'moz') {
+	        KFCompatible.prototype.parseCSS = function (key) {
+	            if (key in KFCompatible._keyMap) {
+	                return KFCompatible._keyMap[key][0];
+	            }
+	            return key;
+	        };
+	    }
+	    else {
+	        KFCompatible.prototype.parseCSS = function (key) {
+	            if (key in KFCompatible._keyMap) {
+	                key = KFCompatible._keyMap[key][0];
+	                return p + key[0].toUpperCase() + key.substr(1);
+	            }
+	            return key;
+	        };
+	    }
+	    return this.parseCSS(key);
+	};
+	KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
+	return KFCompatible;});define('Compiler', ['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (Checker, KFCompatible, Util, Event, EventEmitter) {
+	/**
+	 * 编译类，根据metaData生成class或者keyframes
+	 *
+	 * @class
+	 * @extend EventEmitter
+	 */
+	function Compiler() {
+	    Compiler.superClass.call(this);
+	    // define时cache到map中，map存keyframeName + json
+	    // compile时清空map，cache到store中，store中存keyframeName + css
+	    this._classStore = {};
+	    this._classMap = {};
+	    this._keyframeMap = {};
+	    this._keyframeStore = {};
+	    var compatible = KFCompatible.instance();
+	    this._compatible = compatible;
+	    this._classId = function (className) {
+	        return 'class(' + className + ')';
+	    };
+	    this._keyframeId = function (keyframe) {
+	        return 'keyframe(' + keyframe + ')';
+	    };
+	    this._classText = function (className, body) {
+	        return '.' + className.replace(/\s+/g, ' .') + ' ' + body;
+	    };
+	    this._keyframeText = function (keyframe, body) {
+	        // @-webkit-keyframes xxx
+	        return compatible.keyframe(keyframe) + body;
+	    };
+	}
+	Util.inherit(Compiler, EventEmitter);
+	Compiler.prototype.defineClass = function (className, metaData) {
+	    className = className.trim();
+	    this._classMap[className] = metaData;
+	    return className;
+	};
+	Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
+	    if (Checker.object.check(arguments)) {
+	        metaData = arguments[0];
+	        keyframe = Util.random.name(8);
+	    }
+	    this._keyframeMap[keyframe] = metaData;
+	    return keyframe;
+	};
+	Compiler.prototype.compile = function () {
+	    var classes = {};
+	    var keyframes = {};
+	    Util.forIn(this._classMap, function (className, item) {
+	        classes[className] = this._compileClass(item);
+	    }, this);
+	    Util.forIn(this._keyframeMap, function (keyframe, item) {
+	        keyframes[keyframe] = this._compileKeyframe(item);
+	    }, this);
+	    this._classMap = {};
+	    this._keyframeMap = {};
+	    // classes cache className：cssTextBody
+	    // keyframes cache frameName： frameTextBody
+	    this._effect(classes, keyframes);
+	};
+	Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
+	    var id;
+	    var cssText;
+	    Util.forIn(obj, function (key, item) {
+	        // class & keyframe 的id
+	        id = idG(key);
+	        // 完整的cssText
+	        // className + {}  --> .className{}
+	        // frameName + {} --> @-webkit-keyframes frameName{}
+	        cssText = textG(key, item);
+	        if (key in store) {
+	            this._refreshSheet(cssText, id);
+	        }
+	        else {
+	            frag.appendChild(this._styleSheet(cssText, id));
+	        }
+	        store[key] = item;
+	    }, this);
+	    obj = null;
+	};
+	Compiler.prototype._effect = function (classes, keyframes) {
+	    var frag = this._fragment();
+	    this._absorb(classes, this._classId, this._classText, this._classStore, frag);
+	    this._absorb(keyframes, this._keyframeId, this._keyframeText, this._keyframeStore, frag);
+	    frag.effect();
+	};
+	Compiler.prototype._fragment = function () {
+	    var fragment = document.createDocumentFragment();
+	    fragment.effect = function () {
+	        document.querySelector('head').appendChild(fragment);
+	    };
+	    return fragment;
+	};
+	Compiler.prototype._styleSheet = function (cssText, id) {
+	    var style = document.createElement('style');
+	    style.type = 'text/css';
+	    style.id = id;
+	    style.innerHTML = cssText;
+	    this.emit(Event.style, id, cssText);
+	    return style;
+	};
+	Compiler.prototype.clear = function () {
+	    Util.forIn(this._classStore, function (className) {
+	        this._clearSheet(this._classId(className));
+	    }, this);
+	    Util.forIn(this._keyframeStore, function (frameName) {
+	        this._clearSheet(this._keyframeId(frameName));
+	    }, this);
+	    this._classStore = {};
+	    this._keyframeStore = {};
+	    this._classMap = {};
+	    this._keyframeMap = {};
+	};
+	Compiler.prototype._refreshSheet = function (cssText, id) {
+	    document.getElementById(id).innerHTML = cssText;
+	    this.emit(Event.style, id, cssText);
+	};
+	Compiler.prototype._clearSheet = function (id) {
+	    document.querySelector('head').removeChild(document.getElementById(id));
+	};
+	// 编译生成cssTextBody {}
+	Compiler.prototype._compileClass = function (metaData) {
+	    return '{' + this._compileContent(metaData) + '}';
+	};
+	Compiler.prototype._compileContent = function (metaData) {
+	    var opt = {};
+	    var content = [];
+	    Util.forIn(metaData, function (key, item) {
+	        content.push(this._compatible.patch(key, item, opt));
+	    }, this);
+	    Util.forIn(opt, function (key, item) {
+	        content.push(this._compatible.patchCombine(key, item));
+	    }, this);
+	    return content.join('');
+	};
+	// 编译生成keyframesTextBody {}
+	Compiler.prototype._compileKeyframe = function (metaData) {
+	    var body = '{';
+	    Util.forIn(metaData, function (percent, item) {
+	        body += this._compileFrame(percent, item);
+	    }, this);
+	    body += '}';
+	    return body;
+	};
+	Compiler.prototype._compileFrame = function (percent, metaData) {
+	    return this._compatible.percent(percent) + this._compileClass(metaData);
+	};
+	Compiler.instance = function () {
+	    if (!Compiler._compiler) {
+	        Compiler._compiler = new Compiler();
+	    }
+	    return Compiler._compiler;
+	};
+	return Compiler;});define('Status', ['Util'], function (Util) {
 	/**
 	 * 使用transitionEnd事件兼容
 	 *
@@ -723,7 +1084,7 @@ define('Util', function () {
 	        }, this);
 	    }
 	};
-	return Status;});define('Transform', ['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event', 'Status'], function (EventEmitter, Util, Compatible, TFCompatible, Event, Status) {
+	return Status;});define('Transform', ['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compiler', 'Event', 'Status'], function (Checker, EventEmitter, Util, Compatible, TFCompatible, Compiler, Event, Status) {
 	/**
 	 * 使用transform + transition进行变换
 	 *

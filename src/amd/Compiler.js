@@ -22,7 +22,7 @@ define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (C
 	        return 'keyframe(' + keyframe + ')';
 	    };
 	    this._classText = function (className, body) {
-	        return '.' + className + ' ' + body;
+	        return '.' + className.replace(/\s+/g, ' .') + ' ' + body;
 	    };
 	    this._keyframeText = function (keyframe, body) {
 	        // @-webkit-keyframes xxx
@@ -31,10 +31,15 @@ define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (C
 	}
 	Util.inherit(Compiler, EventEmitter);
 	Compiler.prototype.defineClass = function (className, metaData) {
+	    className = className.trim();
 	    this._classMap[className] = metaData;
 	    return className;
 	};
 	Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
+	    if (Checker.object.check(arguments)) {
+	        metaData = arguments[0];
+	        keyframe = Util.random.name(8);
+	    }
 	    this._keyframeMap[keyframe] = metaData;
 	    return keyframe;
 	};

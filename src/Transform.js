@@ -3,7 +3,7 @@
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* eslint-disable no-loop-func */
-/* global EventEmitter Util Compatible TFCompatible Event Status */
+/* global Checker EventEmitter Util Compatible TFCompatible Compiler Event Status*/
 /* define Transform */
 
 /**

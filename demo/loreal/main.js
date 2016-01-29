@@ -19,7 +19,7 @@ var getPaperOffsetX = function (i) {
 };
 // 自动缩放
 var defaultEntryWidth = 375;
-var suposeScreenWidth = 320;
+var suposeScreenWidth =414;
 /**
  * 动画描述
  * 使用方法见：http://bs.baidu.com/public01/keyframes/index.html
@@ -40,23 +40,23 @@ var timeline = {
         '0.7 4.6': {
             opacity: 1
         },
-        '3.1': {
+        '2.9': {
             translateY: '83.5px',
             translateX: '167px',
             scale: 0.5
         },
-        '3.4': {
+        '3.2': {
             translateY: '83.5px',
             translateX: '250.5px',
             //先translate后scale
             scale: 0.5
         },
-        '3.9': {
+        '3.7': {
             translateY: '0',
             translateX: '250.5px',
             scale: 0.5
         },
-        '4.3 4.6': {
+        '4.1 4.4': {
             translateY: '0',
             translateX: '167px',
             scale: 0.5
@@ -260,11 +260,11 @@ var timeline = {
             opacity: 0
         }
     },
-    'paper@ease': {
-        '0 7.2': {
+    'paper': {
+        '0 7.3': {
             opacity: 0
         },
-        '7.3 8.9': {
+        '7.5 8.9': {
             opacity: 1
         }
     },
@@ -313,6 +313,11 @@ var timeline = {
         }
     }
 };
+
+// 绑定动画参数
+var group = Keyframe.group(timeline);
+group.start();
+
 
 // 绑定动画参数
 var group = Keyframe.group(timeline);

@@ -1,4 +1,4 @@
-define(['EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Event', 'Status'], function (EventEmitter, Util, Compatible, TFCompatible, Event, Status) {
+define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compiler', 'Event', 'Status'], function (Checker, EventEmitter, Util, Compatible, TFCompatible, Compiler, Event, Status) {
 	/**
 	 * 使用transform + transition进行变换
 	 *

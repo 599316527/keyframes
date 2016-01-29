@@ -47,7 +47,7 @@ var Compatible = {
                 if (!timer) {
                     timer = window.setTimeout(
                         digestQueue,
-                        1000 / 60
+                        16
                     );
                 }
             };

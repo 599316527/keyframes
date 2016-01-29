@@ -514,7 +514,7 @@ var Compatible = {
                 if (!timer) {
                     timer = window.setTimeout(
                         digestQueue,
-                        1000 / 60
+                        16
                     );
                 }
             };
@@ -766,7 +766,7 @@ function Compiler() {
         return 'keyframe(' + keyframe + ')';
     };
     this._classText = function (className, body) {
-        return '.' + className + ' ' + body;
+        return '.' + className.replace(/\s+/g, ' .') + ' ' + body;
     };
     this._keyframeText = function (keyframe, body) {
         // @-webkit-keyframes xxx
@@ -775,10 +775,15 @@ function Compiler() {
 }
 Util.inherit(Compiler, EventEmitter);
 Compiler.prototype.defineClass = function (className, metaData) {
+    className = className.trim();
     this._classMap[className] = metaData;
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
+    if (Checker.object.check(arguments)) {
+        metaData = arguments[0];
+        keyframe = Util.random.name(8);
+    }
     this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };
@@ -932,7 +937,7 @@ Group.prototype.clear = function () {
  * @file Classproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Checker Compiler */
+/* global Util Checker Compiler*/
 /* define ClassProxy */
 
 /**
@@ -964,6 +969,16 @@ ClassProxy.prototype.after = function (metaData) {
 };
 ClassProxy.prototype.focus = function (metaData) {
     return this._pseudo('focus', metaData);
+};
+ClassProxy.prototype.selector = function (name, metaData) {
+    Compiler.instance().defineClass(this._className + ' ' + name, metaData);
+    return this;
+};
+ClassProxy.prototype.selectors = function (metaData) {
+    Util.forIn(metaData, function (name, metaData) {
+        this.selector(name, metaData);
+    }, this);
+    return this;
 };
 ClassProxy.prototype._name = function (pseudo) {
     return this._className + ':' + pseudo;
@@ -1639,7 +1654,7 @@ Status.prototype.digest = function (pName) {
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* eslint-disable no-loop-func */
-/* global EventEmitter Util Compatible TFCompatible Event Status */
+/* global Checker EventEmitter Util Compatible TFCompatible Compiler Event Status*/
 /* define Transform */
 
 /**

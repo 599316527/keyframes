@@ -478,7 +478,7 @@ define('Util', function () {
 	                if (!timer) {
 	                    timer = window.setTimeout(
 	                        digestQueue,
-	                        1000 / 60
+	                        16
 	                    );
 	                }
 	            };
@@ -716,7 +716,7 @@ define('Util', function () {
 	        return 'keyframe(' + keyframe + ')';
 	    };
 	    this._classText = function (className, body) {
-	        return '.' + className + ' ' + body;
+	        return '.' + className.replace(/\s+/g, ' .') + ' ' + body;
 	    };
 	    this._keyframeText = function (keyframe, body) {
 	        // @-webkit-keyframes xxx
@@ -725,10 +725,15 @@ define('Util', function () {
 	}
 	Util.inherit(Compiler, EventEmitter);
 	Compiler.prototype.defineClass = function (className, metaData) {
+	    className = className.trim();
 	    this._classMap[className] = metaData;
 	    return className;
 	};
 	Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
+	    if (Checker.object.check(arguments)) {
+	        metaData = arguments[0];
+	        keyframe = Util.random.name(8);
+	    }
 	    this._keyframeMap[keyframe] = metaData;
 	    return keyframe;
 	};
@@ -871,7 +876,7 @@ define('Util', function () {
 	    });
 	    return this;
 	};
-	return Group;});define('ClassProxy', ['Checker', 'Compiler'], function (Checker, Compiler) {
+	return Group;});define('ClassProxy', ['Util', 'Checker', 'Compiler'], function (Util, Checker, Compiler) {
 	/**
 	 * 样式代理,提供简便调用
 	 *
@@ -901,6 +906,16 @@ define('Util', function () {
 	};
 	ClassProxy.prototype.focus = function (metaData) {
 	    return this._pseudo('focus', metaData);
+	};
+	ClassProxy.prototype.selector = function (name, metaData) {
+	    Compiler.instance().defineClass(this._className + ' ' + name, metaData);
+	    return this;
+	};
+	ClassProxy.prototype.selectors = function (metaData) {
+	    Util.forIn(metaData, function (name, metaData) {
+	        this.selector(name, metaData);
+	    }, this);
+	    return this;
 	};
 	ClassProxy.prototype._name = function (pseudo) {
 	    return this._className + ':' + pseudo;

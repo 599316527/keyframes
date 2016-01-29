@@ -2,7 +2,7 @@
  * @file Classproxy.js ~ 2015/08/13 11:47:13
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Checker Compiler */
+/* global Util Checker Compiler*/
 /* define ClassProxy */
 
 /**
@@ -34,6 +34,16 @@ ClassProxy.prototype.after = function (metaData) {
 };
 ClassProxy.prototype.focus = function (metaData) {
     return this._pseudo('focus', metaData);
+};
+ClassProxy.prototype.selector = function (name, metaData) {
+    Compiler.instance().defineClass(this._className + ' ' + name, metaData);
+    return this;
+};
+ClassProxy.prototype.selectors = function (metaData) {
+    Util.forIn(metaData, function (name, metaData) {
+        this.selector(name, metaData);
+    }, this);
+    return this;
 };
 ClassProxy.prototype._name = function (pseudo) {
     return this._className + ':' + pseudo;

@@ -1,0 +1,16 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    background-color: #000000;
+}
+
+.btn {
+    color: white;
+    font-size: 30px;
+    margin: 5px;
+}
+input {
+    margin-top: 2px;
+    width: 28px;
+    height: 28px;
+}

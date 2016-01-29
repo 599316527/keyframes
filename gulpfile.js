@@ -205,5 +205,12 @@ gulp.task('upload', function() {
             }
             console.log(stdout);
         });
+    exec('edp bcs dist' + path.sep + 'lib.min.js bs://public01/keyframes/dist/',
+        function (error, stdout, stderr) {
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            console.log(stdout);
+        });
     return true;
 });

@@ -57,7 +57,7 @@
                 }
             });
     Keyframe.compile();
-    var keyframe = new Keyframe(document.getElementById('demo'), {name:'rot', duration: '3s'}).start();
+    var keyframe = new Keyframe(document.getElementById('demo'), {name:'rot', duration: '3s', 'mode': 'backwards'}).start();
     //var keyframe = new Keyframe(document.getElementById('demo'), [{name: 'gw', count: 'infinite', duration: '4s'}]);
     keyframe.on(Event.beforeStart, function () {
         this.addClass('ec-gw');
