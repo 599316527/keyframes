@@ -5,7 +5,7 @@ keyframes & transform
 
 The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
 
-[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html) ！ [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html) ！ [Migrating](https://github.com/tingkl/keyframes)
+[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)！[Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html)！[Migrating](https://github.com/tingkl/keyframes)
 
 
 ### Usage ###
@@ -16,7 +16,7 @@ Download the [minified library](http://ecma.bdimg.com/public01/keyframes/dist/li
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 (Keyframes based animation group)
-![](https://github.com/tingkl/keyframes/jpg/index.JPG)
+![](https://github.com/tingkl/keyframes/raw/master/jpg/index.JPG)
 This code creates a timeline which binds the target dom element with the animation config. Finally it creates css3 keyframes and  animates the whole timeline.
 
 ```html
