@@ -17,7 +17,7 @@ Alternatively see [how to build the library yourself](https://github.com/mrdoob/
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 (Keyframes based animation group)
-
+![](http://bj.bcebos.com/cae-pub-read/adtest/index.gif)
 This code creates a timeline which binds the target dom element with the animation config. Finally it creates css3 keyframes and  animates the whole timeline.
 
 ```html
