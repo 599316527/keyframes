@@ -83,22 +83,17 @@
             margin: auto;
             border: none;
         }
-        .wall em {
+        .wall {
             color: #fff;
-            position: absolute;
-            left: 130px;
-            top: 130px;
+            text-align: center;
+            line-height: 300px;
             font-size: 40px;
         }
         #target {
             font-size: 40px;
             color: #ffffff;
-
-        }
-        #target em {
-            left: 10px;
-            top: 80px;
-            position: absolute;
+            line-height: 200px;
+            text-align: center;
         }
         /* 3d转换中掉所有元素都应该为absolute布局，从所在空间点(0,0)点开始变换*/
         .space {
@@ -351,22 +346,16 @@
             });
             Keyframe.defineClass('y', {
                 'background-color': 'red',
-                'transform-origin': 'bottom',
-                'translateY': '-300px',
-                'translateZ': '300px',
-                'rotateX': '90deg'
+                'rotateX': '-90deg',
+                'translateZ': '-150px',
+                'translateY': '-150px'
             });
             Keyframe.defineClass('x', {
                 'background-color': 'green',
-                'transform-origin': 'right',
-                'translateX': '-300px',
-                'rotateY': '90deg'
-            });
-            Keyframe.defineClass('z90', {
-                'rotateZ': '90deg'
-            });
-            Keyframe.defineClass('x180', {
-                'rotateX': '180deg'
+                'rotateY': '90deg',
+                'rotateZ': '90deg',
+                'translateZ': '-150px',
+                'translateY': '150px'
             });
             Keyframe.defineClass('z', {
                 'background-color': 'blue'
@@ -535,11 +524,11 @@
 <div class="scene">
     <div class="p3d space">
         <div class="zuobiao space">
-            <div class="z wall space"><em>Z</em></div>
-            <div class="x wall space"><em class="z90">X</em></div>
-            <div class="y wall space"><em class="x180">Y</em></div>
+            <div class="z wall space">Z</div>
+            <div class="x wall space">X</div>
+            <div class="y wall space">Y</div>
         </div>
-        <div id="target" class="target space"><em>transform</em></div>
+        <div id="target" class="target space">transform</div>
     </div>
 </div>
 <div id="fake">

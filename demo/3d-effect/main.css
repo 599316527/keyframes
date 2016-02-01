@@ -1,16 +1,10 @@
 html, body {
     height: 100%;
     margin: 0;
-    background-color: #000000;
-}
-
-.btn {
-    color: white;
-    font-size: 30px;
-    margin: 5px;
+    background: center no-repeat, radial-gradient(#89683f, #ddccb7), #bd9b71;
 }
 input {
-    margin-top: 2px;
-    width: 28px;
-    height: 28px;
+    margin: 20px;
+    font-weight: bold;
+    padding: 5px;
 }
