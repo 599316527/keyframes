@@ -301,5 +301,5 @@ setTimeout(function () {
 
 </script>
 ```
-If everything went well you should see [this](http://ecma.bdimg.com/public01/keyframes/demo/3d-cube/index.app.html).
+If everything went well you should see [this](http://ecmc.bdimg.com/public01/keyframes/demo/3d-cube/index.app.html).
 
