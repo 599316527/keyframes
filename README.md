@@ -5,7 +5,7 @@ keyframes & transform
 
 The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
 
-[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html) — [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html) — [Migrating](https://github.com/tingkl/keyframes)
+[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html) ���� [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html) ���� [Migrating](https://github.com/tingkl/keyframes)
 
 
 ### Usage ###
@@ -16,7 +16,7 @@ Download the [minified library](http://ecma.bdimg.com/public01/keyframes/dist/li
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 (Keyframes based animation group)
-![](http://ecmc.bdimg.com/public01/keyframes/gif/index.gif)
+![](https://github.com/tingkl/keyframes/jpg/index.jpg)
 This code creates a timeline which binds the target dom element with the animation config. Finally it creates css3 keyframes and  animates the whole timeline.
 
 ```html
@@ -118,7 +118,7 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
 
     var config = {
         'class': {
-            // safari浏览器必须包一层container，否则显示有问题，蛋疼，其他浏览器可以不包
+            // safari浏览器必须包�?��container，否则显示有问题，蛋疼，其他浏览器可以不�?
             'container': {
                 'perspective': '800px',
                 'perspective-origin': '50% 40%'
@@ -180,8 +180,8 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
                 'color': randomColor()
             },
             'cube-1': {
-                // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实是 120px,要对z面生效必须scale3d
-                // rotateX(90deg)后 ，z面其实是原先的x面
+                // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实�?120px,要对z面生效必须scale3d
+                // rotateX(90deg)�?，z面其实是原先的x�?
                 'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(90deg) translateZ(100px)'
             },
             'cube-2': {
@@ -200,8 +200,8 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
                 'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(-90deg) translateZ(100px) rotate(180deg)'
             },
             'cube-7': {
-                // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实是 120px
-                // rotateX(90deg)后 ，z面其实是原先的x面
+                // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实�?120px
+                // rotateX(90deg)�?，z面其实是原先的x�?
                 'transform': 'scale3d(0.8, 0.8, 0.8) rotateX(90deg) translateZ(100px)'
             },
             'cube-8': {
