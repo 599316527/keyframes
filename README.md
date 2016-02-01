@@ -6,11 +6,11 @@ keyframes & transform
 The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
 
 [Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
-![](https://github.com/tingkl/keyframes/raw/master/jpg/demo.JPG)
+![](https://github.com/tingkl/keyframes/raw/master/jpg/demo.gif)
 [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html)
-![](https://github.com/tingkl/keyframes/raw/master/jpg/index.JPG)
+![](https://github.com/tingkl/keyframes/raw/master/jpg/index.gif)
 [Effect](http://ecmc.bdimg.com/public01/keyframes/example/index.html)
-![](https://github.com/tingkl/keyframes/raw/master/jpg/example.JPG)
+![](https://github.com/tingkl/keyframes/raw/master/jpg/example.gif)
 [Migrating](https://github.com/tingkl/keyframes)
 
 
