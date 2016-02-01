@@ -303,6 +303,3 @@ setTimeout(function () {
 ```
 If everything went well you should see [this](http://localhost:63342/lib/keyframes/demo/3d-cube/index.app.html).
 
-### Change log ###
-
-[releases](https://github.com/mrdoob/three.js/releases)
