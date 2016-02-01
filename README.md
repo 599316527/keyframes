@@ -16,7 +16,7 @@ The aim of the project is to create a lightweight CSS3 keyframes and transform l
 
 ### Usage ###
 
-Download the [minified library](http://ecma.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
+Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
 ```html
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
@@ -110,7 +110,7 @@ var group = Keyframe.group(timeline);
 group.start();
 </script>
 ```
-If everything went well you should see [this](http://ecma.bdimg.com/public01/keyframes/demo/middle/index.app.html).
+If everything went well you should see [this](http://ecmc.bdimg.com/public01/keyframes/demo/middle/index.app.html).
 
 
 (ClassProxy based animation group)
@@ -301,5 +301,5 @@ setTimeout(function () {
 
 </script>
 ```
-If everything went well you should see [this](http://localhost:63342/lib/keyframes/demo/3d-cube/index.app.html).
+If everything went well you should see [this](http://ecma.bdimg.com/public01/keyframes/demo/3d-cube/index.app.html).
 
