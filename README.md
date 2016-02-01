@@ -5,25 +5,24 @@ keyframes & transform
 
 The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
 
-[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html) ¡ª [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html) ¡ª [Migrating](https://github.com/tingkl/keyframes)
+[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html) â€” [Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html) â€” [Migrating](https://github.com/tingkl/keyframes)
 
 
 ### Usage ###
 
 Download the [minified library](http://ecma.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
-Alternatively see [how to build the library yourself](https://github.com/mrdoob/three.js/wiki/build.py,-or-how-to-generate-a-compressed-Three.js-file).
 
 ```html
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 (Keyframes based animation group)
-![](http://bj.bcebos.com/cae-pub-read/adtest/index.gif)
+![](http://ecmc.bdimg.com/public01/keyframes/gif/index.gif)
 This code creates a timeline which binds the target dom element with the animation config. Finally it creates css3 keyframes and  animates the whole timeline.
 
 ```html
 <script>
 
-	// ×Ô¶¯Ëõ·Å
+	// è‡ªåŠ¨ç¼©æ”¾
     var defaultEntryWidth = 230;
     var suposeScreenWidth = 350;
     var timeline = {
@@ -119,7 +118,7 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
 
     var config = {
         'class': {
-            // safariä¯ÀÀÆ÷±ØĞë°üÒ»²ãcontainer£¬·ñÔòÏÔÊ¾ÓĞÎÊÌâ£¬µ°ÌÛ£¬ÆäËûä¯ÀÀÆ÷¿ÉÒÔ²»°ü
+            // safariæµè§ˆå™¨å¿…é¡»åŒ…ä¸€å±‚containerï¼Œå¦åˆ™æ˜¾ç¤ºæœ‰é—®é¢˜ï¼Œè›‹ç–¼ï¼Œå…¶ä»–æµè§ˆå™¨å¯ä»¥ä¸åŒ…
             'container': {
                 'perspective': '800px',
                 'perspective-origin': '50% 40%'
@@ -181,8 +180,8 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
                 'color': randomColor()
             },
             'cube-1': {
-                // ÏÈscaleÖ®ºó£¬ºóÃæµÄtranslate¶¼ÊÇ·Å´óµÄ£¬±ÈÈçtranslateZ 100px ÆäÊµÊÇ 120px,Òª¶ÔzÃæÉúĞ§±ØĞëscale3d
-                // rotateX(90deg)ºó £¬zÃæÆäÊµÊÇÔ­ÏÈµÄxÃæ
+                // å…ˆscaleä¹‹åï¼Œåé¢çš„translateéƒ½æ˜¯æ”¾å¤§çš„ï¼Œæ¯”å¦‚translateZ 100px å…¶å®æ˜¯ 120px,è¦å¯¹zé¢ç”Ÿæ•ˆå¿…é¡»scale3d
+                // rotateX(90deg)å ï¼Œzé¢å…¶å®æ˜¯åŸå…ˆçš„xé¢
                 'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(90deg) translateZ(100px)'
             },
             'cube-2': {
@@ -201,8 +200,8 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
                 'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(-90deg) translateZ(100px) rotate(180deg)'
             },
             'cube-7': {
-                // ÏÈscaleÖ®ºó£¬ºóÃæµÄtranslate¶¼ÊÇ·Å´óµÄ£¬±ÈÈçtranslateZ 100px ÆäÊµÊÇ 120px
-                // rotateX(90deg)ºó £¬zÃæÆäÊµÊÇÔ­ÏÈµÄxÃæ
+                // å…ˆscaleä¹‹åï¼Œåé¢çš„translateéƒ½æ˜¯æ”¾å¤§çš„ï¼Œæ¯”å¦‚translateZ 100px å…¶å®æ˜¯ 120px
+                // rotateX(90deg)å ï¼Œzé¢å…¶å®æ˜¯åŸå…ˆçš„xé¢
                 'transform': 'scale3d(0.8, 0.8, 0.8) rotateX(90deg) translateZ(100px)'
             },
             'cube-8': {
