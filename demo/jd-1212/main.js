@@ -125,42 +125,6 @@ var sdk = new BdAdSdk.Xuandong({
     msgPrefix: window.name || null
 });
 
-
-/**
- * 统计点击了哪些元素
- *
- * @param  {string} id  元素 id
- * @return {string}     元素名称
- */
-var getElementNameById = (function (elementIdNameMap) {
-    return function (id) {
-        return elementIdNameMap[id] || id;
-    };
-})({
-    'frame1': 'logo',
-    'frame2': '钟摆',
-    'frame3': '背景',
-    'frame4': '表盘指针',
-    'frame5': '口号'
-});
-document.body.addEventListener('click', function (evt) {
-    sdk.sendLog(
-        BdAdSdk.Xuandong.LOG_TYPE.TRACE,
-        '点击 ' + getElementNameById(evt.target.id)
-    );
-}, false);
-
-/**
- * 设置自动缩放
- *
- * @param {number} 动画容器宽度
- * @param {number} 动画容器高度
- * @param {string} 动画容器ID
- */
-sdk.autoScale(399, 500, 'container');
-
-// sdk.autoScale(359.1, 489.6, 'container');
-
 // 初始化 SDK
 sdk.init(function () {
     // 动画结束时发送结束日志

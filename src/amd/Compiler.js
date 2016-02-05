@@ -95,7 +95,7 @@ define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (C
 	    var style = document.createElement('style');
 	    style.type = 'text/css';
 	    style.id = id;
-	    style.innerHTML = cssText;
+	    style.appendChild(document.createTextNode(cssText));
 	    this.emit(Event.style, id, cssText);
 	    return style;
 	};

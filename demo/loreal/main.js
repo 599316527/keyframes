@@ -316,11 +316,6 @@ var timeline = {
 
 // 绑定动画参数
 var group = Keyframe.group(timeline);
-group.start();
-
-
-// 绑定动画参数
-var group = Keyframe.group(timeline);
 
 /**
  * 使用炫动SDK
@@ -345,11 +340,6 @@ var sdk = new BdAdSdk.Xuandong({
      */
     msgPrefix: window.name || null
 });
-
-document.body.addEventListener('click', function (evt) {
-    sdk.sendLog(BdAdSdk.Xuandong.LOG_TYPE.TRACE, '用户点击浮层');
-}, false);
-
 // 初始化 SDK
 sdk.init(function () {
     // 动画结束时发送结束日志

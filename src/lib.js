@@ -839,7 +839,7 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     var style = document.createElement('style');
     style.type = 'text/css';
     style.id = id;
-    style.innerHTML = cssText;
+    style.appendChild(document.createTextNode(cssText));
     this.emit(Event.style, id, cssText);
     return style;
 };

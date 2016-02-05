@@ -20,44 +20,54 @@
         html, body {
             height: 100%;
         }
+
         #wrap {
             width: 95%;
             margin: auto;
             height: 100%;
         }
+
         iframe {
             border: 1px solid #ddd;
             height: 400px;
             border-radius: 5px;
         }
+
         #container {
             clear: both;
             height: 100%;
             margin-bottom: 20px;
         }
+
         #container .tab-content {
             height: 100%;
         }
+
         #container .tab-pane {
             height: 100%;
         }
+
         #container pre {
             height: 100%;
         }
+
         #jsEditor {
             width: 50%;
             height: 100%;
             float: left;
         }
+
         #keyframeEditor {
             width: 50%;
             height: 100%;
             float: left;
         }
+
         #image {
             background-color: #000000;
             overflow-y: scroll;
         }
+
         pre {
             font-size: 15px;
         }
@@ -66,39 +76,47 @@
 <body>
 <div id="wrap" class="row">
     <div class="page-header" style="position: relative">
-        <h1>Write & compile in time<small style="margin-left: 20px;"><a target="_blank" href="../index.html" style="cursor: pointer;">keyframes animation api doc</a></small><small style="margin-left: 20px;"><a target="_blank" href="../example/_doc.html" style="cursor: pointer;position: absolute;right: 0;bottom: 15px;">简版</a></small></h1>
+        <h1>Write & compile in time
+            <small style="margin-left: 20px;"><a target="_blank" href="../index.html" style="cursor: pointer;">keyframes
+                animation api doc</a></small>
+            <small style="margin-left: 20px;"><a target="_blank" href="../example/_doc.html"
+                                                 style="cursor: pointer;position: absolute;right: 0;bottom: 15px;">简版</a>
+            </small>
+        </h1>
     </div>
-<div id="left" class="col-md-3">
-    <div id="tree"></div>
-    <!-- Standard button -->
-    <button type="button" class="btn btn-primary">Compile</button>
-</div>
-<iframe src="env.html" class="col-md-9"></iframe>
-<div id="container">
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#js" aria-controls="js" role="tab" data-toggle="tab">js</a></li>
-        <li role="presentation"><a href="#html" aria-controls="html" role="tab" data-toggle="tab">html</a></li>
-        <li role="presentation"><a href="#css" aria-controls="css" role="tab" data-toggle="tab">css</a></li>
-        <li role="presentation"><a href="#image" aria-controls="image" role="tab" data-toggle="tab">image</a></li>
-    </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane fade" id="html">
-            <pre id="htmlEditor"></pre>
-        </div>
-        <div role="tabpanel" class="tab-pane fade" id="css">
-            <pre id="cssEditor"></pre>
-        </div>
-        <div role="tabpanel" class="tab-pane active fade in" id="js">
-            <pre id="jsEditor"></pre>
-            <pre id="keyframeEditor"></pre>
-        </div>
-        <div role="tabpanel" class="tab-pane fade" id="image"></div>
+    <div id="left" class="col-md-3">
+        <div id="tree"></div>
+        <!-- Standard button -->
+        <button type="button" class="btn btn-primary">Compile</button>
+        <button type="button" class="btn btn-danger">Preview</button>
     </div>
+    <iframe src="env.html" class="col-md-9"></iframe>
+    <div id="container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#js" aria-controls="js" role="tab" data-toggle="tab">js</a>
+            </li>
+            <li role="presentation"><a href="#html" aria-controls="html" role="tab" data-toggle="tab">html</a></li>
+            <li role="presentation"><a href="#css" aria-controls="css" role="tab" data-toggle="tab">css</a></li>
+            <li role="presentation"><a href="#image" aria-controls="image" role="tab" data-toggle="tab">image</a></li>
+        </ul>
 
-</div>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade" id="html">
+                <pre id="htmlEditor"></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="css">
+                <pre id="cssEditor"></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane active fade in" id="js">
+                <pre id="jsEditor"></pre>
+                <pre id="keyframeEditor"></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="image"></div>
+        </div>
+
+    </div>
 </div>
 <script>
     var config = {
@@ -164,7 +182,7 @@
     tree.treeview({
         data: getTree()
     });
-    require.config({paths: {ace: '../ace', ani:'../dist/amd'}});
+    require.config({paths: {ace: '../ace', ani: '../dist/amd'}});
     require(['ace/ace', 'ani/Util'], function (ACE, Util) {
         function all(count, cb) {
             var _count = 0;
@@ -175,6 +193,7 @@
                 }
             }
         }
+
         function loadSrc(item, domain) {
             jsEditor.setValue(item['_main.js']);
             htmlEditor.setValue(item['dom.html']);
@@ -189,6 +208,7 @@
             });
             $('#image').html(images.join(''));
         }
+
         var currentNode;
         tree.on('nodeSelected', function (event, node) {
             currentNode = node;
@@ -209,16 +229,28 @@
                 }
             });
         });
-        Util.on(document.getElementsByTagName('button')[0], 'click', function () {
+        var buttons = document.getElementsByTagName('button');
+        Util.on(buttons[0], 'click', function () {
             if (!currentNode) {
                 return;
             }
             var item = config[currentNode.text];
             if (item.domain) {
                 keyframeEditor.setValue('');
-                var _item = {domain: item.domain, 'dom.html': htmlEditor.getValue(), 'main.css': cssEditor.getValue(), '_main.js': jsEditor.getValue()};
+                var _item = {
+                    domain: item.domain,
+                    'dom.html': htmlEditor.getValue(),
+                    'main.css': cssEditor.getValue(),
+                    '_main.js': jsEditor.getValue()
+                };
                 envWin.postMessage(_item, '*');
             }
+        });
+        Util.on(buttons[1], 'click', function () {
+            if (!currentNode) {
+                return;
+            }
+            window.open(currentNode.text + '/index.app.html', currentNode.text, 'height=100%,width=100%,toolbar=yes,menubar=yes,scrollbars=yes,resizable=yes,status=yes');
         });
         var jsEditor = ACE.edit('jsEditor');
         jsEditor.session.setMode('ace/mode/javascript');

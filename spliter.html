@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+</head>
+<style>
+    #target {
+        height: 500px;
+    }
+</style>
+<style>
+    .spliter {
+        padding: 2px;
+        float: left;
+        height: 100%;
+        width: 1px;
+    }
+    .spliter div{
+        border-left: 1px solid black;
+        height: 100%;
+    }
+    .spliter:hover div {
+        border-left: 1px dashed blue;
+    }
+    .move {
+        cursor: move;
+    }
+    .move .spliter div {
+        border-left: 1px dashed blue;
+    }
+</style>
+<body>
+
+<div id="target">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+</div>
+<script>
+    var target = $('#target');
+    console.log(target.width());
+    var children = target.children();
+    var width = target.width() - 5 * (children.length - 1);
+    var minWidth = 100;
+    var averageWidth = parseInt(width / children.length);
+    var firstWidth = width - (averageWidth * (children.length - 1));
+    $.each(children, function(i, item) {
+        if (i > 0) {
+            var spliter = $('<div class="spliter"><div></div></div>');
+            $(item).width(averageWidth).css('float', 'left').before(spliter);
+            var prev = spliter.prev();
+            var next = spliter.next();
+            var startPageX;
+            var prevWidth;
+            var nextWidth;
+            function mousemove(evt){
+                var offset = evt.pageX - startPageX;
+                var _prevWidth = prevWidth + offset;
+                var _nextWidth = nextWidth - offset;
+                if (_prevWidth > minWidth && _nextWidth > minWidth) {
+                    prev.width(prevWidth + offset);
+                    next.width(nextWidth - offset);
+                }
+                else {
+                    $(document).off('mousemove', mousemove);
+                }
+            }
+            spliter.on('mousedown', function (evt) {
+                startPageX = evt.pageX;
+                prevWidth = prev.width();
+                nextWidth = next.width();
+                target.addClass('move');
+                $(document).on('mousemove', mousemove);
+            });
+            spliter.on('mouseup', function () {
+                target.removeClass('move');
+                $(document).off('mousemove', mousemove);
+            });
+
+        }
+        else {
+            $(item).width(firstWidth).css('float', 'left');
+        }
+    });
+</script>
+</body>
+</html>
