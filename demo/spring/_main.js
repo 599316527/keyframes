@@ -27,13 +27,13 @@ var timeline = {
             'box-shadow': '0 1px 0 white, inset 0 5px 0px #aebfc4, inset 0 10px 0px #aebfc4, 0 5px 0 #bdcbce, 0 10px 0 #bdcbce'
         }
     },
-    "frame1#infinite~2400ms>alternate_400@ease-in-out": spring,
-    "frame2#infinite~2400ms>alternate_800@ease-in-out": spring,
-    "frame3#infinite~2400ms>alternate_1200@ease-in-out": spring,
-    "frame4#infinite~2400ms>alternate_1600@ease-in-out": spring,
-    "frame5#infinite~2400ms>alternate_2000@ease-in-out": spring,
-    "frame6#infinite~2400ms>alternate_2400@ease-in-out": spring,
-    "frame7#infinite~2400ms>alternate_2800@ease-in-out": spring
+    "frame1#infinite~2400ms>alternate^400ms@ease-in-out": spring,
+    "frame2#infinite~2400ms>alternate^800ms@ease-in-out": spring,
+    "frame3#infinite~2400ms>alternate^1200ms@ease-in-out": spring,
+    "frame4#infinite~2400ms>alternate^1600ms@ease-in-out": spring,
+    "frame5#infinite~2400ms>alternate^2000ms@ease-in-out": spring,
+    "frame6#infinite~2400ms>alternate^2400ms@ease-in-out": spring,
+    "frame7#infinite~2400ms>alternate^2800ms@ease-in-out": spring
 };
 var group = Keyframe.group(timeline);
 group.start();
