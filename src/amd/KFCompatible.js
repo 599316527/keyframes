@@ -56,13 +56,13 @@ define(['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], func
 	    pitch.use('animation', 'animation', function (key, value) {
 	        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
 	    });
-	    pitch.use('specialA', 'background',
+	    pitch.use('specialA', 'background background-image ',
 	        function (key, value) {
-	            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	            return key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
 	        });
 	    pitch.use('specialB', 'mask-image',
 	        function (key, value) {
-	            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+	            return me.prefix + key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
 	        });
 	    pitch.use('rest', '*',
 	        function (key, value) {

@@ -8,6 +8,7 @@ var config = {
     'class': {
         // safari浏览器必须包一层container，否则显示有问题，蛋疼，其他浏览器可以不包
         'container': {
+            'margin-top': '-60px',
             'perspective': '800px',
             'perspective-origin': '50% 40%'
             // 不要再设置transform-style了
@@ -179,10 +180,10 @@ Util.on(btn[1], 'change', function (e) {
         state1();
     }
 });
-
+var group;
 setTimeout(function () {
     state1();
-    var group = Keyframe.group(config);
+    group = Keyframe.group(config);
     group.start();
 }, 500);
 

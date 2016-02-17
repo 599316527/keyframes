@@ -101,10 +101,26 @@ Keyframe.prototype._listen = function () {
         }
     });
 };
+// 只有一个动画，group触发
+Keyframe.prototype.timeStart = function () {
+    var me = this;
+    if (this._timeout) {
+        setTimeout(function() {
+            me.start();
+        }, this._timeout);
+    }
+    else {
+        me.start();
+    }
+    return this;
+};
+Keyframe.prototype.setTimeout = function (timeout) {
+    this._timeout = timeout;
+};
 Keyframe.prototype.start = function () {
     var cpt = this._compatible;
     var css = cpt.parseAnimation(this._animations);
-    var old = this._filter(this._animations);
+    var old = this._filter();
     this.emit(Event.beforeStart);
     if (old !== '') {
         if (css.trim() !== '') {
@@ -126,13 +142,13 @@ Keyframe.prototype.pause = function (optName) {
     this.emit(Event.pause);
     return this;
 };
-Keyframe.prototype._filter = function (animations) {
+Keyframe.prototype._filter = function () {
     var animation = this._compatible.css(this._dom, 'animation');
     var $animation = [];
     if (animation) {
         animation = animation.split(',');
         var tmp = ['(?:none)'];
-        Util.each(animations, function (animation) {
+        Util.each(this._animations, function (animation) {
             tmp.push('(?:' + animation.name + ')');
         });
         var reg = this._compatible.regExp(tmp.join('|'));
@@ -153,7 +169,7 @@ Keyframe.prototype.restart = function () {
 };
 Keyframe.prototype.clear = function () {
     var cpt = this._compatible;
-    cpt.css(this._dom, 'animation', this._filter(this._animations));
+    cpt.css(this._dom, 'animation', this._filter());
     Util.forIn(this._animationStatus, function (key) {
         this._animationStatus[key].ko = false;
         this._animationStatus[key].record = 0;
@@ -295,7 +311,7 @@ Keyframe.group = function (group) {
         else {
             frameProxy = Keyframe.timeLine(item);
         }
-        frames = frames.concat(frameProxy.keyframe(dom));
+        frames.push(frameProxy.keyframe(dom));
     });
     Keyframe.compile();
     return new Group(frames);

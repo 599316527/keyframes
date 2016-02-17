@@ -42,11 +42,13 @@ Compiler.prototype.defineClass = function (className, metaData) {
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        keyframe = Util.random.name(8);
+    if (metaData !== null) {
+        if (Checker.object.check(arguments)) {
+            metaData = arguments[0];
+            keyframe = Util.random.name(8);
+        }
+        this._keyframeMap[keyframe] = metaData;
     }
-    this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };
 Compiler.prototype.compile = function () {

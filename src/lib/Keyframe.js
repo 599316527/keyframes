@@ -620,13 +620,13 @@ function KFCompatible() {
     pitch.use('animation', 'animation', function (key, value) {
         return me.prefix + key + ':' + me.parseAnimation(value) + ';';
     });
-    pitch.use('specialA', 'background',
+    pitch.use('specialA', 'background background-image ',
         function (key, value) {
-            return key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+            return key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
         });
     pitch.use('specialB', 'mask-image',
         function (key, value) {
-            return me.prefix + key + ':' + value.replace(/linear-gradient/g, me.prefix + 'linear-gradient') + ';';
+            return me.prefix + key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
         });
     pitch.use('rest', '*',
         function (key, value) {
@@ -780,11 +780,13 @@ Compiler.prototype.defineClass = function (className, metaData) {
     return className;
 };
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-    if (Checker.object.check(arguments)) {
-        metaData = arguments[0];
-        keyframe = Util.random.name(8);
+    if (metaData !== null) {
+        if (Checker.object.check(arguments)) {
+            metaData = arguments[0];
+            keyframe = Util.random.name(8);
+        }
+        this._keyframeMap[keyframe] = metaData;
     }
-    this._keyframeMap[keyframe] = metaData;
     return keyframe;
 };
 Compiler.prototype.compile = function () {
@@ -1042,17 +1044,31 @@ FrameProxy.prototype.getConfigs = function () {
 };
 // FrameProxy只针对一个keyframes
 FrameProxy.prototype.keyframe = function (domFnIt) {
-    var map = {'@': 'function', '#': 'count'};
+    var map = {'@': 'function', '#': 'count', '^': 'delay', '~': 'duration', '>': 'direction'};
     var option = {};
-    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function ($0, $1, $2) {
+    var dom = domFnIt.replace(/([@#^~>_])([^@#^~>_]*)/g, function ($0, $1, $2) {
             option[$1] = $2;
             return '';
-        });
+        }).trim();
+    var attr;
     Util.forIn(option, function (key, item) {
-        this._config[map[key]] = item;
+        attr = map[key];
+        if (!(attr in this._config)) {
+            this._config[attr] = item;
+        }
     }, this);
-    this._keyframe = new this._clazz(document.getElementById(dom), this._configs);
-    return this._keyframe;
+    if (dom[0] === '.') {
+        dom = document.getElementsByClassName(dom.substr(1));
+        this._keyframes = [];
+        Util.each(dom, function(dom) {
+            this._keyframes.push(new this._clazz(dom, this._configs));
+        }, this);
+    }
+    else {
+        dom = document.getElementById(dom);
+        this._keyframes = [new this._clazz(dom, this._configs)];
+    }
+    return this._keyframes;
 };
 FrameProxy.prototype.combine = function (frameProxy) {
     var configs = frameProxy.getConfigs();
@@ -1168,7 +1184,7 @@ Keyframe.prototype._listen = function () {
 Keyframe.prototype.start = function () {
     var cpt = this._compatible;
     var css = cpt.parseAnimation(this._animations);
-    var old = this._filter();
+    var old = this._filter(this._animations);
     this.emit(Event.beforeStart);
     if (old !== '') {
         if (css.trim() !== '') {
@@ -1190,13 +1206,13 @@ Keyframe.prototype.pause = function (optName) {
     this.emit(Event.pause);
     return this;
 };
-Keyframe.prototype._filter = function () {
+Keyframe.prototype._filter = function (animations) {
     var animation = this._compatible.css(this._dom, 'animation');
     var $animation = [];
     if (animation) {
         animation = animation.split(',');
         var tmp = ['(?:none)'];
-        Util.each(this._animations, function (animation) {
+        Util.each(animations, function (animation) {
             tmp.push('(?:' + animation.name + ')');
         });
         var reg = this._compatible.regExp(tmp.join('|'));
@@ -1217,7 +1233,7 @@ Keyframe.prototype.restart = function () {
 };
 Keyframe.prototype.clear = function () {
     var cpt = this._compatible;
-    cpt.css(this._dom, 'animation', this._filter());
+    cpt.css(this._dom, 'animation', this._filter(this._animations));
     Util.forIn(this._animationStatus, function (key) {
         this._animationStatus[key].ko = false;
         this._animationStatus[key].record = 0;
@@ -1352,8 +1368,14 @@ Keyframe.group = function (group) {
         delete group['class'];
     }
     Util.forIn(group, function (dom, item) {
-        frameProxy = Keyframe.timeLine(item);
-        frames.push(frameProxy.keyframe(dom));
+        if (typeof item === 'string') {
+            frameProxy = new FrameProxy(item, null, Keyframe);
+            frameProxy.setConfig({});
+        }
+        else {
+            frameProxy = Keyframe.timeLine(item);
+        }
+        frames = frames.concat(frameProxy.keyframe(dom));
     });
     Keyframe.compile();
     return new Group(frames);
@@ -1395,3 +1417,4 @@ Keyframe.timeLine = function (timeLine) {
     frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
     return frameProxy;
 };
+

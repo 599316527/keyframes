@@ -18,17 +18,17 @@
         width: 1px;
     }
     .spliter div{
-        border-left: 1px solid black;
+        border-left: 1px solid gray;
         height: 100%;
     }
-    .spliter:hover div {
-        border-left: 1px dashed blue;
-    }
     .move {
-        cursor: move;
+        cursor: e-resize;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
-    .move .spliter div {
-        border-left: 1px dashed blue;
+    .move .focus div{
+        border-left: 1px dashed lightblue;
     }
 </style>
 <body>
@@ -41,48 +41,72 @@
 </div>
 <script>
     var target = $('#target');
-    console.log(target.width());
+    var startPageX;
+    var prevWidth;
+    var nextWidth;
+    var pre, next;
+    var isMoving;
+    function mousemove(evt){
+        isMoving = true;
+        var offset = evt.pageX - startPageX;
+        var _prevWidth = prevWidth + offset;
+        var _nextWidth = nextWidth - offset;
+        if (_prevWidth > minWidth && _nextWidth > minWidth) {
+            prev.width(prevWidth + offset);
+            next.width(nextWidth - offset);
+        }
+    }
+    function mouseout() {
+        isMoving = false;
+        if (focusSpliter) {
+            focusSpliter = false;
+        }
+        target.off('mousemove', mousemove);
+        target.removeClass('move');
+    }
+    target.on('mousedown', function (evt) {
+        if (focusSpliter) {
+            prev = focusSpliter.prev();
+            next = focusSpliter.next();
+            startPageX = evt.pageX;
+            prevWidth = prev.width();
+            nextWidth = next.width();
+            target.on('mousemove', mousemove);
+        }
+    });
+    target.hover(function() {}, mouseout);
+    target.on('mouseup', mouseout);
     var children = target.children();
     var width = target.width() - 5 * (children.length - 1);
     var minWidth = 100;
     var averageWidth = parseInt(width / children.length);
     var firstWidth = width - (averageWidth * (children.length - 1));
+    var focusSpliter;
     $.each(children, function(i, item) {
+        item = $(item);
         if (i > 0) {
             var spliter = $('<div class="spliter"><div></div></div>');
-            $(item).width(averageWidth).css('float', 'left').before(spliter);
-            var prev = spliter.prev();
-            var next = spliter.next();
-            var startPageX;
-            var prevWidth;
-            var nextWidth;
-            function mousemove(evt){
-                var offset = evt.pageX - startPageX;
-                var _prevWidth = prevWidth + offset;
-                var _nextWidth = nextWidth - offset;
-                if (_prevWidth > minWidth && _nextWidth > minWidth) {
-                    prev.width(prevWidth + offset);
-                    next.width(nextWidth - offset);
+            item.width(averageWidth).css('float', 'left').before(spliter);
+            spliter.hover(function () {
+                if (!isMoving&&!focusSpliter) {
+                    focusSpliter = spliter;
+                    $('.spliter').removeClass('focus');
+                    spliter.addClass('focus');
+                    target.addClass('move');
                 }
-                else {
-                    $(document).off('mousemove', mousemove);
+            }, function () {
+                if (!isMoving && focusSpliter) {
+                    focusSpliter.removeClass('focus');
+                    target.removeClass('move');
+                    focusSpliter = false;
                 }
-            }
-            spliter.on('mousedown', function (evt) {
-                startPageX = evt.pageX;
-                prevWidth = prev.width();
-                nextWidth = next.width();
-                target.addClass('move');
-                $(document).on('mousemove', mousemove);
             });
-            spliter.on('mouseup', function () {
-                target.removeClass('move');
-                $(document).off('mousemove', mousemove);
-            });
-
         }
         else {
-            $(item).width(firstWidth).css('float', 'left');
+            item.width(firstWidth).css('float', 'left');
+        }
+        if (item.is(':hidden')) {
+
         }
     });
 </script>

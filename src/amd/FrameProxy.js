@@ -30,17 +30,31 @@ define(['Checker', 'Util', 'Compiler'], function (Checker, Util, Compiler) {
 	};
 	// FrameProxy只针对一个keyframes
 	FrameProxy.prototype.keyframe = function (domFnIt) {
-	    var map = {'@': 'function', '#': 'count'};
+	    var map = {'@': 'function', '#': 'count', '^': 'delay', '~': 'duration', '>': 'direction'};
 	    var option = {};
-	    var dom = domFnIt.replace(/([@#])([^@#]*)/g, function ($0, $1, $2) {
+	    var dom = domFnIt.replace(/([@#^~>_])([^@#^~>_]*)/g, function ($0, $1, $2) {
 	            option[$1] = $2;
 	            return '';
-	        });
+	        }).trim();
+	    var attr;
 	    Util.forIn(option, function (key, item) {
-	        this._config[map[key]] = item;
+	        attr = map[key];
+	        if (!(attr in this._config)) {
+	            this._config[attr] = item;
+	        }
 	    }, this);
-	    this._keyframe = new this._clazz(document.getElementById(dom), this._configs);
-	    return this._keyframe;
+	    if (dom[0] === '.') {
+	        dom = document.getElementsByClassName(dom.substr(1));
+	        this._keyframes = [];
+	        Util.each(dom, function(dom) {
+	            this._keyframes.push(new this._clazz(dom, this._configs));
+	        }, this);
+	    }
+	    else {
+	        dom = document.getElementById(dom);
+	        this._keyframes = [new this._clazz(dom, this._configs)];
+	    }
+	    return this._keyframes;
 	};
 	FrameProxy.prototype.combine = function (frameProxy) {
 	    var configs = frameProxy.getConfigs();
