@@ -6,12 +6,6 @@
  */
 var timeline = {
     'class': {
-        'canvas': {
-            'width': '100%',
-            'height': '100%',
-            'background': 'hsla(205, 95%, 15%, 1)',
-            'background-image': 'radial-gradient(top, circle cover, hsla(205, 95%, 15%, 1) 0%, hsla(251, 20%, 17%,1) 80%)'
-        },
         'stage': {
             'transform-style': 'preserve-3d',
             'position': 'relative',
