@@ -30,9 +30,9 @@ define(['Checker', 'Util', 'Compiler'], function (Checker, Util, Compiler) {
 	};
 	// FrameProxy只针对一个keyframes
 	FrameProxy.prototype.keyframe = function (domFnIt) {
-	    var map = {'@': 'function', '#': 'count', '^': 'delay', '~': 'duration', '>': 'direction'};
+	    var map = {'@': 'function', '#': 'count', '_': 'delay', '~': 'duration', '>': 'direction'};
 	    var option = {};
-	    var dom = domFnIt.replace(/([@#^~>_])([^@#^~>_]*)/g, function ($0, $1, $2) {
+	    var dom = domFnIt.replace(/([@#~>_])([^@#~>_]*)/g, function ($0, $1, $2) {
 	            option[$1] = $2;
 	            return '';
 	        }).trim();

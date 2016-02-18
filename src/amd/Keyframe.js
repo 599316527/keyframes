@@ -331,5 +331,4 @@ define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Eve
 	    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
 	    return frameProxy;
 	};
-	
 	return Keyframe;});

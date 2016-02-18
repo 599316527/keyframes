@@ -17,20 +17,18 @@ var timeline = {
             'position': 'relative',
             'top': '50%',
             'margin': '-100px auto 0',
-            'width': (63 * 19) + 'px',
-            'height': '220px',
-            'overflow': 'hidden',
-            'perspective': '1000px'
+            'width': '100px',
+            'height': '220px'
         },
         'gen': {
-            'position': 'relative',
+            'position': 'absolute',
             'width': '1px',
+            'left': '49px',
+            'top': '10px',
             'height': '200px',
-             'display': 'inline-block',
-            'margin': '10px 6px',
+            'display': 'inline-block',
             'background': 'hsla(243, 100%, 85%, 1)',
-            'box-shadow': '1px 1px 1px 1px hsla(0,0%,0%,0.2)',
-            'transition': 'all 1s ease'
+            'box-shadow': '1px 1px 1px 1px hsla(0,0%,0%,0.2)'
         },
         'gen:before': {
             'position': 'absolute',
@@ -50,21 +48,38 @@ var timeline = {
             'width': '12px',
             'height': '10px',
             'box-shadow': '2px 2px 2px 2px hsla(0,0%,0%,0.25)',
-            'background': 'hsla(243, 95%, 85%, 1)',
+            'background': 'red',
             'content': '""',
             'bottom': '-2px'
         }
     }
 };
-var rot = Keyframe.defineKeyframe({
-    40: { 'background': 'hsla(253, 85%, 25%, 1)'},
-    100: { 'rotateX': '-360deg'}
-}).getName();
+var perspective = {
+    '0': {
+        'perspective': '1px'
+    }
+};
+
 var delay = 0;
-for (var i = 630; i >= 0; i-=10) {
+for (var i = 0; i <= 36; i++) {
     delay -= 0.1;
     delay = delay.toFixed(2);
-    timeline['.rot' + i + '#infinite~5s_' + delay + 's'] = rot;
+    perspective[(i * 2.5 + 1) + ''] = {
+        'rotateZ': (i * 10) + 'deg',
+        'perspective': (i * 6 + 2) + 'px',
+        'perspective-origin': (50 + Math.sin(i/Math.PI) * 50 + 10).toFixed(2) + 'px ' + (110 - Math.cos(i/Math.PI) * 50 + 10).toFixed(2) + 'px'
+    };
+    timeline['class']['rot' + i] = {
+        'transform': 'rotateZ(' + (i * 10) + 'deg) translateZ(' + (i * 5) + 'px)'
+    };
 }
+perspective['91']['perspective-origin'] = perspective['88.5']['perspective-origin'];
+perspective['100'] = {
+    'perspective-origin': perspective['91']['perspective-origin'],
+    'rotateZ': '360deg',
+    'perspective': '230px'
+};
+var rot = Keyframe.defineKeyframe(perspective).getName();
+timeline['stage#infinite~8s>alternate'] = rot;
 var group = Keyframe.group(timeline);
 group.start();
