@@ -53,6 +53,7 @@ css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。
 ```js
 // by ClassProxy
 var cpl = Compiler.instance();
+// 也可以调用Keyframe.defineClass
 var proxy = new ClassProxy('scene', {
         'width': '200px',
         'height': '200px',
@@ -60,7 +61,7 @@ var proxy = new ClassProxy('scene', {
         'position': 'relative',
         'transform-style': 'preserve-3d'
     });
-cpl.compile();
+cpl.compile();   // 也可以调用Keyframe.compile()
 ```
 ```css
 .scene {
@@ -113,6 +114,24 @@ cpl.compile();
      height: 150px;
  }
 ```
+类名混淆(不指定类名)
+```js
+var mixClass = new ClassProxy({
+        'width': '200px',
+        'height': '200px',
+        'transform-style': 'preserve-3d'
+    });
+console.log(mixClass.getName()); // 随机类名，例如：Xn9gQ41e
+cpl.compile();
+```
+```css
+.Xn9gQ41e {
+    width: 200px;
+    height: 200px;
+    -webkit-transform-style: preserve-3d;   // 自动适配浏览器前缀
+}
+```
+
 ###3.2 update class
 
 ###3.3 create keyframes
