@@ -178,9 +178,55 @@ cpl.compile();
 }
 ```
 ###3.3 create keyframes
-
+```js
+var cpl = Compiler.instance();
+// 或者调用Keyframe.defineKeyframe
+var rot = cpl.defineKeyframe({
+    '0 50': {
+        'transform': 'rotateY(0)'
+    },
+    '100': {
+        'transform': 'rotateY(360deg)'
+    }
+});
+console.log(rot); // P236bM6I随机
+cpl.compile(); // 或者调用Keyframe.compile()
+```
+```css
+@-webkit-keyframes P236bM6I {
+    0%, 50% {
+        -webkit-transform: rotateY(0);
+    }
+    100% {
+        -webkit-transform: rotateY(360deg);
+    }
+}
+```
 ###3.4 update keyframes
-
+```js
+// 在3.3生成的rot基础上更新
+var cpl = Compiler.instance();
+rot = cpl.defineKeyframe(rot, {
+    '0': {
+        'transform': 'rotateY(20deg)'
+    },
+    '100': {
+        'transform': 'rotateY(360deg)'
+    }
+});
+console.log(rot); // P236bM6I保持不变
+cpl.compile(); // 或者调用Keyframe.compile()
+```
+```css
+@-webkit-keyframes P236bM6I {
+    0% {
+        -webkit-transform: rotateY(20deg);
+    }
+    100% {
+        -webkit-transform: rotateY(360deg);
+    }
+}
+```
 ##4 control animation
 
 ###4.1 bind dom&animation
