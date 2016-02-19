@@ -5,7 +5,7 @@ keyframes使用文档
 
  [2 起步](#user-content-2-start)
 
- [3 动态class和keyframes](#user-content-3-dynamic-class&keyframes)
+ [3 动态class和keyframes](#user-content-3-dynamic-classkeyframes)
 
 　　[3.1 生成class](#user-content-31-create-class)
 
@@ -17,7 +17,7 @@ keyframes使用文档
 
  [4 控制元素动画](#user-content-4-control-animation)
 
-　　[4.1 绑定元素与动画](#user-content-41-bind-dom&animation)
+　　[4.1 绑定元素与动画](#user-content-41-bind-domanimation)
 
 　　[4.2 监听动画状态](#user-content-42-monitor-animation)
 
@@ -35,7 +35,7 @@ keyframes使用文档
 
 　　[5.2 生成keyframes](#user-content-52-create-keyframes)
 
-　　[5.3 绑定元素与动画](#user-content-53-bind-dom&animation)
+　　[5.3 绑定元素与动画](#user-content-53-bind-domanimation)
 
 ## 1 preface
 
