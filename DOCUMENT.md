@@ -59,6 +59,15 @@ var scene = new ClassProxy('scene', {
         'transform-style': 'preserve-3d'
     });
 ```
+```css
+.scene {
+    width: 200px;
+    height: 200px;
+    margin: 150px auto;
+    position: relative;
+    -webkit-transform-style: preserve-3d;
+}
+```
 ###3.2 update class
 
 ###3.3 create keyframes
