@@ -39,7 +39,7 @@ keyframes使用文档
 
 ## 1 preface
 
-css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。keyframes类库致力于动态生成class和keyframes，为开发者提供一种友好的开发方式，简化动画的的编写，透明动画的控制以及监听，使开发者将更多的精力投入到动画的创造。
+css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。keyframes类库致力于动态生成class和keyframes，同时支持进度轴和时间轴两种生成动画的途径，简化动画的的编写，透明动画的控制以及监听，使开发者将更多的精力投入到动画的创造。
 
 ## 2 start
 
@@ -205,7 +205,6 @@ cpl.compile(); // 或者调用Keyframe.compile()
 ###3.4 update keyframes
 ```js
 // 在3.3生成的rot基础上更新
-var cpl = Compiler.instance();
 rot = cpl.defineKeyframe(rot, {
     '0': {
         'transform': 'rotateY(20deg)'
