@@ -73,14 +73,45 @@ cpl.compile();
 ```
 伪类方法(hover, focus, before, after)
 ```js
-var cpl = Compiler.instance();
-var proxy.hover({'color': 'red'});
+proxy.hover({'color': 'red'});
 cpl.compile();
 ```
 ```css
 .scene:hover {
     color: red;
 }
+```
+子类方法(selector, selectors)
+```js
+proxy.selector('init', {
+        'background-color': randomColor(),
+        'border': '1px solid ' + randomColor(),
+        'color': randomColor()
+    });
+proxy.selectors({
+        'big-cube': {
+            'opacity': 0.5
+        },
+        'small-cube': {
+            'width': '150px',
+            'height': '150px',
+        }
+    });
+cpl.compile();
+```
+```css
+.scene .init {
+    background-color: #xxx;
+    border: 1px solid #xxx;
+    color: #xxx;
+}
+.scene .big-cube {
+    opacity: 0.5;
+}
+.scene .small-cube {
+     width: 150px;
+     height: 150px;
+ }
 ```
 ###3.2 update class
 
