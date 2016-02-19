@@ -7,7 +7,7 @@ The aim of the project is to create a lightweight CSS3 keyframes and transform l
 
 [Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
 ![](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
-[Documentation](http://ecmc.bdimg.com/public01/keyframes/index.html)
+[Configure](http://ecmc.bdimg.com/public01/keyframes/index.html)
 ![](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
 [Effect](http://ecmc.bdimg.com/public01/keyframes/example/index.html)
 ![](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)

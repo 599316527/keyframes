@@ -1,0 +1,124 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+@-webkit-keyframes o9K61fWN {
+    0% {
+        -webkit-perspective: 1px;
+    }
+    3% {
+        -webkit-perspective-origin: 109.45px 29.59px;
+    }
+    6% {
+        -webkit-perspective-origin: 145.61px 80.68px;
+    }
+    9% {
+        -webkit-perspective-origin: 144.31px 143.26px;
+    }
+    12% {
+        -webkit-perspective-origin: 106.06px 192.81px;
+    }
+    15% {
+        -webkit-perspective-origin: 45.85px 209.91px;
+    }
+    18% {
+        -webkit-perspective-origin: -12.73px 187.87px;
+    }
+    21% {
+        -webkit-perspective-origin: -46.74px 135.33px;
+    }
+    24% {
+        -webkit-perspective-origin: -42.85px 72.86px;
+    }
+    27% {
+        -webkit-perspective-origin: -2.58px 24.94px;
+    }
+    30% {
+        -webkit-perspective-origin: 58.29px 10.34px;
+    }
+    33% {
+        -webkit-perspective-origin: 115.91px 34.80px;
+    }
+    36% {
+        -webkit-perspective-origin: 147.71px 88.71px;
+    }
+    39% {
+        -webkit-perspective-origin: 141.22px 150.97px;
+    }
+    42% {
+        -webkit-perspective-origin: 99.00px 197.17px;
+    }
+    45% {
+        -webkit-perspective-origin: 37.58px 209.23px;
+    }
+    48% {
+        -webkit-perspective-origin: -18.97px 182.41px;
+    }
+    51% {
+        -webkit-perspective-origin: -48.51px 127.22px;
+    }
+    100% {
+        -webkit-perspective: 500px;
+        -webkit-transform: rotate3d(0, 0, 1, 630deg);
+    }
+    94.5% {
+        -webkit-perspective: 340px;
+        -webkit-transform: rotate3d(0, 0, 1, 630deg);
+    }
+    1.5% {
+        -webkit-perspective-origin: 81.30px 15.02px;
+    }
+    4.5% {
+        -webkit-perspective-origin: 131.63px 52.23px;
+    }
+    7.5% {
+        -webkit-perspective-origin: 149.98px 112.08px;
+    }
+    10.5% {
+        -webkit-perspective-origin: 129.16px 171.10px;
+    }
+    13.5% {
+        -webkit-perspective-origin: 77.33px 206.19px;
+    }
+    16.5% {
+        -webkit-perspective-origin: 14.79px 203.60px;
+    }
+    19.5% {
+        -webkit-perspective-origin: -33.95px 164.33px;
+    }
+    22.5% {
+        -webkit-perspective-origin: -49.81px 103.78px;
+    }
+    25.5% {
+        -webkit-perspective-origin: -26.56px 45.66px;
+    }
+    28.5% {
+        -webkit-perspective-origin: 26.69px 12.76px;
+    }
+    31.5% {
+        -webkit-perspective-origin: 89.06px 17.95px;
+    }
+    34.5% {
+        -webkit-perspective-origin: 136.14px 59.20px;
+    }
+    37.5% {
+        -webkit-perspective-origin: 149.46px 120.36px;
+    }
+    40.5% {
+        -webkit-perspective-origin: 123.82px 177.46px;
+    }
+    43.5% {
+        -webkit-perspective-origin: 69.26px 208.13px;
+    }
+    46.5% {
+        -webkit-perspective-origin: 7.15px 200.35px;
+    }
+    49.5% {
+        -webkit-perspective-origin: -38.17px 157.18px;
+    }
+    52.5% {
+        -webkit-perspective-origin: -48.95px 95.52px;
+    }
+}
