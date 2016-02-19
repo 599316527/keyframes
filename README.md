@@ -1,4 +1,4 @@
-keyframes & transform
+keyframes
 ========
 
 #### JavaScript keyframes and transform library ####
