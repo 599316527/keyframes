@@ -6,11 +6,11 @@ keyframes & transform
 The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
 
 [Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
-![](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
+![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
 [Configure](http://ecmc.bdimg.com/public01/keyframes/index.html)
-![](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
+![http://ecmc.bdimg.com/public01/keyframes/index.html](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
 [Effect](http://ecmc.bdimg.com/public01/keyframes/example/index.html)
-![](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)
+![http://ecmc.bdimg.com/public01/keyframes/example/index.html](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)
 [Migrating](https://github.com/tingkl/keyframes)
 
 
@@ -291,14 +291,11 @@ Util.on(btn[1], 'change', function (e) {
         state1();
     }
 });
-
 setTimeout(function () {
     state1();
     var group = Keyframe.group(config);
     group.start();
 }, 500);
-
-
 </script>
 ```
 If everything went well you should see [this](http://ecmc.bdimg.com/public01/keyframes/demo/3d-cube/index.app.html).
