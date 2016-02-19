@@ -50,7 +50,15 @@ css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。
 ## 3 dynamic class&keyframes
 
 ###3.1 create class
-
+```js
+var scene = new ClassProxy('scene', {
+        'width': '200px',
+        'height': '200px',
+        'margin': '150px auto',
+        'position': 'relative',
+        'transform-style': 'preserve-3d'
+    });
+```
 ###3.2 update class
 
 ###3.3 create keyframes
