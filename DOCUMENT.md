@@ -72,7 +72,7 @@ cpl.compile();   // 也可以调用Keyframe.compile()
     -webkit-transform-style: preserve-3d;  //自动适配浏览器前缀
 }
 ```
-伪类方法(hover, focus, before, after)
+####伪类方法(hover, focus, before, after)
 ```js
 proxy.hover({'color': 'red'});
 cpl.compile();
@@ -82,7 +82,7 @@ cpl.compile();
     color: red;
 }
 ```
-子类方法(selector, selectors)
+####子类方法(selector, selectors)
 ```js
 proxy.selector('init', {
         'background-color': randomColor(),
@@ -114,7 +114,7 @@ cpl.compile();
      height: 150px;
  }
 ```
-类名混淆(不指定类名)
+####类名混淆(不指定类名)
 ```js
 var mixClass = new ClassProxy({
         'width': '200px',
