@@ -51,13 +51,16 @@ css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。
 
 ###3.1 create class
 ```js
-var scene = new ClassProxy('scene', {
+// by ClassProxy
+var cpl = Compiler.instance();
+var proxy = new ClassProxy('scene', {
         'width': '200px',
         'height': '200px',
         'margin': '150px auto',
         'position': 'relative',
         'transform-style': 'preserve-3d'
     });
+cpl.compile();
 ```
 ```css
 .scene {
@@ -65,7 +68,18 @@ var scene = new ClassProxy('scene', {
     height: 200px;
     margin: 150px auto;
     position: relative;
-    -webkit-transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;  //自动适配浏览器前缀
+}
+```
+伪类方法(hover, focus, before, after)
+```js
+var cpl = Compiler.instance();
+var proxy.hover({'color': 'red'});
+cpl.compile();
+```
+```css
+.scene:hover {
+    color: red;
 }
 ```
 ###3.2 update class
