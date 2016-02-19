@@ -165,7 +165,7 @@ proxy.rewrite({
         'width': '100px',
         'height': '100px'
     });
-proxy.rewrite({'color': 'blue'}, 'hover);
+proxy.rewrite({'color': 'blue'}, 'hover');
 cpl.compile();
 ```
 ```css
