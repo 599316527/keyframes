@@ -15,7 +15,7 @@ The aim of the project is to create a lightweight CSS3 keyframes and transform l
 
 
 ### Usage ###
-
+[使用指南](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
 Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
 ```html
