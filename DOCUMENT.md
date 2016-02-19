@@ -36,3 +36,15 @@ keyframes使用文档
 　　[5.2 生成keyframes](#5-2-keyframes)
 
 　　[5.3 绑定元素与动画](#5-3)
+
+## 1 前言
+
+css3动画作为flash动画的一种替代方案，其开发方式是通过编写css样式文件，不具有动态性。keyframes类库致力于动态生成class和keyframes，为开发者提供一种友好的开发方式，创造具有复杂性的动画效果。
+
+## 2 起步
+
+下载压缩后的代码文件，并将它包含到你的html文件中，或者使用cdn的文件地址。
+```html
+<script src="//ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js"></script>
+```
+
