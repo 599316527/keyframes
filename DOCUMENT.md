@@ -133,7 +133,50 @@ cpl.compile();
 ```
 
 ###3.2 update class
-
+####初始化样式
+```js
+var cpl = Compiler.instance();
+// 也可以调用Keyframe.defineClass
+var proxy = new ClassProxy({
+        'width': '200px',
+        'height': '200px',
+        'margin': '150px auto',
+        'position': 'relative',
+        'transform-style': 'preserve-3d'
+    });
+proxy.hover({'color': 'red'});
+cpl.compile();   // 也可以调用Keyframe.compile()
+```
+```css
+.Xn9gQ41e {
+    width: 200px;
+    height: 200px;
+    margin: 150px auto;
+    position: relative;
+    -webkit-transform-style: preserve-3d;  //自动适配浏览器前缀
+}
+.Xn9gQ41e:hover {
+    color: red;
+}
+```
+####更新后样式刷新
+```js
+proxy.rewrite({
+        'width': '100px',
+        'height': '100px'
+    });
+proxy.rewrite({'color': 'blue'}, 'hover);
+cpl.compile();
+```
+```css
+.Xn9gQ41e {
+    width: 100px;
+    height: 100px;
+}
+.Xn9gQ41e:hover {
+    color: blue;
+}
+```
 ###3.3 create keyframes
 
 ###3.4 update keyframes
