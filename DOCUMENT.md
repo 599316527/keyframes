@@ -181,7 +181,7 @@ cpl.compile();
 ```js
 var cpl = Compiler.instance();
 // 或者调用Keyframe.defineKeyframe
-var rot = cpl.defineKeyframe({
+var proxy = cpl.defineKeyframe({
     '0 50': {
         'transform': 'rotateY(0)'
     },
@@ -189,7 +189,7 @@ var rot = cpl.defineKeyframe({
         'transform': 'rotateY(360deg)'
     }
 });
-console.log(rot); // P236bM6I随机
+console.log(proxy.getName()); // P236bM6I随机
 cpl.compile(); // 或者调用Keyframe.compile()
 ```
 ```css
@@ -205,7 +205,7 @@ cpl.compile(); // 或者调用Keyframe.compile()
 ###3.4 update keyframes
 ```js
 // 在3.3生成的rot基础上更新
-rot = cpl.defineKeyframe(rot, {
+proxy.rewrite({
     '0': {
         'transform': 'rotateY(20deg)'
     },
@@ -213,7 +213,7 @@ rot = cpl.defineKeyframe(rot, {
         'transform': 'rotateY(360deg)'
     }
 });
-console.log(rot); // P236bM6I保持不变
+console.log(proxy.getName()); // P236bM6I保持不变
 cpl.compile(); // 或者调用Keyframe.compile()
 ```
 ```css
@@ -225,6 +225,19 @@ cpl.compile(); // 或者调用Keyframe.compile()
         -webkit-transform: rotateY(360deg);
     }
 }
+```
+```js
+// 或者通过重定义覆盖
+proxy = cpl.defineKeyframe(proxy.getName(), {
+    '0': {
+        'transform': 'rotateY(20deg)'
+    },
+    '100': {
+        'transform': 'rotateY(360deg)'
+    }
+});
+console.log(proxy.getName()); // P236bM6I保持不变
+cpl.compile(); // 或者调用Keyframe.compile()
 ```
 ##4 control animation
 
