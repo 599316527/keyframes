@@ -25,9 +25,11 @@ keyframes使用文档
 
 　　[4.4 暂停动画](#44-pause-animation)
 
-　　[4.5 重启动画](#45-restart-animation)
+　　[4.5 继续动画](#45-goon-animation)
 
-　　[4.6 清理动画](#46-clear-animation)
+　　[4.6 重启动画](#46-restart-animation)
+
+　　[4.7 清理动画](#47-clear-animation)
 
 [5 实战时间轴](#5-timeline-in-action)
 
@@ -242,17 +244,95 @@ cpl.compile(); // 或者调用Keyframe.compile()
 ##4 control animation
 
 ###4.1 bind dom&animation
-
+####一对一
+```js
+// 在3.3生成的rot基础上更新
+Keyframe.defineKeyframe('zoomIn', {
+    '0': {
+        'scale3d': '.3, .3, .3',
+        'opacity': 0
+    },
+    '50': {
+        'opacity': 1
+    }
+});
+var oneToOne = new Keyframe(document.getElementById('demo'), {
+    'name': 'zoomIn',
+    'duration': '1.8s',
+    'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out cub
+    'count': 1, // 'infinite',
+    'delay': '200ms',
+    'direction': 'normal' // 'alternate'
+});
+```
+####一对多
+```js
+// 在3.3生成的rot基础上更新
+Keyframe.defineKeyframe('speedIn', {
+    '0': {
+        'translate3d': '100%, 0, 0',
+        'skewX': '-30deg',
+        'opacity': 0
+    },
+    '60': {
+        'skewX': '20deg',
+        'opacity': 1
+    },
+    '80': {
+        'skewX': '-5deg'
+    },
+    '100': {
+        'transform': 'none'
+    }
+});
+var oneToMany = new Keyframe(document.getElementById('demo'), [
+    {
+        'name': 'zoomIn',
+        'duration': '1.8s',
+        'function': 'ease-in-out', // ease,linear,ease-in,ease-out,ease-in-out
+        'count': 1, // 'infinite',
+        'delay': '200ms',
+        'direction': 'normal' // 'alternate'
+    },
+    {
+        'name': 'speedIn',
+        'duration': '2s' // default 1s
+    }
+]);
+```
 ###4.2 monitor animation
-
+```js
+oneToMany.on(Event.start, function () {});
+oneToMany.on(Event.iteration, function () {});
+oneToMany.on(Event.end, function () {});
+```
 ###4.3 start animation
-
+```js
+oneToOne.start();
+oneToMany.start();
+```
 ###4.4 pause animation
-
-###4.5 restart animation
-
-###4.6 clear animation
-
+```js
+oneToOne.pause();
+oneToMany.pause(); // 暂停所有动画
+oneToMany.pause('zoomIn'); // 暂停指定动画
+```
+###4.5 goon animation
+```js
+oneToOne.goon();
+oneToMany.goon(); // 继续所有动画
+oneToMany.goon('zoomIn'); // 继续指定动画
+```
+###4.6 restart animation
+```js
+oneToOne.restart();
+oneToMany.restart(); // 继续所有动画
+```
+###4.7 clear animation
+```js
+oneToOne.clear();
+oneToMany.clear(); // 清理所有动画
+```
 ##5 timeline in action
 
 ###5.1 create class
