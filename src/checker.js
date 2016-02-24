@@ -5,7 +5,6 @@
 /* global Util */
 // 当前文件依赖加载: Util.js
 /* define Checker */
-
 /**
  * 参数类型匹配
  *

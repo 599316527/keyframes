@@ -6,6 +6,7 @@
 /**
  * @namespace
  */
+
 // transform ie 9
 // transition keyframe ie 10, 所以不需要考虑ie9之下
 var Util = {

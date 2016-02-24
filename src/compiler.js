@@ -36,11 +36,13 @@ function Compiler() {
     };
 }
 Util.inherit(Compiler, EventEmitter);
+
 Compiler.prototype.defineClass = function (className, metaData) {
     className = className.trim();
     this._classMap[className] = metaData;
     return className;
 };
+
 Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
     if (metaData !== null) {
         if (Checker.object.check(arguments)) {
@@ -51,6 +53,7 @@ Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
     }
     return keyframe;
 };
+
 Compiler.prototype.compile = function () {
     var classes = {};
     var keyframes = {};
@@ -66,6 +69,7 @@ Compiler.prototype.compile = function () {
     // keyframes cache frameName： frameTextBody
     this._effect(classes, keyframes);
 };
+
 Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
     var id;
     var cssText;
@@ -86,12 +90,14 @@ Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
     }, this);
     obj = null;
 };
+
 Compiler.prototype._effect = function (classes, keyframes) {
     var frag = this._fragment();
     this._absorb(classes, this._classId, this._classText, this._classStore, frag);
     this._absorb(keyframes, this._keyframeId, this._keyframeText, this._keyframeStore, frag);
     frag.effect();
 };
+
 Compiler.prototype._fragment = function () {
     var fragment = document.createDocumentFragment();
     fragment.effect = function () {
@@ -99,6 +105,7 @@ Compiler.prototype._fragment = function () {
     };
     return fragment;
 };
+
 Compiler.prototype._styleSheet = function (cssText, id) {
     var style = document.createElement('style');
     style.type = 'text/css';
@@ -107,6 +114,7 @@ Compiler.prototype._styleSheet = function (cssText, id) {
     this.emit(Event.style, id, cssText);
     return style;
 };
+
 Compiler.prototype.clear = function () {
     Util.forIn(this._classStore, function (className) {
         this._clearSheet(this._classId(className));
@@ -119,17 +127,21 @@ Compiler.prototype.clear = function () {
     this._classMap = {};
     this._keyframeMap = {};
 };
+
 Compiler.prototype._refreshSheet = function (cssText, id) {
     document.getElementById(id).innerHTML = cssText;
     this.emit(Event.style, id, cssText);
 };
+
 Compiler.prototype._clearSheet = function (id) {
     document.querySelector('head').removeChild(document.getElementById(id));
 };
+
 // 编译生成cssTextBody {}
 Compiler.prototype._compileClass = function (metaData) {
     return '{' + this._compileContent(metaData) + '}';
 };
+
 Compiler.prototype._compileContent = function (metaData) {
     var opt = {};
     var content = [];
@@ -141,6 +153,7 @@ Compiler.prototype._compileContent = function (metaData) {
     }, this);
     return content.join('');
 };
+
 // 编译生成keyframesTextBody {}
 Compiler.prototype._compileKeyframe = function (metaData) {
     var body = '{';
@@ -150,9 +163,11 @@ Compiler.prototype._compileKeyframe = function (metaData) {
     body += '}';
     return body;
 };
+
 Compiler.prototype._compileFrame = function (percent, metaData) {
     return this._compatible.percent(percent) + this._compileClass(metaData);
 };
+
 Compiler.instance = function () {
     if (!Compiler._compiler) {
         Compiler._compiler = new Compiler();

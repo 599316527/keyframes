@@ -2,6 +2,7 @@
  * @file 属性扫描处理
  * @author tingkl(dingguoliang01@baidu.com)
  **/
+
 /* global Checker */
 /* define Pitch */
 
