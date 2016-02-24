@@ -15,64 +15,8 @@ The aim of the project is to create a lightweight CSS3 keyframes and transform l
 
 
 ### Usage ###
-<style>
-@-webkit-keyframes highlight {
-     0% {
-         background: white;
-         color: #4078c0;
-     }
-     100% {
-         background: #4078c0,
-         color: white;
-     }
- }
- @-moz-keyframes highlight {
-     0% {
-         background: white;
-         color: #4078c0;
-     }
-     100% {
-         background: #4078c0,
-         color: white;
-     }
- }
- @-o-keyframes highlight {
-     0% {
-         background: white;
-         color: #4078c0;
-     }
-     100% {
-         background: #4078c0,
-         color: white;
-     }
- }
- @-ms-keyframes highlight {
-     0% {
-         background: white;
-         color: #4078c0;
-     }
-     100% {
-         background: #4078c0,
-         color: white;
-     }
- }
- @keyframes highlight {
-     0% {
-         background: white;
-         color: #4078c0;
-     }
-     100% {
-         background: #4078c0,
-         color: white;
-     }
- }
- .highlight {
-     -webkit-animation: highlight 1.4s linear 3.5s infinite normal forwards;
-     -moz-animation: 1.4s linear 3.5s normal forwards infinite running highlight;
-     animation: highlight 1.4s linear 3.5s 1 normal forwards;
- }
-</style>
-<a target="_blank" href="https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md" class="highlight">使用指南</a>
+[使用指南](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
+
 Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
 ```html
