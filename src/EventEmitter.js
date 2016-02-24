@@ -1,17 +1,36 @@
 /**
- * @file Eventemitter.js ~ 2015/08/13 11:47:13
+ * @file 事件分发类定义
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* eslint-disable brace-style */
-/* global Checker Event Util*/
+/* global Util Event Checker */
+// 当前文件依赖加载: Util.js Event.js Checker.js
 /* define EventEmitter */
+
+/**
+ *  事件分发器
+ *
+ * @class
+ */
 function EventEmitter() {
     this._triggers = {};
 }
+
+/**
+ *  事件种类
+ */
 EventEmitter.type = {
     once: 'once',
     all: 'all'
 };
+
+/**
+ * 注册事件名的回调函数
+ *
+ * @param {string} eventName 事件名
+ * @param {Function} fn 回调函数
+ * @param {Object=} option 可选参数
+ */
 EventEmitter.prototype.on = function (eventName, fn, option) {
     if (eventName) {
         if (eventName in this._triggers) {
@@ -26,6 +45,13 @@ EventEmitter.prototype.on = function (eventName, fn, option) {
         throw new Error('undefined event!');
     }
 };
+
+/**
+ * 注销事件名的回调函数
+ *
+ * @param {string} eventName 事件名
+ * @param {Function} fn 回调函数
+ */
 EventEmitter.prototype.off = function (eventName, fn) {
     if (Checker.string.check(arguments)) {
         if (eventName in this._triggers) {
@@ -52,6 +78,14 @@ EventEmitter.prototype.off = function (eventName, fn) {
         throw new Error('incorrect parameter!');
     }
 };
+
+/**
+ * 注册事件名的单次回调函数
+ *
+ * @param {string} eventName 事件名
+ * @param {Function} fn 回调函数
+ * @param {Object=} option 可选参数
+ */
 EventEmitter.prototype.once = function (eventName, fn, option) {
     if (!option) {
         option = {};
@@ -60,6 +94,14 @@ EventEmitter.prototype.once = function (eventName, fn, option) {
     this.emit(Event.once, eventName, option);
     this.on(eventName, fn, option);
 };
+
+/**
+ * 注册事件名的单次回调函数
+ *
+ * @param {Function} fn 回调函数
+ * @param {Object} option 配置参数
+ * @param {Object} params 结果参数
+ */
 EventEmitter.prototype.callWithScope = function (fn, option, params) {
     params = params || [];
     if (option && option.hasOwnProperty('scope')) {
@@ -70,6 +112,14 @@ EventEmitter.prototype.callWithScope = function (fn, option, params) {
         fn.apply(this, params);
     }
 };
+
+/**
+ * 注册事件集合的回调函数
+ *
+ * @param {Array.<string>} dependency 事件集合
+ * @param {Function} fn 回调函数
+ * @param {Object} option 配置参数
+ */
 EventEmitter.prototype.all = function (dependency, fn, option) {
     var record = {};
     var results = [];
@@ -100,6 +150,12 @@ EventEmitter.prototype.all = function (dependency, fn, option) {
     }, me);
     this.emit(Event.all, dependency, option);
 };
+
+/**
+ * 事件触发函数
+ *
+ * @param {string} eventName 事件名
+ */
 EventEmitter.prototype.emit = function (eventName) {
     var fns = this._triggers[eventName];
     var scope;

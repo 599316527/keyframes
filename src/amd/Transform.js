@@ -1,4 +1,4 @@
-define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compiler', 'Event', 'Status'], function (Checker, EventEmitter, Util, Compatible, TFCompatible, Compiler, Event, Status) {
+define(['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], function (Util, Event, EventEmitter, Compatible, TFCompatible, Status) {
 	/**
 	 * 使用transform + transition进行变换
 	 *
@@ -73,6 +73,12 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    this._executeInTime = flag;
 	    return this;
 	};
+	
+	/**
+	 * 恢复到变换之前的状态
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reStore = function () {
 	    Compatible.css(this._dom, this._store, '', this);
 	    var status;
@@ -84,10 +90,22 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    this._transformRecord = '';
 	    return this;
 	};
+	
+	/**
+	 * 触发重绘
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reflow = function () {
 	    Compatible.reflow(this._dom);
 	    return this;
 	};
+	
+	/**
+	 * 恢复状态并再次执行变换
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reExecute = function () {
 	    this.reStore().reflow();
 	    return this.execute();
@@ -107,6 +125,12 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    }
 	    return this;
 	};
+	
+	/**
+	 * 目前支持的变换已经简写对照表
+	 *
+	 * @private
+	 */
 	Transform._apiMap = {
 	    changeTo: {
 	        c: 'color',
@@ -333,6 +357,13 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	        return css;
 	    }, status);
 	};
+	
+	/**
+	 * 位移变换
+	 *
+	 * @param {Object|Array.<Object>} configs 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.moveTo = function (configs) {
 	    var apiMap = Transform._apiMap.moveTo;
 	    configs = this._patchMoveTo(configs, apiMap);
@@ -373,33 +404,75 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    });
 	    return configs;
 	};
+	
+	/**
+	 * 变换
+	 *
+	 * @param {Object|Array.<Object>} configs 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.changeTo = function (configs) {
 	    var apiMap = Transform._apiMap.changeTo;
 	    configs = this._patchMoveTo(configs, Transform._apiMap.moveTo);
 	    this._css(configs, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 移动变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.moveBy = function (config) {
 	    var apiMap = Transform._apiMap.moveBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 缩放变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.scaleBy = function (config) {
 	    var apiMap = Transform._apiMap.scaleBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 扭转变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.skewBy = function (config) {
 	    var apiMap = Transform._apiMap.skewBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
 	
+	/**
+	 * 旋转变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.rotateBy = function (config) {
 	    var apiMap = Transform._apiMap.rotateBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 模拟运行环境
+	 *
+	 * @param {string} method 要模拟的函数
+	 * @param {Object} config 配置对象
+	 * @return {Array} 模拟得到的返回数据
+	 */
 	Transform.prototype.mock = function (method, config) {
 	    var apiMap = Transform._apiMap[method];
 	    var css = {};
@@ -450,6 +523,13 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    css[transform] = 'old+; ' + val.join(' ');
 	    return [cpt.parseTransition(config), css, status];
 	};
+	
+	/**
+	 * 混合变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.mix = function (config) {
 	    var mould = this._compatible.peelMould(config);
 	    var part;
@@ -491,6 +571,13 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	    }, status);
 	    return this;
 	};
+	
+	/**
+	 * 插入变换队列
+	 *
+	 * @param {Function} callback 回调函数
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.then = function (callback) {
 	    var length = this._steps.length;
 	    if (length > 0) {
@@ -533,11 +620,19 @@ define(['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compil
 	Transform.prototype._off = function (name, callback) {
 	    Util.off(this._dom, name, callback);
 	};
+	
 	Transform.prototype._unListen = function () {
 	    if (this._monitorEnd) {
 	        this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
 	    }
 	};
+	
+	/**
+	 * 设置视点位置
+	 *
+	 * @param {string} perspective 视点距离
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.perspective = function (perspective) {
 	    var cpt = this._compatible;
 	    var parentNode = this._dom.parentNode;

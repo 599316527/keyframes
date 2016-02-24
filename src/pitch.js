@@ -1,5 +1,5 @@
 /**
- * @file Pitch.js ~ 2015/08/13 11:47:13
+ * @file 属性扫描处理
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Checker */

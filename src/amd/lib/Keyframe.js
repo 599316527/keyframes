@@ -22,6 +22,15 @@ define('Util', function () {
 	        }
 	        return true;
 	    },
+	
+	    /**
+	     * JSON对象键名遍历函数
+	     *
+	     * @param {Object} obj 要进行遍历的对象
+	     * @param {Function} handler 遍历的处理函数
+	     * @param {Object=} scope 作用域对象
+	     * @return {boolean} 是否完全遍历完了obj对象
+	     */
 	    forKey: function (obj, handler, scope) {
 	        for (var key in obj) {
 	            if (handler.call(scope, key) === false) {
@@ -47,6 +56,12 @@ define('Util', function () {
 	        });
 	        return init;
 	    },
+	
+	    /**
+	     * 命名空间初始化
+	     *
+	     * @param {string} namespace 命名空间
+	     */
 	    define: function (namespace) {
 	        namespace = namespace.split('.');
 	        var domain;
@@ -58,7 +73,14 @@ define('Util', function () {
 	            module = module[domain];
 	        }
 	    },
-	    // extend 只是拓展没有的属性 rewrite则是重写
+	
+	    /**
+	     * 拓展函数，extend 只是拓展没有的属性 rewrite则是重写
+	     *
+	     * @param {Object} src 需要拓展的对象
+	     * @param {Object=} init 从init拿数据拓展src
+	     * @return {Object} 拓展后的对象
+	     */
 	    extend: function (src, init) {
 	        if (!src) {
 	            return init;
@@ -72,6 +94,13 @@ define('Util', function () {
 	        }
 	        return src;
 	    },
+	
+	    /**
+	     * 继承
+	     *
+	     * @param {Function} Child 子类
+	     * @param {Function} Parent 父类
+	     */
 	    inherit: function (Child, Parent) {
 	        var Clz = new Function();
 	        Clz.prototype = Parent.prototype;
@@ -97,6 +126,13 @@ define('Util', function () {
 	        });
 	        return index;
 	    },
+	
+	    /**
+	     * Arguments对象转化为Array对象
+	     *
+	     * @param {Arguments} arg 需要转化的对象
+	     * @return {Array} 转化为的对象
+	     */
 	    arg2Ary: function (arg) {
 	        return Array.prototype.slice.call(arg, 0);
 	    },
@@ -117,11 +153,27 @@ define('Util', function () {
 	        }
 	        return i === ary.length;
 	    },
+	    // 随机相关函数及变量
 	    random: {
+	        // 随机种子
 	        seed: [[48, 9], [65, 25], [97, 25]],
+	
+	        /**
+	         * 根据种子生成随机字符
+	         *
+	         * @param {Array.<number>} seed 种子数组
+	         * @return {string} 随机字符
+	         */
 	        generator: function (seed) {
 	            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
 	        },
+	
+	        /**
+	         * 指定种子生成随机字符
+	         *
+	         * @param {number} index 种子索引
+	         * @return {string} 随机字符
+	         */
 	        word: function (index) {
 	            var range;
 	            if (index === 0) {
@@ -132,6 +184,13 @@ define('Util', function () {
 	            }
 	            return this.generator(this.seed[range]);
 	        },
+	
+	        /**
+	         * 生成指定长度随机字符串
+	         *
+	         * @param {number=} length 长度
+	         * @return {string} 随机字符串
+	         */
 	        name: function (length) {
 	            length = length || 6;
 	            var name = '';
@@ -141,14 +200,37 @@ define('Util', function () {
 	            return name;
 	        }
 	    },
+	
+	    /**
+	     * 添加样式
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} className 样式名
+	     */
 	    addClass: function (dom, className) {
 	        if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
 	            dom.className = (dom.className + ' ' + className).trim();
 	        }
 	    },
+	
+	    /**
+	     * 删除样式
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} className 样式名
+	     */
 	    removeClass: function (dom, className) {
 	        dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
 	    },
+	
+	    /**
+	     * 设置或者获取样式属性
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {Object|string} attr 样式属性名
+	     * @param {string=} value 样式属性值
+	     * @return {string} 属性值
+	     */
 	    css: function (dom, attr, value) {
 	        if (typeof attr === 'string') {
 	            return Util.$css(dom, attr, value);
@@ -157,10 +239,25 @@ define('Util', function () {
 	            Util.$css(dom, key, item);
 	        });
 	    },
+	
+	    /**
+	     * 阻值冒泡，stopPropagation ie 9 support
+	     *
+	     * @param {Event} event 事件对象
+	     */
 	    stopPropagation: function (event) {
 	        // stopPropagation ie 9 support
 	        event.stopPropagation();
 	    },
+	
+	    /**
+	     * 设置或获取样式属性，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} key 样式属性名
+	     * @param {string=} value 样式属性值
+	     * @return {string} 属性值
+	     */
 	    $css: function (dom, key, value) {
 	        if (value !== undefined) {
 	            dom.style[key] = value;
@@ -170,10 +267,25 @@ define('Util', function () {
 	        var tmp = window.getComputedStyle(dom, null)[key];
 	        return !tmp ? dom.style[key] : tmp;
 	    },
-	    // addEventListener ie 9 support
+	
+	    /**
+	     * 注册事件监听函数，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} name 事件名
+	     * @param {Function} fn 回调函数
+	     */
 	    on: function (dom, name, fn) {
 	        dom.addEventListener(name, fn, false);
 	    },
+	
+	    /**
+	     * 注销事件监听函数，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} name 事件名
+	     * @param {Function} fn 回调函数
+	     */
 	    off: function (dom, name, fn) {
 	        dom.removeEventListener(name, fn, false);
 	    }
@@ -183,10 +295,18 @@ define('Util', function () {
 	 * 参数类型匹配
 	 *
 	 * @class
+	 * @param {...(string|Function)} arg 类型字符串或者类
 	 */
 	function Checker() {
 	    this._list = Util.arg2Ary(arguments);
 	}
+	
+	/**
+	 * 参数检查
+	 *
+	 * @param {Arguments.<(string|Function)>|Array.<(string|Function)>} arg 参数集合
+	 * @return {boolean} 是否满足检查规则
+	 */
 	Checker.prototype.check = function (arg) {
 	    var me = this;
 	    if (arg.length !== me._list.length) {
@@ -196,12 +316,15 @@ define('Util', function () {
 	    var typeOf;
 	    var match = Util.each(arg, function (item, i) {
 	        type = me._list[i];
+	        // type有可能为字符串或者类，例如：new Checker(Array);
 	        typeOf = typeof type;
+	        // 对于字符串使用typeof判断
 	        if (typeOf === 'string') {
 	            if (typeof item !== type) {
 	                return false;
 	            }
 	        }
+	        // 对于类使用instance判断是否为类的实例
 	        else if (typeOf === 'function') {
 	            if (!(item instanceof type)) {
 	                return false;
@@ -210,12 +333,19 @@ define('Util', function () {
 	    });
 	    return match;
 	};
+	// 参数1为string类型，参数2为JSON对象
 	Checker.stringObject = new Checker('string', 'object');
+	// 参数1为JSON对象，参数1为string类型
 	Checker.objectString = new Checker('object', 'string');
+	// 参数1为JSON类型
 	Checker.object = new Checker('object');
+	// 参数1为string类型
 	Checker.string = new Checker('string');
+	// 参数1为string类型，参数2为string类型，参数3为函数
 	Checker.ssFunction = new Checker('string', 'string', 'function');
+	// 参数1为string类型，参数2为函数
 	Checker.sFunction = new Checker('string', 'function');
+	// 参数1为Array类型
 	Checker.array = new Checker(Array);
 	return Checker;});define('Pitch', ['Checker'], function (Checker) {
 	/**
@@ -253,6 +383,9 @@ define('Util', function () {
 	    return this.next(0, key, value, opt);
 	};
 	return Pitch;});define('Event', function () {
+	/**
+	 * @namespace
+	 */
 	var Event = {
 	    style: 'Style',
 	    css: 'CSS',
@@ -272,14 +405,31 @@ define('Util', function () {
 	    all: 'All',
 	    emit: 'Emit'
 	};
-	return Event;});define('EventEmitter', ['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
+	return Event;});define('EventEmitter', ['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
+	/**
+	 *  �¼��ַ���
+	 *
+	 * @class
+	 */
 	function EventEmitter() {
 	    this._triggers = {};
 	}
+	
+	/**
+	 *  �¼�����
+	 */
 	EventEmitter.type = {
 	    once: 'once',
 	    all: 'all'
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.on = function (eventName, fn, option) {
 	    if (eventName) {
 	        if (eventName in this._triggers) {
@@ -294,6 +444,13 @@ define('Util', function () {
 	        throw new Error('undefined event!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 */
 	EventEmitter.prototype.off = function (eventName, fn) {
 	    if (Checker.string.check(arguments)) {
 	        if (eventName in this._triggers) {
@@ -320,6 +477,14 @@ define('Util', function () {
 	        throw new Error('incorrect parameter!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.once = function (eventName, fn, option) {
 	    if (!option) {
 	        option = {};
@@ -328,6 +493,14 @@ define('Util', function () {
 	    this.emit(Event.once, eventName, option);
 	    this.on(eventName, fn, option);
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 * @param {Object} params ��������
+	 */
 	EventEmitter.prototype.callWithScope = function (fn, option, params) {
 	    params = params || [];
 	    if (option && option.hasOwnProperty('scope')) {
@@ -338,6 +511,14 @@ define('Util', function () {
 	        fn.apply(this, params);
 	    }
 	};
+	
+	/**
+	 * ע���¼����ϵĻص�����
+	 *
+	 * @param {Array.<string>} dependency �¼�����
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 */
 	EventEmitter.prototype.all = function (dependency, fn, option) {
 	    var record = {};
 	    var results = [];
@@ -368,6 +549,12 @@ define('Util', function () {
 	    }, me);
 	    this.emit(Event.all, dependency, option);
 	};
+	
+	/**
+	 * �¼���������
+	 *
+	 * @param {string} eventName �¼���
+	 */
 	EventEmitter.prototype.emit = function (eventName) {
 	    var fns = this._triggers[eventName];
 	    var scope;
@@ -439,6 +626,7 @@ define('Util', function () {
 	 * @namespace
 	 */
 	var Compatible = {
+	    // 当前浏览器前缀
 	    prefix: (function () {
 	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
 	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
@@ -455,6 +643,12 @@ define('Util', function () {
 	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
 	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 	    })(),
+	
+	    /**
+	     * 兼容性绘制函数
+	     *
+	     * @param {Function} fn 回调函数
+	     */
 	    requestAnimationFrame: (function () {
 	        window.requestAnimationFrame = window.requestAnimationFrame
 	        || window.webkitRequestAnimationFrame
@@ -489,6 +683,16 @@ define('Util', function () {
 	            window.requestAnimationFrame(fn);
 	        };
 	    })(),
+	
+	    /**
+	     * 绘制函数中设置样式属性或者直接设置样式属性值
+	     *
+	     * @param {Node} dom 要操作的节点
+	     * @param {string} key 样式属性名
+	     * @param {string=} css 样式属性值
+	     * @param {Object=} me 函数调用者
+	     * @return {string} 样式值
+	     */
 	    css: function (dom, key, css, me) {
 	        if (css || css === '') {
 	            Compatible.requestAnimationFrame(function () {
@@ -500,12 +704,25 @@ define('Util', function () {
 	            return Util.css(dom, key);
 	        }
 	    },
-	    // -> triggering reflow /* The actual magic */
+	
+	    /**
+	     * 绘制函数中触发重排
+	     *
+	     * @param {Node} dom 要操作的节点
+	     */
 	    reflow: function (dom) {
 	        Compatible.requestAnimationFrame(function () {
 	            dom.offsetWidth = dom.offsetWidth;
 	        });
 	    },
+	
+	    /**
+	     * 兼容性事件转换函数
+	     *
+	     * @param {string} lower 小写值
+	     * @param {string} upper 首字母大写值
+	     * @return {Function} 兼容性事件函数
+	     */
 	    parseEvent: function (lower, upper) {
 	        // animationstart webkitAnimationStart
 	        var p = Compatible.prefix.replace(/-/g, '');

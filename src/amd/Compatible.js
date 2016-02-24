@@ -3,6 +3,7 @@ define(['Util', 'Event'], function (Util, Event) {
 	 * @namespace
 	 */
 	var Compatible = {
+	    // 当前浏览器前缀
 	    prefix: (function () {
 	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
 	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
@@ -19,6 +20,12 @@ define(['Util', 'Event'], function (Util, Event) {
 	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
 	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 	    })(),
+	
+	    /**
+	     * 兼容性绘制函数
+	     *
+	     * @param {Function} fn 回调函数
+	     */
 	    requestAnimationFrame: (function () {
 	        window.requestAnimationFrame = window.requestAnimationFrame
 	        || window.webkitRequestAnimationFrame
@@ -53,6 +60,16 @@ define(['Util', 'Event'], function (Util, Event) {
 	            window.requestAnimationFrame(fn);
 	        };
 	    })(),
+	
+	    /**
+	     * 绘制函数中设置样式属性或者直接设置样式属性值
+	     *
+	     * @param {Node} dom 要操作的节点
+	     * @param {string} key 样式属性名
+	     * @param {string=} css 样式属性值
+	     * @param {Object=} me 函数调用者
+	     * @return {string} 样式值
+	     */
 	    css: function (dom, key, css, me) {
 	        if (css || css === '') {
 	            Compatible.requestAnimationFrame(function () {
@@ -64,12 +81,25 @@ define(['Util', 'Event'], function (Util, Event) {
 	            return Util.css(dom, key);
 	        }
 	    },
-	    // -> triggering reflow /* The actual magic */
+	
+	    /**
+	     * 绘制函数中触发重排
+	     *
+	     * @param {Node} dom 要操作的节点
+	     */
 	    reflow: function (dom) {
 	        Compatible.requestAnimationFrame(function () {
 	            dom.offsetWidth = dom.offsetWidth;
 	        });
 	    },
+	
+	    /**
+	     * 兼容性事件转换函数
+	     *
+	     * @param {string} lower 小写值
+	     * @param {string} upper 首字母大写值
+	     * @return {Function} 兼容性事件函数
+	     */
 	    parseEvent: function (lower, upper) {
 	        // animationstart webkitAnimationStart
 	        var p = Compatible.prefix.replace(/-/g, '');

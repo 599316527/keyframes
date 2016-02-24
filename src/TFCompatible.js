@@ -1,8 +1,9 @@
 /**
- * @file TFCompatible.js ~ 2015/08/13 11:47:13
+ * @file transform相关浏览器兼容性处理
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Util Event EventEmitter Compatible*/
+// 当前文件依赖加载: Util.js Event.js EventEmitter.js Compatible.js
 /* define TFCompatible */
 
 /**
@@ -15,7 +16,15 @@ function TFCompatible() {
     TFCompatible.superClass.call(this);
 }
 Util.inherit(TFCompatible, EventEmitter);
+
+// 引用浏览器前缀
 TFCompatible.prototype.prefix = Compatible.prefix;
+
+/**
+ * 变换和过渡的简写以及默认值对照表
+ *
+ * @private
+ */
 TFCompatible._keyMap = {
     'transform': ['transform'],
     'transition': ['transition'],
@@ -23,8 +32,14 @@ TFCompatible._keyMap = {
     'function': ['transitionTimingFunction', 'linear'],
     'delay': ['transitionDelay', '0s']
 };
-// 如果为duration function delay，简称转全称
-// 其他加入兼容性前缀：transition -->webkitTransition
+
+/**
+ * 如果为duration function delay，简称转全称,
+ * 其他加入兼容性前缀：transition -->webkitTransition
+ *
+ * @param {string} key 要转换的属性名
+ * @return {string} 转换后的属性名
+ */
 TFCompatible.prototype.parseCSS = function (key) {
     var p = this.prefix.replace(/-/g, '');
     if ('moz ms'.indexOf(p) > -1) {
@@ -46,7 +61,13 @@ TFCompatible.prototype.parseCSS = function (key) {
     }
     return this.parseCSS(key);
 };
-// 用于设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
+
+/**
+ * 设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
+ *
+ * @param {string} propertyName 要转换的属性名
+ * @return {string} 转换后的属性名
+ */
 TFCompatible.prototype.cssMap = function (propertyName) {
     var tmp;
     switch (propertyName) {
@@ -74,6 +95,10 @@ TFCompatible.prototype.cssMap = function (propertyName) {
     }
     return tmp;
 };
+
+/**
+ * 浏览器兼容性事件对照表
+ */
 TFCompatible.prototype.eventMap = {
     'border-radius': [
         'border-bottom-left-radius',
@@ -92,6 +117,14 @@ TFCompatible.prototype.eventMap = {
         'border-bottom-color'
     ]
 };
+
+/**
+ * 想状态对象添加事件状态
+ *
+ * @param {Status} status 状态对象
+ * @param {string} key 要映射的事件名称
+ * @return {string} 映射后的事件名称
+ */
 TFCompatible.prototype.addStatus = function (status, key) {
     var keyT = this.cssMap(key);
     if (keyT in this.eventMap) {
@@ -154,6 +187,13 @@ TFCompatible.prototype.clone = function (obj, apiMap) {
     }
     return clone;
 };
+
+/**
+ * 生成transition属性值
+ *
+ * @param {Object} transition 配置对象
+ * @return {string} 生成的transition值
+ */
 TFCompatible.prototype.parseTransition = function (transition) {
     function regReplace($0, $1) {
         if ($1 in transition) {
@@ -163,10 +203,18 @@ TFCompatible.prototype.parseTransition = function (transition) {
     }
     return '<property> <duration> <function> <delay>'.replace(/<(.*?)>/g, regReplace);
 };
+
+/**
+ * 获取TFCompatible单例
+ *
+ * @return {TFCompatible} 单例
+ */
 TFCompatible.instance = function () {
     if (!TFCompatible._compatible) {
         TFCompatible._compatible = new TFCompatible();
     }
     return TFCompatible._compatible;
 };
+
+// 兼容性事件转换函数
 TFCompatible.prototype.parseEvent = Compatible.parseEvent('transition', 'Transition');

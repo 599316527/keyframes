@@ -22,6 +22,15 @@ define('Util', function () {
 	        }
 	        return true;
 	    },
+	
+	    /**
+	     * JSON对象键名遍历函数
+	     *
+	     * @param {Object} obj 要进行遍历的对象
+	     * @param {Function} handler 遍历的处理函数
+	     * @param {Object=} scope 作用域对象
+	     * @return {boolean} 是否完全遍历完了obj对象
+	     */
 	    forKey: function (obj, handler, scope) {
 	        for (var key in obj) {
 	            if (handler.call(scope, key) === false) {
@@ -47,6 +56,12 @@ define('Util', function () {
 	        });
 	        return init;
 	    },
+	
+	    /**
+	     * 命名空间初始化
+	     *
+	     * @param {string} namespace 命名空间
+	     */
 	    define: function (namespace) {
 	        namespace = namespace.split('.');
 	        var domain;
@@ -58,7 +73,14 @@ define('Util', function () {
 	            module = module[domain];
 	        }
 	    },
-	    // extend 只是拓展没有的属性 rewrite则是重写
+	
+	    /**
+	     * 拓展函数，extend 只是拓展没有的属性 rewrite则是重写
+	     *
+	     * @param {Object} src 需要拓展的对象
+	     * @param {Object=} init 从init拿数据拓展src
+	     * @return {Object} 拓展后的对象
+	     */
 	    extend: function (src, init) {
 	        if (!src) {
 	            return init;
@@ -72,6 +94,13 @@ define('Util', function () {
 	        }
 	        return src;
 	    },
+	
+	    /**
+	     * 继承
+	     *
+	     * @param {Function} Child 子类
+	     * @param {Function} Parent 父类
+	     */
 	    inherit: function (Child, Parent) {
 	        var Clz = new Function();
 	        Clz.prototype = Parent.prototype;
@@ -97,6 +126,13 @@ define('Util', function () {
 	        });
 	        return index;
 	    },
+	
+	    /**
+	     * Arguments对象转化为Array对象
+	     *
+	     * @param {Arguments} arg 需要转化的对象
+	     * @return {Array} 转化为的对象
+	     */
 	    arg2Ary: function (arg) {
 	        return Array.prototype.slice.call(arg, 0);
 	    },
@@ -117,11 +153,27 @@ define('Util', function () {
 	        }
 	        return i === ary.length;
 	    },
+	    // 随机相关函数及变量
 	    random: {
+	        // 随机种子
 	        seed: [[48, 9], [65, 25], [97, 25]],
+	
+	        /**
+	         * 根据种子生成随机字符
+	         *
+	         * @param {Array.<number>} seed 种子数组
+	         * @return {string} 随机字符
+	         */
 	        generator: function (seed) {
 	            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
 	        },
+	
+	        /**
+	         * 指定种子生成随机字符
+	         *
+	         * @param {number} index 种子索引
+	         * @return {string} 随机字符
+	         */
 	        word: function (index) {
 	            var range;
 	            if (index === 0) {
@@ -132,6 +184,13 @@ define('Util', function () {
 	            }
 	            return this.generator(this.seed[range]);
 	        },
+	
+	        /**
+	         * 生成指定长度随机字符串
+	         *
+	         * @param {number=} length 长度
+	         * @return {string} 随机字符串
+	         */
 	        name: function (length) {
 	            length = length || 6;
 	            var name = '';
@@ -141,14 +200,37 @@ define('Util', function () {
 	            return name;
 	        }
 	    },
+	
+	    /**
+	     * 添加样式
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} className 样式名
+	     */
 	    addClass: function (dom, className) {
 	        if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
 	            dom.className = (dom.className + ' ' + className).trim();
 	        }
 	    },
+	
+	    /**
+	     * 删除样式
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} className 样式名
+	     */
 	    removeClass: function (dom, className) {
 	        dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
 	    },
+	
+	    /**
+	     * 设置或者获取样式属性
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {Object|string} attr 样式属性名
+	     * @param {string=} value 样式属性值
+	     * @return {string} 属性值
+	     */
 	    css: function (dom, attr, value) {
 	        if (typeof attr === 'string') {
 	            return Util.$css(dom, attr, value);
@@ -157,10 +239,25 @@ define('Util', function () {
 	            Util.$css(dom, key, item);
 	        });
 	    },
+	
+	    /**
+	     * 阻值冒泡，stopPropagation ie 9 support
+	     *
+	     * @param {Event} event 事件对象
+	     */
 	    stopPropagation: function (event) {
 	        // stopPropagation ie 9 support
 	        event.stopPropagation();
 	    },
+	
+	    /**
+	     * 设置或获取样式属性，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} key 样式属性名
+	     * @param {string=} value 样式属性值
+	     * @return {string} 属性值
+	     */
 	    $css: function (dom, key, value) {
 	        if (value !== undefined) {
 	            dom.style[key] = value;
@@ -170,54 +267,33 @@ define('Util', function () {
 	        var tmp = window.getComputedStyle(dom, null)[key];
 	        return !tmp ? dom.style[key] : tmp;
 	    },
-	    // addEventListener ie 9 support
+	
+	    /**
+	     * 注册事件监听函数，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} name 事件名
+	     * @param {Function} fn 回调函数
+	     */
 	    on: function (dom, name, fn) {
 	        dom.addEventListener(name, fn, false);
 	    },
+	
+	    /**
+	     * 注销事件监听函数，ie 9 support
+	     *
+	     * @param {Node} dom 要进操作的节点
+	     * @param {string} name 事件名
+	     * @param {Function} fn 回调函数
+	     */
 	    off: function (dom, name, fn) {
 	        dom.removeEventListener(name, fn, false);
 	    }
 	};
-	return Util;});define('Checker', ['Util'], function (Util) {
+	return Util;});define('Event', function () {
 	/**
-	 * 参数类型匹配
-	 *
-	 * @class
+	 * @namespace
 	 */
-	function Checker() {
-	    this._list = Util.arg2Ary(arguments);
-	}
-	Checker.prototype.check = function (arg) {
-	    var me = this;
-	    if (arg.length !== me._list.length) {
-	        return false;
-	    }
-	    var type;
-	    var typeOf;
-	    var match = Util.each(arg, function (item, i) {
-	        type = me._list[i];
-	        typeOf = typeof type;
-	        if (typeOf === 'string') {
-	            if (typeof item !== type) {
-	                return false;
-	            }
-	        }
-	        else if (typeOf === 'function') {
-	            if (!(item instanceof type)) {
-	                return false;
-	            }
-	        }
-	    });
-	    return match;
-	};
-	Checker.stringObject = new Checker('string', 'object');
-	Checker.objectString = new Checker('object', 'string');
-	Checker.object = new Checker('object');
-	Checker.string = new Checker('string');
-	Checker.ssFunction = new Checker('string', 'string', 'function');
-	Checker.sFunction = new Checker('string', 'function');
-	Checker.array = new Checker(Array);
-	return Checker;});define('Event', function () {
 	var Event = {
 	    style: 'Style',
 	    css: 'CSS',
@@ -237,14 +313,88 @@ define('Util', function () {
 	    all: 'All',
 	    emit: 'Emit'
 	};
-	return Event;});define('EventEmitter', ['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
+	return Event;});define('Checker', ['Util'], function (Util) {
+	/**
+	 * 参数类型匹配
+	 *
+	 * @class
+	 * @param {...(string|Function)} arg 类型字符串或者类
+	 */
+	function Checker() {
+	    this._list = Util.arg2Ary(arguments);
+	}
+	
+	/**
+	 * 参数检查
+	 *
+	 * @param {Arguments.<(string|Function)>|Array.<(string|Function)>} arg 参数集合
+	 * @return {boolean} 是否满足检查规则
+	 */
+	Checker.prototype.check = function (arg) {
+	    var me = this;
+	    if (arg.length !== me._list.length) {
+	        return false;
+	    }
+	    var type;
+	    var typeOf;
+	    var match = Util.each(arg, function (item, i) {
+	        type = me._list[i];
+	        // type有可能为字符串或者类，例如：new Checker(Array);
+	        typeOf = typeof type;
+	        // 对于字符串使用typeof判断
+	        if (typeOf === 'string') {
+	            if (typeof item !== type) {
+	                return false;
+	            }
+	        }
+	        // 对于类使用instance判断是否为类的实例
+	        else if (typeOf === 'function') {
+	            if (!(item instanceof type)) {
+	                return false;
+	            }
+	        }
+	    });
+	    return match;
+	};
+	// 参数1为string类型，参数2为JSON对象
+	Checker.stringObject = new Checker('string', 'object');
+	// 参数1为JSON对象，参数1为string类型
+	Checker.objectString = new Checker('object', 'string');
+	// 参数1为JSON类型
+	Checker.object = new Checker('object');
+	// 参数1为string类型
+	Checker.string = new Checker('string');
+	// 参数1为string类型，参数2为string类型，参数3为函数
+	Checker.ssFunction = new Checker('string', 'string', 'function');
+	// 参数1为string类型，参数2为函数
+	Checker.sFunction = new Checker('string', 'function');
+	// 参数1为Array类型
+	Checker.array = new Checker(Array);
+	return Checker;});define('EventEmitter', ['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
+	/**
+	 *  �¼��ַ���
+	 *
+	 * @class
+	 */
 	function EventEmitter() {
 	    this._triggers = {};
 	}
+	
+	/**
+	 *  �¼�����
+	 */
 	EventEmitter.type = {
 	    once: 'once',
 	    all: 'all'
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.on = function (eventName, fn, option) {
 	    if (eventName) {
 	        if (eventName in this._triggers) {
@@ -259,6 +409,13 @@ define('Util', function () {
 	        throw new Error('undefined event!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 */
 	EventEmitter.prototype.off = function (eventName, fn) {
 	    if (Checker.string.check(arguments)) {
 	        if (eventName in this._triggers) {
@@ -285,6 +442,14 @@ define('Util', function () {
 	        throw new Error('incorrect parameter!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.once = function (eventName, fn, option) {
 	    if (!option) {
 	        option = {};
@@ -293,6 +458,14 @@ define('Util', function () {
 	    this.emit(Event.once, eventName, option);
 	    this.on(eventName, fn, option);
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 * @param {Object} params ��������
+	 */
 	EventEmitter.prototype.callWithScope = function (fn, option, params) {
 	    params = params || [];
 	    if (option && option.hasOwnProperty('scope')) {
@@ -303,6 +476,14 @@ define('Util', function () {
 	        fn.apply(this, params);
 	    }
 	};
+	
+	/**
+	 * ע���¼����ϵĻص�����
+	 *
+	 * @param {Array.<string>} dependency �¼�����
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 */
 	EventEmitter.prototype.all = function (dependency, fn, option) {
 	    var record = {};
 	    var results = [];
@@ -333,6 +514,12 @@ define('Util', function () {
 	    }, me);
 	    this.emit(Event.all, dependency, option);
 	};
+	
+	/**
+	 * �¼���������
+	 *
+	 * @param {string} eventName �¼���
+	 */
 	EventEmitter.prototype.emit = function (eventName) {
 	    var fns = this._triggers[eventName];
 	    var scope;
@@ -404,6 +591,7 @@ define('Util', function () {
 	 * @namespace
 	 */
 	var Compatible = {
+	    // 当前浏览器前缀
 	    prefix: (function () {
 	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
 	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
@@ -420,6 +608,12 @@ define('Util', function () {
 	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
 	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
 	    })(),
+	
+	    /**
+	     * 兼容性绘制函数
+	     *
+	     * @param {Function} fn 回调函数
+	     */
 	    requestAnimationFrame: (function () {
 	        window.requestAnimationFrame = window.requestAnimationFrame
 	        || window.webkitRequestAnimationFrame
@@ -454,6 +648,16 @@ define('Util', function () {
 	            window.requestAnimationFrame(fn);
 	        };
 	    })(),
+	
+	    /**
+	     * 绘制函数中设置样式属性或者直接设置样式属性值
+	     *
+	     * @param {Node} dom 要操作的节点
+	     * @param {string} key 样式属性名
+	     * @param {string=} css 样式属性值
+	     * @param {Object=} me 函数调用者
+	     * @return {string} 样式值
+	     */
 	    css: function (dom, key, css, me) {
 	        if (css || css === '') {
 	            Compatible.requestAnimationFrame(function () {
@@ -465,12 +669,25 @@ define('Util', function () {
 	            return Util.css(dom, key);
 	        }
 	    },
-	    // -> triggering reflow /* The actual magic */
+	
+	    /**
+	     * 绘制函数中触发重排
+	     *
+	     * @param {Node} dom 要操作的节点
+	     */
 	    reflow: function (dom) {
 	        Compatible.requestAnimationFrame(function () {
 	            dom.offsetWidth = dom.offsetWidth;
 	        });
 	    },
+	
+	    /**
+	     * 兼容性事件转换函数
+	     *
+	     * @param {string} lower 小写值
+	     * @param {string} upper 首字母大写值
+	     * @return {Function} 兼容性事件函数
+	     */
 	    parseEvent: function (lower, upper) {
 	        // animationstart webkitAnimationStart
 	        var p = Compatible.prefix.replace(/-/g, '');
@@ -495,7 +712,15 @@ define('Util', function () {
 	    TFCompatible.superClass.call(this);
 	}
 	Util.inherit(TFCompatible, EventEmitter);
+	
+	// 引用浏览器前缀
 	TFCompatible.prototype.prefix = Compatible.prefix;
+	
+	/**
+	 * 变换和过渡的简写以及默认值对照表
+	 *
+	 * @private
+	 */
 	TFCompatible._keyMap = {
 	    'transform': ['transform'],
 	    'transition': ['transition'],
@@ -503,8 +728,14 @@ define('Util', function () {
 	    'function': ['transitionTimingFunction', 'linear'],
 	    'delay': ['transitionDelay', '0s']
 	};
-	// 如果为duration function delay，简称转全称
-	// 其他加入兼容性前缀：transition -->webkitTransition
+	
+	/**
+	 * 如果为duration function delay，简称转全称,
+	 * 其他加入兼容性前缀：transition -->webkitTransition
+	 *
+	 * @param {string} key 要转换的属性名
+	 * @return {string} 转换后的属性名
+	 */
 	TFCompatible.prototype.parseCSS = function (key) {
 	    var p = this.prefix.replace(/-/g, '');
 	    if ('moz ms'.indexOf(p) > -1) {
@@ -526,7 +757,13 @@ define('Util', function () {
 	    }
 	    return this.parseCSS(key);
 	};
-	// 用于设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
+	
+	/**
+	 * 设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
+	 *
+	 * @param {string} propertyName 要转换的属性名
+	 * @return {string} 转换后的属性名
+	 */
 	TFCompatible.prototype.cssMap = function (propertyName) {
 	    var tmp;
 	    switch (propertyName) {
@@ -554,6 +791,10 @@ define('Util', function () {
 	    }
 	    return tmp;
 	};
+	
+	/**
+	 * 浏览器兼容性事件对照表
+	 */
 	TFCompatible.prototype.eventMap = {
 	    'border-radius': [
 	        'border-bottom-left-radius',
@@ -572,6 +813,14 @@ define('Util', function () {
 	        'border-bottom-color'
 	    ]
 	};
+	
+	/**
+	 * 想状态对象添加事件状态
+	 *
+	 * @param {Status} status 状态对象
+	 * @param {string} key 要映射的事件名称
+	 * @return {string} 映射后的事件名称
+	 */
 	TFCompatible.prototype.addStatus = function (status, key) {
 	    var keyT = this.cssMap(key);
 	    if (keyT in this.eventMap) {
@@ -634,6 +883,13 @@ define('Util', function () {
 	    }
 	    return clone;
 	};
+	
+	/**
+	 * 生成transition属性值
+	 *
+	 * @param {Object} transition 配置对象
+	 * @return {string} 生成的transition值
+	 */
 	TFCompatible.prototype.parseTransition = function (transition) {
 	    function regReplace($0, $1) {
 	        if ($1 in transition) {
@@ -643,379 +899,24 @@ define('Util', function () {
 	    }
 	    return '<property> <duration> <function> <delay>'.replace(/<(.*?)>/g, regReplace);
 	};
+	
+	/**
+	 * 获取TFCompatible单例
+	 *
+	 * @return {TFCompatible} 单例
+	 */
 	TFCompatible.instance = function () {
 	    if (!TFCompatible._compatible) {
 	        TFCompatible._compatible = new TFCompatible();
 	    }
 	    return TFCompatible._compatible;
 	};
+	
+	// 兼容性事件转换函数
 	TFCompatible.prototype.parseEvent = Compatible.parseEvent('transition', 'Transition');
-	return TFCompatible;});define('Pitch', ['Checker'], function (Checker) {
+	return TFCompatible;});define('Status', ['Util'], function (Util) {
 	/**
-	 * css属性转cssText过滤器
-	 *
-	 * @param {string} name  pitch的别名.
-	 * @param {string} keys 补丁属性集合.
-	 * @param {Function} handler 补丁函数.
-	 * @class
-	 */
-	function Pitch(name, keys, handler) {
-	    this._router = [];
-	    if (Checker.ssFunction.check(arguments)) {
-	        this.use(name, keys, handler);
-	    }
-	}
-	Pitch.prototype.use = function (name, keys, handler) {
-	    this._router.push({name: name, keys: keys + ' ', handler: handler});
-	    return this;
-	};
-	Pitch.prototype.next = function (index, key, value, opt) {
-	    var middleware = this._router[index];
-	    if (middleware) {
-	        if (middleware.keys.trim() === '*') {
-	            return middleware.handler(key.trim(), value, opt);
-	        }
-	        if (middleware.keys.indexOf(key) > -1) {
-	            return middleware.handler(key.trim(), value, opt);
-	        }
-	        return this.next(index + 1, key, value, opt);
-	    }
-	    return '';
-	};
-	Pitch.prototype.do = function (key, value, opt) {
-	    return this.next(0, key, value, opt);
-	};
-	return Pitch;});define('KFCompatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
-	/**
-	 *  浏览器兼容处理
-	 *
-	 * @class
-	 * @extend EventEmitter
-	 */
-	function KFCompatible() {
-	    KFCompatible.superClass.call(this);
-	    var pitch = new Pitch();
-	    var me = this;
-	    pitch.use('prefixOnly', 'text-shadow backface-visibility transition transition-timing-function '
-	        + 'animation-timing-function transform-origin transform-style perspective-origin perspective '
-	        + 'background-clip background-origin',
-	        function (key, value) {
-	            if (value === 'transform') {
-	                value = me.prefix + value;
-	            }
-	            return me.prefix + key + ':' + value + ';';
-	        }
-	    );
-	    pitch.use('needAll', 'box-shadow border-radius',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value + ';' + key + ':' + value + ';';
-	        }
-	    );
-	    // 需要整合到transform中的值，暂存如opt中
-	    pitch.use('extend', 'translateX translateY translateZ translate translate3d '
-	        + 'rotateX rotateY rotateZ rotate rotate3d '
-	        + 'skewX skewY skewZ skew '
-	        // perspective-origin 只对设置了perspective属性的起作用，对于transform: perspective(700px)不起作用
-	        // + 'perspective',
-	        + 'scaleZ scaleX scaleY scale3d scale ',
-	        function (key, value, opt) {
-	            if ('transform' in opt) {
-	                opt.transform += ' ' + key + '(' + value + ')';
-	            }
-	            else {
-	                opt.transform = key + '(' + value + ')';
-	            }
-	            return '';
-	        }
-	    );
-	    // 直接的transform，需要拼接到opt.transform
-	    pitch.use('transform', 'transform',
-	        function (key, value, opt) {
-	            if ('transform' in opt) {
-	                opt.transform += ' ' + value;
-	            }
-	            else {
-	                opt.transform = value;
-	            }
-	            return '';
-	        });
-	    // class的定义中可能出现
-	    pitch.use('animation', 'animation', function (key, value) {
-	        return me.prefix + key + ':' + me.parseAnimation(value) + ';';
-	    });
-	    pitch.use('specialA', 'background background-image ',
-	        function (key, value) {
-	            return key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
-	        });
-	    pitch.use('specialB', 'mask-image',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value.replace(/(linear|radial)-gradient/g, me.prefix + '$1-gradient') + ';';
-	        });
-	    pitch.use('rest', '*',
-	        function (key, value) {
-	            return key + ':' + value + ';';
-	        });
-	    this._pitch = pitch;
-	    // 经过_pitch处理，transform聚合到opt中，由_combine处理
-	    this._combine = new Pitch('combine', 'transform',
-	        function (key, value) {
-	            return me.prefix + key + ':' + value + ';';
-	        }
-	    );
-	}
-	Util.inherit(KFCompatible, EventEmitter);
-	KFCompatible.prototype.prefix = Compatible.prefix;
-	KFCompatible._keyMap = {
-	    'animation': ['animation'],
-	    'name': ['animationName'],
-	    'duration': ['animationDuration', '1s'],
-	    'function': ['animationTimingFunction', 'linear'],
-	    'delay': ['animationDelay', '0s'],
-	    'count': ['animationIterationCount', 1],
-	    'direction': ['animationDirection', 'normal'],
-	    'state': ['animationPlayState', 'running'],
-	    'mode': ['animationFillMode', 'forwards']
-	};
-	KFCompatible.prototype.parseAnimation = function (animations) {
-	    if (!Checker.array.check(arguments)) {
-	        animations = [animations];
-	    }
-	    var css;
-	    var csses = [];
-	    var tpl = this.animationTpl();
-	    function regReplace($0, $1) {
-	        if ($1 in css) {
-	            return css[$1];
-	        }
-	        return KFCompatible._keyMap[$1][1];
-	    }
-	    Util.each(animations, function (animation) {
-	        css = animation;
-	        csses.push(tpl.replace(/<(.*?)>/g, regReplace));
-	    });
-	    return csses.join(',');
-	};
-	KFCompatible.prototype.animationTpl = function () {
-	    if (!this._animationTpl) {
-	        if (this.prefix === '-moz-') {
-	            this._animationTpl = '<duration> <function> <delay> <direction> <mode> <count> <state> <name>';
-	            this._closeReg = {start: '\\s', end: '(?:\\s*)$'};
-	        }
-	        else {
-	            this._animationTpl = '<name> <duration> <function> <delay> <count> <direction> <mode>';
-	            this._closeReg = {start: '^(?:\\s*)', end: '\\s'};
-	        }
-	    }
-	    return this._animationTpl;
-	};
-	KFCompatible.prototype.regExp = function (middle) {
-	    return new RegExp(this._closeReg.start + middle + this._closeReg.end);
-	};
-	KFCompatible.prototype.keyframe = function (keyframe) {
-	    return '@' + this.prefix + 'keyframes ' + keyframe;
-	};
-	KFCompatible.prototype.percent = function (percent) {
-	    percent = (percent + '').trim();
-	    var percents = percent.split(/\s+/);
-	    return percents.join('%, ') + '%';
-	};
-	KFCompatible.prototype.patchCombine = function (key, value) {
-	    return this._combine.do(key + ' ', value);
-	};
-	KFCompatible.prototype.patch = function (key, value, opt) {
-	    return this._pitch.do(key + ' ', value, opt);
-	};
-	KFCompatible.instance = function () {
-	    if (!KFCompatible._compatible) {
-	        KFCompatible._compatible = new KFCompatible();
-	    }
-	    return KFCompatible._compatible;
-	};
-	KFCompatible.prototype.css = function (dom, key, css) {
-	    key = this.parseCSS(key);
-	    return Compatible.css(dom, key, css, this);
-	};
-	// 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
-	KFCompatible.prototype.parseCSS = function (key) {
-	    var p = this.prefix.replace(/-/g, '');
-	    if (p === 'moz') {
-	        KFCompatible.prototype.parseCSS = function (key) {
-	            if (key in KFCompatible._keyMap) {
-	                return KFCompatible._keyMap[key][0];
-	            }
-	            return key;
-	        };
-	    }
-	    else {
-	        KFCompatible.prototype.parseCSS = function (key) {
-	            if (key in KFCompatible._keyMap) {
-	                key = KFCompatible._keyMap[key][0];
-	                return p + key[0].toUpperCase() + key.substr(1);
-	            }
-	            return key;
-	        };
-	    }
-	    return this.parseCSS(key);
-	};
-	KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
-	return KFCompatible;});define('Compiler', ['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (Checker, KFCompatible, Util, Event, EventEmitter) {
-	/**
-	 * 编译类，根据metaData生成class或者keyframes
-	 *
-	 * @class
-	 * @extend EventEmitter
-	 */
-	function Compiler() {
-	    Compiler.superClass.call(this);
-	    // define时cache到map中，map存keyframeName + json
-	    // compile时清空map，cache到store中，store中存keyframeName + css
-	    this._classStore = {};
-	    this._classMap = {};
-	    this._keyframeMap = {};
-	    this._keyframeStore = {};
-	    var compatible = KFCompatible.instance();
-	    this._compatible = compatible;
-	    this._classId = function (className) {
-	        return 'class(' + className + ')';
-	    };
-	    this._keyframeId = function (keyframe) {
-	        return 'keyframe(' + keyframe + ')';
-	    };
-	    this._classText = function (className, body) {
-	        return '.' + className.replace(/\s+/g, ' .') + ' ' + body;
-	    };
-	    this._keyframeText = function (keyframe, body) {
-	        // @-webkit-keyframes xxx
-	        return compatible.keyframe(keyframe) + body;
-	    };
-	}
-	Util.inherit(Compiler, EventEmitter);
-	Compiler.prototype.defineClass = function (className, metaData) {
-	    className = className.trim();
-	    this._classMap[className] = metaData;
-	    return className;
-	};
-	Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
-	    if (metaData !== null) {
-	        if (Checker.object.check(arguments)) {
-	            metaData = arguments[0];
-	            keyframe = Util.random.name(8);
-	        }
-	        this._keyframeMap[keyframe] = metaData;
-	    }
-	    return keyframe;
-	};
-	Compiler.prototype.compile = function () {
-	    var classes = {};
-	    var keyframes = {};
-	    Util.forIn(this._classMap, function (className, item) {
-	        classes[className] = this._compileClass(item);
-	    }, this);
-	    Util.forIn(this._keyframeMap, function (keyframe, item) {
-	        keyframes[keyframe] = this._compileKeyframe(item);
-	    }, this);
-	    this._classMap = {};
-	    this._keyframeMap = {};
-	    // classes cache className：cssTextBody
-	    // keyframes cache frameName： frameTextBody
-	    this._effect(classes, keyframes);
-	};
-	Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
-	    var id;
-	    var cssText;
-	    Util.forIn(obj, function (key, item) {
-	        // class & keyframe 的id
-	        id = idG(key);
-	        // 完整的cssText
-	        // className + {}  --> .className{}
-	        // frameName + {} --> @-webkit-keyframes frameName{}
-	        cssText = textG(key, item);
-	        if (key in store) {
-	            this._refreshSheet(cssText, id);
-	        }
-	        else {
-	            frag.appendChild(this._styleSheet(cssText, id));
-	        }
-	        store[key] = item;
-	    }, this);
-	    obj = null;
-	};
-	Compiler.prototype._effect = function (classes, keyframes) {
-	    var frag = this._fragment();
-	    this._absorb(classes, this._classId, this._classText, this._classStore, frag);
-	    this._absorb(keyframes, this._keyframeId, this._keyframeText, this._keyframeStore, frag);
-	    frag.effect();
-	};
-	Compiler.prototype._fragment = function () {
-	    var fragment = document.createDocumentFragment();
-	    fragment.effect = function () {
-	        document.querySelector('head').appendChild(fragment);
-	    };
-	    return fragment;
-	};
-	Compiler.prototype._styleSheet = function (cssText, id) {
-	    var style = document.createElement('style');
-	    style.type = 'text/css';
-	    style.id = id;
-	    style.appendChild(document.createTextNode(cssText));
-	    this.emit(Event.style, id, cssText);
-	    return style;
-	};
-	Compiler.prototype.clear = function () {
-	    Util.forIn(this._classStore, function (className) {
-	        this._clearSheet(this._classId(className));
-	    }, this);
-	    Util.forIn(this._keyframeStore, function (frameName) {
-	        this._clearSheet(this._keyframeId(frameName));
-	    }, this);
-	    this._classStore = {};
-	    this._keyframeStore = {};
-	    this._classMap = {};
-	    this._keyframeMap = {};
-	};
-	Compiler.prototype._refreshSheet = function (cssText, id) {
-	    document.getElementById(id).innerHTML = cssText;
-	    this.emit(Event.style, id, cssText);
-	};
-	Compiler.prototype._clearSheet = function (id) {
-	    document.querySelector('head').removeChild(document.getElementById(id));
-	};
-	// 编译生成cssTextBody {}
-	Compiler.prototype._compileClass = function (metaData) {
-	    return '{' + this._compileContent(metaData) + '}';
-	};
-	Compiler.prototype._compileContent = function (metaData) {
-	    var opt = {};
-	    var content = [];
-	    Util.forIn(metaData, function (key, item) {
-	        content.push(this._compatible.patch(key, item, opt));
-	    }, this);
-	    Util.forIn(opt, function (key, item) {
-	        content.push(this._compatible.patchCombine(key, item));
-	    }, this);
-	    return content.join('');
-	};
-	// 编译生成keyframesTextBody {}
-	Compiler.prototype._compileKeyframe = function (metaData) {
-	    var body = '{';
-	    Util.forIn(metaData, function (percent, item) {
-	        body += this._compileFrame(percent, item);
-	    }, this);
-	    body += '}';
-	    return body;
-	};
-	Compiler.prototype._compileFrame = function (percent, metaData) {
-	    return this._compatible.percent(percent) + this._compileClass(metaData);
-	};
-	Compiler.instance = function () {
-	    if (!Compiler._compiler) {
-	        Compiler._compiler = new Compiler();
-	    }
-	    return Compiler._compiler;
-	};
-	return Compiler;});define('Status', ['Util'], function (Util) {
-	/**
-	 * 使用transitionEnd事件兼容
+	 * transitionEnd事件兼容
 	 *
 	 * @class
 	 */
@@ -1024,7 +925,13 @@ define('Util', function () {
 	    this.size = 0;
 	    this.store = [];
 	}
+	
+	// 分隔符
 	Status.sep = '|';
+	
+	/**
+	 * 初始化
+	 */
 	Status.prototype.init = function () {
 	    this.all = {};
 	    this.once = {};
@@ -1049,12 +956,22 @@ define('Util', function () {
 	        this.size++;
 	    }
 	};
+	
+	/**
+	 * 重置所有添加的状态
+	 */
 	Status.prototype.reset = function () {
 	    this.init();
 	    Util.each(this.store, function (item) {
 	        this.add(item.all, item.once, true);
 	    }, this);
 	};
+	
+	/**
+	 * 是否完成所有子事件
+	 *
+	 * @return {boolean} 是否完成了所有子事件
+	 */
 	Status.prototype.isDone = function () {
 	    return this.size === this.addUp;
 	};
@@ -1086,7 +1003,7 @@ define('Util', function () {
 	        }, this);
 	    }
 	};
-	return Status;});define('Transform', ['Checker', 'EventEmitter', 'Util', 'Compatible', 'TFCompatible', 'Compiler', 'Event', 'Status'], function (Checker, EventEmitter, Util, Compatible, TFCompatible, Compiler, Event, Status) {
+	return Status;});define('Transform', ['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], function (Util, Event, EventEmitter, Compatible, TFCompatible, Status) {
 	/**
 	 * 使用transform + transition进行变换
 	 *
@@ -1161,6 +1078,12 @@ define('Util', function () {
 	    this._executeInTime = flag;
 	    return this;
 	};
+	
+	/**
+	 * 恢复到变换之前的状态
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reStore = function () {
 	    Compatible.css(this._dom, this._store, '', this);
 	    var status;
@@ -1172,10 +1095,22 @@ define('Util', function () {
 	    this._transformRecord = '';
 	    return this;
 	};
+	
+	/**
+	 * 触发重绘
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reflow = function () {
 	    Compatible.reflow(this._dom);
 	    return this;
 	};
+	
+	/**
+	 * 恢复状态并再次执行变换
+	 *
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.reExecute = function () {
 	    this.reStore().reflow();
 	    return this.execute();
@@ -1195,6 +1130,12 @@ define('Util', function () {
 	    }
 	    return this;
 	};
+	
+	/**
+	 * 目前支持的变换已经简写对照表
+	 *
+	 * @private
+	 */
 	Transform._apiMap = {
 	    changeTo: {
 	        c: 'color',
@@ -1421,6 +1362,13 @@ define('Util', function () {
 	        return css;
 	    }, status);
 	};
+	
+	/**
+	 * 位移变换
+	 *
+	 * @param {Object|Array.<Object>} configs 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.moveTo = function (configs) {
 	    var apiMap = Transform._apiMap.moveTo;
 	    configs = this._patchMoveTo(configs, apiMap);
@@ -1461,33 +1409,75 @@ define('Util', function () {
 	    });
 	    return configs;
 	};
+	
+	/**
+	 * 变换
+	 *
+	 * @param {Object|Array.<Object>} configs 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.changeTo = function (configs) {
 	    var apiMap = Transform._apiMap.changeTo;
 	    configs = this._patchMoveTo(configs, Transform._apiMap.moveTo);
 	    this._css(configs, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 移动变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.moveBy = function (config) {
 	    var apiMap = Transform._apiMap.moveBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 缩放变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.scaleBy = function (config) {
 	    var apiMap = Transform._apiMap.scaleBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 扭转变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.skewBy = function (config) {
 	    var apiMap = Transform._apiMap.skewBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
 	
+	/**
+	 * 旋转变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.rotateBy = function (config) {
 	    var apiMap = Transform._apiMap.rotateBy;
 	    this._transform(config, apiMap);
 	    return this;
 	};
+	
+	/**
+	 * 模拟运行环境
+	 *
+	 * @param {string} method 要模拟的函数
+	 * @param {Object} config 配置对象
+	 * @return {Array} 模拟得到的返回数据
+	 */
 	Transform.prototype.mock = function (method, config) {
 	    var apiMap = Transform._apiMap[method];
 	    var css = {};
@@ -1538,6 +1528,13 @@ define('Util', function () {
 	    css[transform] = 'old+; ' + val.join(' ');
 	    return [cpt.parseTransition(config), css, status];
 	};
+	
+	/**
+	 * 混合变换
+	 *
+	 * @param {Object} config 配置对象
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.mix = function (config) {
 	    var mould = this._compatible.peelMould(config);
 	    var part;
@@ -1579,6 +1576,13 @@ define('Util', function () {
 	    }, status);
 	    return this;
 	};
+	
+	/**
+	 * 插入变换队列
+	 *
+	 * @param {Function} callback 回调函数
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.then = function (callback) {
 	    var length = this._steps.length;
 	    if (length > 0) {
@@ -1621,11 +1625,19 @@ define('Util', function () {
 	Transform.prototype._off = function (name, callback) {
 	    Util.off(this._dom, name, callback);
 	};
+	
 	Transform.prototype._unListen = function () {
 	    if (this._monitorEnd) {
 	        this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
 	    }
 	};
+	
+	/**
+	 * 设置视点位置
+	 *
+	 * @param {string} perspective 视点距离
+	 * @return {Transform} 对象本身
+	 */
 	Transform.prototype.perspective = function (perspective) {
 	    var cpt = this._compatible;
 	    var parentNode = this._dom.parentNode;

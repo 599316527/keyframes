@@ -1,5 +1,5 @@
 /**
- * @file group.js ~ 2015/08/13 11:47:13
+ * @file 群组动画管理
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Util Event EventEmitter*/

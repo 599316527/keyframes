@@ -1,5 +1,5 @@
 /**
- * @file Util.js ~ 2015/08/13 11:47:13
+ * @file 通用工具
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* define Util */
@@ -26,6 +26,15 @@ var Util = {
         }
         return true;
     },
+
+    /**
+     * JSON对象键名遍历函数
+     *
+     * @param {Object} obj 要进行遍历的对象
+     * @param {Function} handler 遍历的处理函数
+     * @param {Object=} scope 作用域对象
+     * @return {boolean} 是否完全遍历完了obj对象
+     */
     forKey: function (obj, handler, scope) {
         for (var key in obj) {
             if (handler.call(scope, key) === false) {
@@ -51,6 +60,12 @@ var Util = {
         });
         return init;
     },
+
+    /**
+     * 命名空间初始化
+     *
+     * @param {string} namespace 命名空间
+     */
     define: function (namespace) {
         namespace = namespace.split('.');
         var domain;
@@ -62,7 +77,14 @@ var Util = {
             module = module[domain];
         }
     },
-    // extend 只是拓展没有的属性 rewrite则是重写
+
+    /**
+     * 拓展函数，extend 只是拓展没有的属性 rewrite则是重写
+     *
+     * @param {Object} src 需要拓展的对象
+     * @param {Object=} init 从init拿数据拓展src
+     * @return {Object} 拓展后的对象
+     */
     extend: function (src, init) {
         if (!src) {
             return init;
@@ -76,6 +98,13 @@ var Util = {
         }
         return src;
     },
+
+    /**
+     * 继承
+     *
+     * @param {Function} Child 子类
+     * @param {Function} Parent 父类
+     */
     inherit: function (Child, Parent) {
         var Clz = new Function();
         Clz.prototype = Parent.prototype;
@@ -101,6 +130,13 @@ var Util = {
         });
         return index;
     },
+
+    /**
+     * Arguments对象转化为Array对象
+     *
+     * @param {Arguments} arg 需要转化的对象
+     * @return {Array} 转化为的对象
+     */
     arg2Ary: function (arg) {
         return Array.prototype.slice.call(arg, 0);
     },
@@ -121,11 +157,27 @@ var Util = {
         }
         return i === ary.length;
     },
+    // 随机相关函数及变量
     random: {
+        // 随机种子
         seed: [[48, 9], [65, 25], [97, 25]],
+
+        /**
+         * 根据种子生成随机字符
+         *
+         * @param {Array.<number>} seed 种子数组
+         * @return {string} 随机字符
+         */
         generator: function (seed) {
             return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
         },
+
+        /**
+         * 指定种子生成随机字符
+         *
+         * @param {number} index 种子索引
+         * @return {string} 随机字符
+         */
         word: function (index) {
             var range;
             if (index === 0) {
@@ -136,6 +188,13 @@ var Util = {
             }
             return this.generator(this.seed[range]);
         },
+
+        /**
+         * 生成指定长度随机字符串
+         *
+         * @param {number=} length 长度
+         * @return {string} 随机字符串
+         */
         name: function (length) {
             length = length || 6;
             var name = '';
@@ -145,14 +204,37 @@ var Util = {
             return name;
         }
     },
+
+    /**
+     * 添加样式
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {string} className 样式名
+     */
     addClass: function (dom, className) {
         if (!dom.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))) {
             dom.className = (dom.className + ' ' + className).trim();
         }
     },
+
+    /**
+     * 删除样式
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {string} className 样式名
+     */
     removeClass: function (dom, className) {
         dom.className = dom.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').trim();
     },
+
+    /**
+     * 设置或者获取样式属性
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {Object|string} attr 样式属性名
+     * @param {string=} value 样式属性值
+     * @return {string} 属性值
+     */
     css: function (dom, attr, value) {
         if (typeof attr === 'string') {
             return Util.$css(dom, attr, value);
@@ -161,10 +243,25 @@ var Util = {
             Util.$css(dom, key, item);
         });
     },
+
+    /**
+     * 阻值冒泡，stopPropagation ie 9 support
+     *
+     * @param {Event} event 事件对象
+     */
     stopPropagation: function (event) {
         // stopPropagation ie 9 support
         event.stopPropagation();
     },
+
+    /**
+     * 设置或获取样式属性，ie 9 support
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {string} key 样式属性名
+     * @param {string=} value 样式属性值
+     * @return {string} 属性值
+     */
     $css: function (dom, key, value) {
         if (value !== undefined) {
             dom.style[key] = value;
@@ -174,10 +271,25 @@ var Util = {
         var tmp = window.getComputedStyle(dom, null)[key];
         return !tmp ? dom.style[key] : tmp;
     },
-    // addEventListener ie 9 support
+
+    /**
+     * 注册事件监听函数，ie 9 support
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {string} name 事件名
+     * @param {Function} fn 回调函数
+     */
     on: function (dom, name, fn) {
         dom.addEventListener(name, fn, false);
     },
+
+    /**
+     * 注销事件监听函数，ie 9 support
+     *
+     * @param {Node} dom 要进操作的节点
+     * @param {string} name 事件名
+     * @param {Function} fn 回调函数
+     */
     off: function (dom, name, fn) {
         dom.removeEventListener(name, fn, false);
     }

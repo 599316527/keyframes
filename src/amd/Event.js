@@ -1,4 +1,7 @@
 define(function () {
+	/**
+	 * @namespace
+	 */
 	var Event = {
 	    style: 'Style',
 	    css: 'CSS',

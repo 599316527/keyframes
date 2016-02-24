@@ -1,8 +1,11 @@
 /**
- * @file Event.js ~ 2015/08/13 11:47:13
+ * @file 通用事件枚举
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* define Event */
+/**
+ * @namespace
+ */
 var Event = {
     style: 'Style',
     css: 'CSS',

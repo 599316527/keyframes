@@ -1,5 +1,5 @@
 /**
- * @file keyframe.js ~ 2015/08/13 11:47:13
+ * @file 动画帧控制
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Checker Util Compiler Group ClassProxy FrameProxy Event EventEmitter Compatible KFCompatible*/

@@ -1,5 +1,5 @@
 /**
- * @file KFCompatible.js ~ 2015/08/13 11:47:13
+ * @file 动画帧相关兼容处理
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Pitch Util Checker Event EventEmitter Compatible*/

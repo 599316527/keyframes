@@ -1,11 +1,28 @@
-define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
+define(['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
+	/**
+	 *  �¼��ַ���
+	 *
+	 * @class
+	 */
 	function EventEmitter() {
 	    this._triggers = {};
 	}
+	
+	/**
+	 *  �¼�����
+	 */
 	EventEmitter.type = {
 	    once: 'once',
 	    all: 'all'
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.on = function (eventName, fn, option) {
 	    if (eventName) {
 	        if (eventName in this._triggers) {
@@ -20,6 +37,13 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	        throw new Error('undefined event!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����Ļص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 */
 	EventEmitter.prototype.off = function (eventName, fn) {
 	    if (Checker.string.check(arguments)) {
 	        if (eventName in this._triggers) {
@@ -46,6 +70,14 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	        throw new Error('incorrect parameter!');
 	    }
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {string} eventName �¼���
+	 * @param {Function} fn �ص�����
+	 * @param {Object=} option ��ѡ����
+	 */
 	EventEmitter.prototype.once = function (eventName, fn, option) {
 	    if (!option) {
 	        option = {};
@@ -54,6 +86,14 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	    this.emit(Event.once, eventName, option);
 	    this.on(eventName, fn, option);
 	};
+	
+	/**
+	 * ע���¼����ĵ��λص�����
+	 *
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 * @param {Object} params ��������
+	 */
 	EventEmitter.prototype.callWithScope = function (fn, option, params) {
 	    params = params || [];
 	    if (option && option.hasOwnProperty('scope')) {
@@ -64,6 +104,14 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	        fn.apply(this, params);
 	    }
 	};
+	
+	/**
+	 * ע���¼����ϵĻص�����
+	 *
+	 * @param {Array.<string>} dependency �¼�����
+	 * @param {Function} fn �ص�����
+	 * @param {Object} option ���ò���
+	 */
 	EventEmitter.prototype.all = function (dependency, fn, option) {
 	    var record = {};
 	    var results = [];
@@ -94,6 +142,12 @@ define(['Checker', 'Event', 'Util'], function (Checker, Event, Util) {
 	    }, me);
 	    this.emit(Event.all, dependency, option);
 	};
+	
+	/**
+	 * �¼���������
+	 *
+	 * @param {string} eventName �¼���
+	 */
 	EventEmitter.prototype.emit = function (eventName) {
 	    var fns = this._triggers[eventName];
 	    var scope;

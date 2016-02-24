@@ -1,5 +1,5 @@
 /**
- * @file Compiler.js ~ 2015/08/13 11:47:13
+ * @file 元数据到样式转换
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Checker KFCompatible Util Event EventEmitter*/

@@ -1,6 +1,6 @@
 define(['Util'], function (Util) {
 	/**
-	 * 使用transitionEnd事件兼容
+	 * transitionEnd事件兼容
 	 *
 	 * @class
 	 */
@@ -9,7 +9,13 @@ define(['Util'], function (Util) {
 	    this.size = 0;
 	    this.store = [];
 	}
+	
+	// 分隔符
 	Status.sep = '|';
+	
+	/**
+	 * 初始化
+	 */
 	Status.prototype.init = function () {
 	    this.all = {};
 	    this.once = {};
@@ -34,12 +40,22 @@ define(['Util'], function (Util) {
 	        this.size++;
 	    }
 	};
+	
+	/**
+	 * 重置所有添加的状态
+	 */
 	Status.prototype.reset = function () {
 	    this.init();
 	    Util.each(this.store, function (item) {
 	        this.add(item.all, item.once, true);
 	    }, this);
 	};
+	
+	/**
+	 * 是否完成所有子事件
+	 *
+	 * @return {boolean} 是否完成了所有子事件
+	 */
 	Status.prototype.isDone = function () {
 	    return this.size === this.addUp;
 	};
