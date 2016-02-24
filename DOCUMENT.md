@@ -31,6 +31,8 @@ keyframes使用文档
 
 　　[5.3 绑定元素与动画](#53-bind-domanimation)
 
+　　[5.4 案例](#54-demo)
+
 ## 1 preface
 
 css3动画作为flash动画的一种替代方案，其开发方式是编写css样式文件，不具有动态性。keyframes类库致力于动态生成class和keyframes，同时支持进度轴和时间轴两种生成动画的途径，简化动画的的编写，透明动画的控制以及监听，使开发者将更多的精力投入到动画的创造。
@@ -537,7 +539,7 @@ group.start();
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
 ####可配置项
-语法为: (id选择器|class选择器)[#animation-count][@animation-timing-function][>animation-direction][_animation-delay][~animation-duration]
+语法: (id选择器|class选择器)[#animation-count][@animation-timing-function][>animation-direction][_animation-delay][~animation-duration]
 
 idSelector#infinite~5s_2.1s@linear>alternate
 
@@ -551,3 +553,8 @@ idSelector#infinite~5s_2.1s@linear>alternate
 <tr><td>_</td><td>animation-delay</td><td>0</td><td></td><td>进度轴</td></tr>
 <tr><td>~</td><td>animation-duration</td><td></td><td></td><td>进度轴</td></tr>
 </table>
+
+###5.4 demo
+
+[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
+![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
