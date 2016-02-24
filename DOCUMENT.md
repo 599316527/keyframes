@@ -537,6 +537,12 @@ group.start();
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
 ####可配置项
+ var map = {'@': 'function', '#': 'count', '_': 'delay', '~': 'duration', '>': 'direction'};
 <table>
-<tr><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td></tr>
+<tr><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td><td>适用范围</td></tr>
+<tr><td>@</td><td>animation-function</td><td>linear</td><td>可选值</td></tr>
+<tr><td>#</td><td>animation-count</td><td>1</td><td>1,2,...|infinite</td></tr>
+<tr><td>></td><td>animation-direction</td><td>normal</td><td>normal|alternate</td></tr>
+<tr><td>_</td><td>animation-delay</td><td>0</td><td></td></tr>
+<tr><td>~</td><td>animation-duration</td><td></td><td></td></tr>
 </table>
