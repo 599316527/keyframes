@@ -15,21 +15,13 @@ keyframes使用文档
 
 　　[3.4 更新keyframes](#34-update-keyframes)
 
- [4 控制元素动画](#4-control-animation)
+ [4 控制元素动画](#4-apply-animation)
 
 　　[4.1 绑定元素与动画](#41-bind-domanimation)
 
 　　[4.2 监听动画状态](#42-monitor-animation)
 
-　　[4.3 启动动画](#43-start-animation)
-
-　　[4.4 暂停动画](#44-pause-animation)
-
-　　[4.5 继续动画](#45-goon-animation)
-
-　　[4.6 重启动画](#46-restart-animation)
-
-　　[4.7 清理动画](#47-clear-animation)
+　　[4.3 控制动画](#43-control-animation)
 
 [5 实战时间轴](#5-timeline-in-action)
 
@@ -206,7 +198,7 @@ cpl.compile(); // 或者调用Keyframe.compile()
 ```
 ###3.4 update keyframes
 ```js
-// 在3.3生成的rot基础上更新
+// 在3.3生成的proxy基础上更新
 proxy.rewrite({
     '0': {
         'transform': 'rotateY(20deg)'
@@ -241,12 +233,11 @@ proxy = cpl.defineKeyframe(proxy.getName(), {
 console.log(proxy.getName()); // P236bM6I保持不变
 cpl.compile(); // 或者调用Keyframe.compile()
 ```
-##4 control animation
+##4 apply animation
 
 ###4.1 bind dom&animation
-####一对一
+####单对单
 ```js
-// 在3.3生成的rot基础上更新
 Keyframe.defineKeyframe('zoomIn', {
     '0': {
         'scale3d': '.3, .3, .3',
@@ -256,6 +247,7 @@ Keyframe.defineKeyframe('zoomIn', {
         'opacity': 1
     }
 });
+// 在dom上绑定一个动画
 var oneToOne = new Keyframe(document.getElementById('demo'), {
     'name': 'zoomIn',
     'duration': '1.8s',
@@ -265,9 +257,8 @@ var oneToOne = new Keyframe(document.getElementById('demo'), {
     'direction': 'normal' // 'alternate'
 });
 ```
-####一对多
+####单对多
 ```js
-// 在3.3生成的rot基础上更新
 Keyframe.defineKeyframe('speedIn', {
     '0': {
         'translate3d': '100%, 0, 0',
@@ -285,6 +276,7 @@ Keyframe.defineKeyframe('speedIn', {
         'transform': 'none'
     }
 });
+// 在dom上绑定多个动画
 var oneToMany = new Keyframe(document.getElementById('demo'), [
     {
         'name': 'zoomIn',
@@ -306,29 +298,30 @@ oneToMany.on(Event.start, function () {});
 oneToMany.on(Event.iteration, function () {});
 oneToMany.on(Event.end, function () {});
 ```
-###4.3 start animation
+###4.3 control animation
+####开始
 ```js
 oneToOne.start();
 oneToMany.start();
 ```
-###4.4 pause animation
+####暂停
 ```js
 oneToOne.pause();
 oneToMany.pause(); // 暂停所有动画
 oneToMany.pause('zoomIn'); // 暂停指定动画
 ```
-###4.5 goon animation
+####继续
 ```js
 oneToOne.goon();
 oneToMany.goon(); // 继续所有动画
 oneToMany.goon('zoomIn'); // 继续指定动画
 ```
-###4.6 restart animation
+####重启
 ```js
 oneToOne.restart();
 oneToMany.restart(); // 继续所有动画
 ```
-###4.7 clear animation
+####清除
 ```js
 oneToOne.clear();
 oneToMany.clear(); // 清理所有动画
