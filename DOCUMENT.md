@@ -537,12 +537,17 @@ group.start();
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
 ####可配置项
- var map = {'@': 'function', '#': 'count', '_': 'delay', '~': 'duration', '>': 'direction'};
+语法为: (id选择器|class选择器)[#animation-count][@animation-timing-function][>animation-direction][_animation-delay][~animation-duration]
+
+idSelector#infinite~5s_2.1s@linear>alternate
+
+.classSelector#infinite~5s_2.1s@linear>alternate
+
 <table>
 <tr><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td><td>适用范围</td></tr>
-<tr><td>@</td><td>animation-function</td><td>linear</td><td>可选值</td></tr>
-<tr><td>#</td><td>animation-count</td><td>1</td><td>1,2,...|infinite</td></tr>
-<tr><td>></td><td>animation-direction</td><td>normal</td><td>normal|alternate</td></tr>
-<tr><td>_</td><td>animation-delay</td><td>0</td><td></td></tr>
-<tr><td>~</td><td>animation-duration</td><td></td><td></td></tr>
+<tr><td>@</td><td>animation-timing-function</td><td>linear</td><td>linear|ease|ease-in|ease-out|ease-in-out|cubic-bezier(n,n,n,n)</td><td>时间轴&进度轴</td></tr>
+<tr><td>#</td><td>animation-count</td><td>1</td><td>1,2,...|infinite</td><td>时间轴&进度轴</td></tr>
+<tr><td>></td><td>animation-direction</td><td>normal</td><td>normal|alternate</td><td>时间轴&进度轴</td></tr>
+<tr><td>_</td><td>animation-delay</td><td>0</td><td></td><td>进度轴</td></tr>
+<tr><td>~</td><td>animation-duration</td><td></td><td></td><td>进度轴</td></tr>
 </table>
