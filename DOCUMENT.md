@@ -179,10 +179,10 @@ var cpl = Compiler.instance();
 // 或者调用Keyframe.defineKeyframe
 var proxy = cpl.defineKeyframe({
     '0 50': {
-        'transform': 'rotateY(0)'
+        'rotateY': '0'
     },
     '100': {
-        'transform': 'rotateY(360deg)'
+        'rotateY': '360deg'
     }
 });
 console.log(proxy.getName()); // P236bM6I随机
@@ -203,10 +203,10 @@ cpl.compile(); // 或者调用Keyframe.compile()
 // 在3.3生成的proxy基础上更新
 proxy.rewrite({
     '0': {
-        'transform': 'rotateY(20deg)'
+        'rotateY': '20deg'
     },
     '100': {
-        'transform': 'rotateY(360deg)'
+        'rotateY': '360deg'
     }
 });
 console.log(proxy.getName()); // P236bM6I保持不变
@@ -226,10 +226,10 @@ cpl.compile(); // 或者调用Keyframe.compile()
 // 或者通过重定义覆盖
 proxy = cpl.defineKeyframe(proxy.getName(), {
     '0': {
-        'transform': 'rotateY(20deg)'
+        'rotateY': '20deg'
     },
     '100': {
-        'transform': 'rotateY(360deg)'
+        'rotateY': '360deg'
     }
 });
 console.log(proxy.getName()); // P236bM6I保持不变
@@ -404,10 +404,10 @@ var group = Keyframe.group(config);
 var config = {
     'shape#infinite': {
                  '2.1': {
-                     'transform': 'rotateY(0deg)'
+                     'rotateY': '0deg'
                  },
                  '12': {
-                     'transform': 'rotateY(-360deg)'
+                     'rotateY': '-360deg'
                  }
     }
 };
@@ -435,10 +435,10 @@ var group = Keyframe.group(config);
 var config = {
     'shape#infinite': {
                  '2.1': {
-                     'transform': 'rotateY(0deg)'
+                     'rotateY': '0deg'
                  },
                  '12': {
-                     'transform': 'rotateY(-360deg)'
+                     'rotateY': '-360deg'
                  }
     }
 };
