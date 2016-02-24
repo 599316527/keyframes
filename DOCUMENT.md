@@ -445,6 +445,23 @@ var config = {
 };
 var group = Keyframe.group(config);
 ```
+```css
+@-webkit-keyframes xV38lnYg
+{
+  0%
+  {
+    -webkit-transform: rotateY(0deg);
+  }
+
+  100%
+  {
+    -webkit-transform: rotateY(-360deg);
+  }
+}
+```
+```html
+<div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
+```
 ###绑定进度轴动画
 ```js
 var timeline = {
@@ -476,7 +493,49 @@ var rot = Keyframe.defineKeyframe({
     40: { 'background': 'hsla(253, 85%, 25%, 1)'},
     100: { 'rotateX': '-360deg'}
 }).getName();
-timeline['demo#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
+timeline['idSelector#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
+timeline['.classSelector#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
 var group = Keyframe.group(timeline);
 group.start();
+```
+```css
+.gen {
+    position: relative;
+    width: 1px;
+    height: 200px;
+    display: inline-block;
+    margin: 10px 6px;
+    background: hsla(243, 100%, 85%, 1);
+    -webkit-box-shadow: 1px 1px 1px 1px hsla(0, 0%, 0%, 0.2);
+    box-shadow: 1px 1px 1px 1px hsla(0, 0%, 0%, 0.2);
+    -webkit-transition: all 1s ease;
+}
+
+.gen:before {
+    position: absolute;
+    left: -2px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    width: 12px;
+    height: 10px;
+    -webkit-box-shadow: 2px 2px 2px 2px hsla(0, 0%, 0%, 0.25);
+    box-shadow: 2px 2px 2px 2px hsla(0, 0%, 0%, 0.25);
+    background: hsla(243, 95%, 85%, 1);
+    content: "";
+    top: -2px;
+}
+
+@-webkit-keyframes WuHfsn54 {
+    40% {
+        background: hsla(253, 85%, 25%, 1);
+    }
+    100% {
+        -webkit-transform: rotateX(-360deg);
+    }
+}
+```
+```html
+<div id="idSelector" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
+<div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
+<div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
