@@ -425,9 +425,6 @@ var group = Keyframe.group(config);
   }
 }
 ```
-```html
-<div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
-```
 ###5.3 bind dom&animation
 
 ###绑定时间轴动画
@@ -464,6 +461,10 @@ var group = Keyframe.group(config);
 ```
 ###绑定进度轴动画
 ```js
+var rot = Keyframe.defineKeyframe({
+    40: { 'background': 'hsla(253, 85%, 25%, 1)'},
+    100: { 'rotateX': '-360deg'}
+}).getName();
 var timeline = {
     'class': {
         'gen': {
@@ -487,14 +488,10 @@ var timeline = {
             'content': '""',
             'bottom': '-2px'
         }
-    }
+    },
+    'idSelector#infinite~5s_2.1s@linear>alternate': rot  // 绑定进度轴动画，需要设置时长和延迟
 };
-var rot = Keyframe.defineKeyframe({
-    40: { 'background': 'hsla(253, 85%, 25%, 1)'},
-    100: { 'rotateX': '-360deg'}
-}).getName();
-timeline['idSelector#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
-timeline['.classSelector#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
+timeline['.classSelector#infinite~5s_2.1s@linear>alternate'] = rot; // 支持id选择器和class选择器
 var group = Keyframe.group(timeline);
 group.start();
 ```
@@ -539,3 +536,7 @@ group.start();
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
+####可配置项
+<table>
+<th><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td></th>
+</table>
