@@ -459,6 +459,7 @@ var group = Keyframe.group(config);
 }
 ```
 ```html
+// 通过以上配置，已经将元素和动画绑定，自动设置style
 <div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
 ###绑定进度轴动画
@@ -534,6 +535,7 @@ group.start();
 }
 ```
 ```html
+// 通过以上配置，已经将元素和动画绑定，自动设置style
 <div id="idSelector" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
