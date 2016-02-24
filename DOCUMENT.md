@@ -327,9 +327,105 @@ oneToOne.clear();
 oneToMany.clear(); // 清理所有动画
 ```
 ##5 timeline in action
+使用Keyframe生成基于百分比的动画，实际开发中，更多的需求是针对特定dom的时间轴动画。针对这种需求，group方法用于简化动画控制与绑定。
 
 ###5.1 create class
+```js
+var config = {
+    // 包裹在class下
+    'class': {
+        'container': {
+            'perspective': '800px',
+            'perspective-origin': '50% 40%'
+        },
+        'stage': {
+            'transform-style': 'preserve-3d'
+        },
+        'box-3d': {
+            'transform-style': 'preserve-3d',
+            'perspective': '600px'
+        },
+        'hidden plane': {
+            'backface-visibility': 'hidden'
+        },
+        'plane': {
+            'position': 'absolute',
+            'transition': 'all ease-in-out 2s',
+            'text-align': 'center',
+            'backface-visibility': 'visible',
+            'width': '200px',
+            'height': '200px',
+            'border-radius': '10px',
+            'font-size': '100px',
+            'line-height': '200px',
+            'opacity': 0.7
+        }
+    }
+};
+var group = Keyframe.group(config);
+```
+```css
+.container {
+    -webkit-perspective: 800px; // 自动适配前缀
+    -webkit-perspective-origin: 50% 40%;
+}
 
+.stage {
+    -webkit-transform-style: preserve-3d;
+}
+
+.box-3d {
+    -webkit-transform-style: preserve-3d;
+    -webkit-perspective: 600px;
+}
+
+.hidden .plane {
+    -webkit-backface-visibility: hidden;
+}
+
+.plane {
+    position: absolute;
+    -webkit-transition: all ease-in-out 2s;
+    text-align: center;
+    -webkit-backface-visibility: visible;
+    width: 200px;
+    height: 200px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    font-size: 100px;
+    line-height: 200px;
+    opacity: 0.7;
+}
+```
 ###5.2 create keyframes
+```js
+var config = {
+    'shape#infinite': {
+        '0': {
+            'transform': 'rotateY(0deg)'
+        },
+        '12': {
+            'transform': 'rotateY(-360deg)'
+        }
+    }
+};
+var group = Keyframe.group(config);
+```
+```css
+@-webkit-keyframes Dey6ESiB
+{
+  0%
+  {
+    -webkit-transform: rotateY(0deg);
+  }
 
+  100%
+  {
+    -webkit-transform: rotateY(-360deg);
+  }
+}
+```
+```html
+<div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
+```
 ###5.3 bind dom&animation
