@@ -538,5 +538,5 @@ group.start();
 ```
 ####可配置项
 <table>
-<th><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td></th>
+<tr><td>前缀符</td><td>映射属性</td><td>默认值</td><td>可选值</td></tr>
 </table>
