@@ -53,8 +53,8 @@ var timeline = {
             'background': 'hsla(243, 95%, 85%, 1)',
             'content': '""',
             'bottom': '-2px'
-        }
-    }
+}
+}
 };
 var rot = Keyframe.defineKeyframe({
     40: { 'background': 'hsla(253, 85%, 25%, 1)'},

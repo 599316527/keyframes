@@ -327,7 +327,7 @@ oneToOne.clear();
 oneToMany.clear(); // 清理所有动画
 ```
 ##5 timeline in action
-使用Keyframe生成基于百分比的动画，实际开发中，更多的需求是针对特定dom的时间轴动画。针对这种需求，group方法用于简化动画控制与绑定。
+使用Keyframe生成基于进度轴的动画，实际开发中，更多的需求是针对特定dom的时间轴动画。针对这种需求，group方法用于简化动画控制与绑定。
 
 ###5.1 create class
 ```js
@@ -401,18 +401,18 @@ var group = Keyframe.group(config);
 ```js
 var config = {
     'shape#infinite': {
-        '0': {
-            'transform': 'rotateY(0deg)'
-        },
-        '12': {
-            'transform': 'rotateY(-360deg)'
-        }
+                 '2.1': {
+                     'transform': 'rotateY(0deg)'
+                 },
+                 '12': {
+                     'transform': 'rotateY(-360deg)'
+                 }
     }
 };
 var group = Keyframe.group(config);
 ```
 ```css
-@-webkit-keyframes Dey6ESiB
+@-webkit-keyframes xV38lnYg
 {
   0%
   {
@@ -429,3 +429,54 @@ var group = Keyframe.group(config);
 <div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
 ###5.3 bind dom&animation
+
+###绑定时间轴动画
+不需要设置延迟和持续时间，已包含到时间轴配置中
+```js
+var config = {
+    'shape#infinite': {
+                 '2.1': {
+                     'transform': 'rotateY(0deg)'
+                 },
+                 '12': {
+                     'transform': 'rotateY(-360deg)'
+                 }
+    }
+};
+var group = Keyframe.group(config);
+```
+###绑定进度轴动画
+```js
+var timeline = {
+    'class': {
+        'gen': {
+            'position': 'relative',
+            'width': '1px',
+            'height': '200px',
+             'display': 'inline-block',
+            'margin': '10px 6px',
+            'background': 'hsla(243, 100%, 85%, 1)',
+            'box-shadow': '1px 1px 1px 1px hsla(0,0%,0%,0.2)',
+            'transition': 'all 1s ease'
+        },
+        'gen:after': {
+            'position': 'absolute',
+            'left': '-2px',
+            'border-radius': '50%',
+            'width': '12px',
+            'height': '10px',
+            'box-shadow': '2px 2px 2px 2px hsla(0,0%,0%,0.25)',
+            'background': 'hsla(243, 95%, 85%, 1)',
+            'content': '""',
+            'bottom': '-2px'
+        }
+    }
+};
+var rot = Keyframe.defineKeyframe({
+    40: { 'background': 'hsla(253, 85%, 25%, 1)'},
+    100: { 'rotateX': '-360deg'}
+}).getName();
+timeline['demo#infinite~5s_2.1s@linear>alternate'] = rot; // 绑定进度轴动画，需要设置时长和延迟
+var group = Keyframe.group(timeline);
+group.start();
+```
