@@ -2,6 +2,7 @@ define(function () {
 	/**
 	 * @namespace
 	 */
+	
 	// transform ie 9
 	// transition keyframe ie 10, 所以不需要考虑ie9之下
 	var Util = {
@@ -17,23 +18,6 @@ define(function () {
 	    forIn: function (obj, handler, scope) {
 	        for (var key in obj) {
 	            if (handler.call(scope, key, obj[key]) === false) {
-	                return false;
-	            }
-	        }
-	        return true;
-	    },
-	
-	    /**
-	     * JSON对象键名遍历函数
-	     *
-	     * @param {Object} obj 要进行遍历的对象
-	     * @param {Function} handler 遍历的处理函数
-	     * @param {Object=} scope 作用域对象
-	     * @return {boolean} 是否完全遍历完了obj对象
-	     */
-	    forKey: function (obj, handler, scope) {
-	        for (var key in obj) {
-	            if (handler.call(scope, key) === false) {
 	                return false;
 	            }
 	        }
@@ -263,9 +247,7 @@ define(function () {
 	            dom.style[key] = value;
 	            return value;
 	        }
-	        // getComputedStyle ie 9 support
-	        var tmp = window.getComputedStyle(dom, null)[key];
-	        return !tmp ? dom.style[key] : tmp;
+	        return dom.style[key];
 	    },
 	
 	    /**

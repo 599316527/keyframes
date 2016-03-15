@@ -6,19 +6,22 @@ define(['Util', 'Event'], function (Util, Event) {
 	    // 当前浏览器前缀
 	    prefix: (function () {
 	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
-	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
-	        var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-	        var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
-	            || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-	        var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
-	        var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
-	        var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
-	        var isWebKit = userAgent.indexOf('WebKit') > -1;
-	        if (isIE) {
-	            return '-ms-';
+	        var prefix = '';
+	        if (/WebKit|Chrome|Safari|Maxthon/.test(userAgent)) {
+	            prefix = '-webkit-';
 	        }
-	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
-	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
+	        else if (userAgent.indexOf('Opera') > -1) {
+	            prefix = '-o-';
+	        }
+	        else if (userAgent.indexOf('Firefox') > -1) {
+	            prefix = '-moz-';
+	        }
+	        else if ((userAgent.indexOf('compatible') > -1
+	            && userAgent.indexOf('MSIE') > -1)
+	            || userAgent.indexOf('Trident') > -1) {
+	            prefix = '-ms-';
+	        }
+	        return prefix;
 	    })(),
 	
 	    /**
@@ -27,33 +30,21 @@ define(['Util', 'Event'], function (Util, Event) {
 	     * @param {Function} fn 回调函数
 	     */
 	    requestAnimationFrame: (function () {
-	        window.requestAnimationFrame = window.requestAnimationFrame
-	        || window.webkitRequestAnimationFrame
-	        || window.mozRequestAnimationFrame;
+	        var vendors = ['ms', 'moz', 'webkit', 'o'];
+	        for (var x = 0, xx = vendors.length; x < xx && !window.requestAnimationFrame; ++x) {
+	            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+	        }
 	        if (!window.requestAnimationFrame) {
-	            var timer;
-	            var queue = [];
-	            var digestQueue = function () {
-	                Util.each(
-	                    queue,
-	                    function (cb) {
-	                        cb();
-	                    }
-	                );
-	                clearTimeout(timer);
-	                timer = false;
-	                queue = [];
+	            var lastTime = 0;
+	            return function (callback) {
+	                var currTime = new Date().getTime();
+	                var timeToCall = Math.max(0, (16 - (currTime - lastTime)) % 16);
+	                var id = window.setTimeout(function () {
+	                    callback();
+	                }, timeToCall);
+	                lastTime = currTime + timeToCall;
+	                return id;
 	            };
-	            var mock = function (callback) {
-	                queue.push(callback);
-	                if (!timer) {
-	                    timer = window.setTimeout(
-	                        digestQueue,
-	                        16
-	                    );
-	                }
-	            };
-	            window.requestAnimationFrame = mock;
 	        }
 	        return function (fn) {
 	            // 原生requestAnimationFrame执行的scope必须为window
@@ -67,14 +58,16 @@ define(['Util', 'Event'], function (Util, Event) {
 	     * @param {Node} dom 要操作的节点
 	     * @param {string} key 样式属性名
 	     * @param {string=} css 样式属性值
-	     * @param {Object=} me 函数调用者
+	     * @param {Function=} callback 回调函数
 	     * @return {string} 样式值
 	     */
-	    css: function (dom, key, css, me) {
+	    css: function (dom, key, css, callback) {
 	        if (css || css === '') {
 	            Compatible.requestAnimationFrame(function () {
 	                Util.css(dom, key, css);
-	                me.emit(Event.css, dom, key, css);
+	                if (callback) {
+	                    callback(dom, key, css);
+	                }
 	            });
 	        }
 	        else {

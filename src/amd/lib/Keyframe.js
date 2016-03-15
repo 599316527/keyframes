@@ -2,6 +2,7 @@ define('Util', function () {
 	/**
 	 * @namespace
 	 */
+	
 	// transform ie 9
 	// transition keyframe ie 10, 所以不需要考虑ie9之下
 	var Util = {
@@ -17,23 +18,6 @@ define('Util', function () {
 	    forIn: function (obj, handler, scope) {
 	        for (var key in obj) {
 	            if (handler.call(scope, key, obj[key]) === false) {
-	                return false;
-	            }
-	        }
-	        return true;
-	    },
-	
-	    /**
-	     * JSON对象键名遍历函数
-	     *
-	     * @param {Object} obj 要进行遍历的对象
-	     * @param {Function} handler 遍历的处理函数
-	     * @param {Object=} scope 作用域对象
-	     * @return {boolean} 是否完全遍历完了obj对象
-	     */
-	    forKey: function (obj, handler, scope) {
-	        for (var key in obj) {
-	            if (handler.call(scope, key) === false) {
 	                return false;
 	            }
 	        }
@@ -263,9 +247,7 @@ define('Util', function () {
 	            dom.style[key] = value;
 	            return value;
 	        }
-	        // getComputedStyle ie 9 support
-	        var tmp = window.getComputedStyle(dom, null)[key];
-	        return !tmp ? dom.style[key] : tmp;
+	        return dom.style[key];
 	    },
 	
 	    /**
@@ -629,19 +611,22 @@ define('Util', function () {
 	    // 当前浏览器前缀
 	    prefix: (function () {
 	        var userAgent = navigator.userAgent; // 取得浏览器的userAgent字符串
-	        var isOpera = userAgent.indexOf('Opera') > -1; // 判断是否Opera
-	        var isMaxthon = userAgent.indexOf('Maxthon') > -1; // 判断是否傲游3.0
-	        var isIE = (!isOpera && userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1)
-	            || (userAgent.indexOf('Trident') > -1); // 判断是否IE
-	        var isFF = userAgent.indexOf('Firefox') > -1; // 判断是否Firefox
-	        var isSafari = userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') < 1; // 判断是否Safari
-	        var isChrome = userAgent.indexOf('Chrome') > -1; // 判断是否Chrome
-	        var isWebKit = userAgent.indexOf('WebKit') > -1;
-	        if (isIE) {
-	            return '-ms-';
+	        var prefix = '';
+	        if (/WebKit|Chrome|Safari|Maxthon/.test(userAgent)) {
+	            prefix = '-webkit-';
 	        }
-	        return (isWebKit || isSafari || isChrome || isMaxthon) ?
-	            '-webkit-' : (isOpera ? '-o-' : (isFF ? '-moz-' : ''));
+	        else if (userAgent.indexOf('Opera') > -1) {
+	            prefix = '-o-';
+	        }
+	        else if (userAgent.indexOf('Firefox') > -1) {
+	            prefix = '-moz-';
+	        }
+	        else if ((userAgent.indexOf('compatible') > -1
+	            && userAgent.indexOf('MSIE') > -1)
+	            || userAgent.indexOf('Trident') > -1) {
+	            prefix = '-ms-';
+	        }
+	        return prefix;
 	    })(),
 	
 	    /**
@@ -650,33 +635,21 @@ define('Util', function () {
 	     * @param {Function} fn 回调函数
 	     */
 	    requestAnimationFrame: (function () {
-	        window.requestAnimationFrame = window.requestAnimationFrame
-	        || window.webkitRequestAnimationFrame
-	        || window.mozRequestAnimationFrame;
+	        var vendors = ['ms', 'moz', 'webkit', 'o'];
+	        for (var x = 0, xx = vendors.length; x < xx && !window.requestAnimationFrame; ++x) {
+	            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+	        }
 	        if (!window.requestAnimationFrame) {
-	            var timer;
-	            var queue = [];
-	            var digestQueue = function () {
-	                Util.each(
-	                    queue,
-	                    function (cb) {
-	                        cb();
-	                    }
-	                );
-	                clearTimeout(timer);
-	                timer = false;
-	                queue = [];
+	            var lastTime = 0;
+	            return function (callback) {
+	                var currTime = new Date().getTime();
+	                var timeToCall = Math.max(0, (16 - (currTime - lastTime)) % 16);
+	                var id = window.setTimeout(function () {
+	                    callback();
+	                }, timeToCall);
+	                lastTime = currTime + timeToCall;
+	                return id;
 	            };
-	            var mock = function (callback) {
-	                queue.push(callback);
-	                if (!timer) {
-	                    timer = window.setTimeout(
-	                        digestQueue,
-	                        16
-	                    );
-	                }
-	            };
-	            window.requestAnimationFrame = mock;
 	        }
 	        return function (fn) {
 	            // 原生requestAnimationFrame执行的scope必须为window
@@ -690,14 +663,16 @@ define('Util', function () {
 	     * @param {Node} dom 要操作的节点
 	     * @param {string} key 样式属性名
 	     * @param {string=} css 样式属性值
-	     * @param {Object=} me 函数调用者
+	     * @param {Function=} callback 回调函数
 	     * @return {string} 样式值
 	     */
-	    css: function (dom, key, css, me) {
+	    css: function (dom, key, css, callback) {
 	        if (css || css === '') {
 	            Compatible.requestAnimationFrame(function () {
 	                Util.css(dom, key, css);
-	                me.emit(Event.css, dom, key, css);
+	                if (callback) {
+	                    callback(dom, key, css);
+	                }
 	            });
 	        }
 	        else {
@@ -941,11 +916,13 @@ define('Util', function () {
 	    };
 	}
 	Util.inherit(Compiler, EventEmitter);
+	
 	Compiler.prototype.defineClass = function (className, metaData) {
 	    className = className.trim();
 	    this._classMap[className] = metaData;
 	    return className;
 	};
+	
 	Compiler.prototype.defineKeyframe = function (keyframe, metaData) {
 	    if (metaData !== null) {
 	        if (Checker.object.check(arguments)) {
@@ -956,6 +933,7 @@ define('Util', function () {
 	    }
 	    return keyframe;
 	};
+	
 	Compiler.prototype.compile = function () {
 	    var classes = {};
 	    var keyframes = {};
@@ -971,6 +949,7 @@ define('Util', function () {
 	    // keyframes cache frameName： frameTextBody
 	    this._effect(classes, keyframes);
 	};
+	
 	Compiler.prototype._absorb = function (obj, idG, textG, store, frag) {
 	    var id;
 	    var cssText;
@@ -991,12 +970,14 @@ define('Util', function () {
 	    }, this);
 	    obj = null;
 	};
+	
 	Compiler.prototype._effect = function (classes, keyframes) {
 	    var frag = this._fragment();
 	    this._absorb(classes, this._classId, this._classText, this._classStore, frag);
 	    this._absorb(keyframes, this._keyframeId, this._keyframeText, this._keyframeStore, frag);
 	    frag.effect();
 	};
+	
 	Compiler.prototype._fragment = function () {
 	    var fragment = document.createDocumentFragment();
 	    fragment.effect = function () {
@@ -1004,6 +985,7 @@ define('Util', function () {
 	    };
 	    return fragment;
 	};
+	
 	Compiler.prototype._styleSheet = function (cssText, id) {
 	    var style = document.createElement('style');
 	    style.type = 'text/css';
@@ -1012,6 +994,7 @@ define('Util', function () {
 	    this.emit(Event.style, id, cssText);
 	    return style;
 	};
+	
 	Compiler.prototype.clear = function () {
 	    Util.forIn(this._classStore, function (className) {
 	        this._clearSheet(this._classId(className));
@@ -1024,17 +1007,21 @@ define('Util', function () {
 	    this._classMap = {};
 	    this._keyframeMap = {};
 	};
+	
 	Compiler.prototype._refreshSheet = function (cssText, id) {
 	    document.getElementById(id).innerHTML = cssText;
 	    this.emit(Event.style, id, cssText);
 	};
+	
 	Compiler.prototype._clearSheet = function (id) {
 	    document.querySelector('head').removeChild(document.getElementById(id));
 	};
+	
 	// 编译生成cssTextBody {}
 	Compiler.prototype._compileClass = function (metaData) {
 	    return '{' + this._compileContent(metaData) + '}';
 	};
+	
 	Compiler.prototype._compileContent = function (metaData) {
 	    var opt = {};
 	    var content = [];
@@ -1046,6 +1033,7 @@ define('Util', function () {
 	    }, this);
 	    return content.join('');
 	};
+	
 	// 编译生成keyframesTextBody {}
 	Compiler.prototype._compileKeyframe = function (metaData) {
 	    var body = '{';
@@ -1055,9 +1043,11 @@ define('Util', function () {
 	    body += '}';
 	    return body;
 	};
+	
 	Compiler.prototype._compileFrame = function (percent, metaData) {
 	    return this._compatible.percent(percent) + this._compileClass(metaData);
 	};
+	
 	Compiler.instance = function () {
 	    if (!Compiler._compiler) {
 	        Compiler._compiler = new Compiler();

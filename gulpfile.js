@@ -6,7 +6,7 @@ var jshint = require('gulp-jshint');
 var mergeMap = {};
 var generateMap = {
     'Keyframe': [],
-    'Transform': []
+    'Transition': []
 };
 gulp.task('lint',['concat'], function() {
     return gulp.src(['src/*.js', 'src/*/*.js'])
@@ -184,8 +184,8 @@ gulp.task('cdn', [], function () {
 gulp.task('define', function () {
     var fs = require('fs');
     var path = require('path');
-    var content = fs.readFileSync(path.join('dist', 'amd', 'lib', 'Transform.js')).toString();
-    fs.writeFileSync(path.join('dist', 'amd', 'lib', 'Transform.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
+    var content = fs.readFileSync(path.join('dist', 'amd', 'lib', 'Transition.js')).toString();
+    fs.writeFileSync(path.join('dist', 'amd', 'lib', 'Transition.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
     return true;
 });
 gulp.task('upload', function() {

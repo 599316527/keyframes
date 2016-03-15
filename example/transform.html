@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Transform</title>
+    <title>Transition</title>
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     <link rel="shortcut icon" href="http://www.baidu.com/favicon.ico" type="image/x-icon">
     <script src="../lib/require.js"></script>
@@ -46,7 +46,7 @@
 </head>
 <body class="bg">
 <button id="restart" class="btn">restart</button>
-<div id="demo" class="mask">Transform</div>
+<div id="demo" class="mask">Transition</div>
 <pre>
     t.mix({
         'duration': '0.1s',
@@ -128,7 +128,7 @@
 </pre>
 <script>
     require.config({baseUrl: '../dist/amd'});
-    require(["Transform", "Event", "Keyframe"], function (Transform, Event, Keyframe) {
+    require(["Transition", "Event", "Keyframe"], function (Transition, Event, Keyframe) {
         var btn = Keyframe.defineClass('btn', {
             'background-color': '#000000',
             'color': '#ffffff',
@@ -148,7 +148,7 @@
             'overflow': 'hidden'
         });
         Keyframe.compile();
-        var t = new Transform(document.getElementById('demo'), true);
+        var t = new Transition(document.getElementById('demo'), true);
         t.on(Event.next, function () {
             console.log(arguments);
         });

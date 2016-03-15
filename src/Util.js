@@ -29,23 +29,6 @@ var Util = {
     },
 
     /**
-     * JSON对象键名遍历函数
-     *
-     * @param {Object} obj 要进行遍历的对象
-     * @param {Function} handler 遍历的处理函数
-     * @param {Object=} scope 作用域对象
-     * @return {boolean} 是否完全遍历完了obj对象
-     */
-    forKey: function (obj, handler, scope) {
-        for (var key in obj) {
-            if (handler.call(scope, key) === false) {
-                return false;
-            }
-        }
-        return true;
-    },
-
-    /**
      * 重写函数
      *
      * @param {Object} init 需要重写的对象
@@ -268,9 +251,7 @@ var Util = {
             dom.style[key] = value;
             return value;
         }
-        // getComputedStyle ie 9 support
-        var tmp = window.getComputedStyle(dom, null)[key];
-        return !tmp ? dom.style[key] : tmp;
+        return dom.style[key];
     },
 
     /**

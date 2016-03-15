@@ -5,7 +5,7 @@
 /* eslint-disable no-loop-func */
 /* global Util Event EventEmitter Compatible TFCompatible Status */
 // 当前文件依赖加载: Util.js Event.js EventEmitter.js Compatible.js TFCompatible.js Status.js
-/* define Transform */
+/* define Transition */
 
 /**
  * 使用transform + transition进行变换
@@ -15,25 +15,26 @@
  * @class
  * @extends EventEmitter
  */
-function Transform(dom, executeInTime) {
-    Transform.superClass.call(this);
+function Transition(dom, executeInTime) {
+    Transition.superClass.call(this);
     this._dom = dom;
     this._executeInTime = executeInTime;
     this._steps = [];
     this._store = {};
     this._index = 0;
     this._transformRecord = '';
+    this._firstRun = true;
     this._compatible = TFCompatible.instance();
     this._listen();
 }
-Util.inherit(Transform, EventEmitter);
+Util.inherit(Transition, EventEmitter);
 
 /**
  * 动画事件监听逻辑
  *
  * @private
  */
-Transform.prototype._listen = function () {
+Transition.prototype._listen = function () {
     var me = this;
     var cpt = me._compatible;
     function wrap(eventName) {
@@ -75,9 +76,9 @@ Transform.prototype._listen = function () {
  * 合并当前transform与变换transform，不破坏之前的状态
  *
  * @param {boolean} flag 是否为即刻执行模式
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.setExecuteInTime = function (flag) {
+Transition.prototype.setExecuteInTime = function (flag) {
     this._executeInTime = flag;
     return this;
 };
@@ -85,9 +86,9 @@ Transform.prototype.setExecuteInTime = function (flag) {
 /**
  * 恢复到变换之前的状态
  *
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.reStore = function () {
+Transition.prototype.reStore = function () {
     Compatible.css(this._dom, this._store, '', this);
     var status;
     while (this._index > 0) {
@@ -102,29 +103,23 @@ Transform.prototype.reStore = function () {
 /**
  * 触发重绘
  *
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.reflow = function () {
+Transition.prototype.reflow = function () {
     Compatible.reflow(this._dom);
     return this;
 };
 
 /**
- * 恢复状态并再次执行变换
- *
- * @return {Transform} 对象本身
- */
-Transform.prototype.reExecute = function () {
-    this.reStore().reflow();
-    return this.execute();
-};
-
-/**
  * 当executeInTime为false，即非即刻执行模式下，调用此函数触发变换
  *
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.execute = function () {
+Transition.prototype.execute = function () {
+    if (!this._firstRun) {
+        this.reStore().reflow();
+        this._firstRun = false;
+    }
     if (this._index < this._steps.length) {
         var firstStep = this._steps[this._index];
         if ('execute' in firstStep) {
@@ -139,7 +134,7 @@ Transform.prototype.execute = function () {
  *
  * @private
  */
-Transform._apiMap = {
+Transition._apiMap = {
     changeTo: {
         c: 'color',
         bc: 'backgroundColor',
@@ -177,8 +172,8 @@ Transform._apiMap = {
     }
 };
 // 不具有实用性，暂时去掉
-/* Transform.prototype.perspectiveTo = function (config) {
-    var apiMap = Transform._apiMap.perspective;
+/* Transition.prototype.perspectiveTo = function (config) {
+    var apiMap = Transition._apiMap.perspective;
     this._transform(config, apiMap);
     return this;
 };*/
@@ -191,29 +186,32 @@ Transform._apiMap = {
  * @param {Function} generator css键值对象，包括transform
  * @param {Status} status 需要监听的属性变化对象，包括transform以及其他css属性
  */
-Transform.prototype._step = function (transition, generator, status) {
+Transition.prototype._step = function (transition, generator, status) {
     var me = this;
     var cpt = me._compatible;
     var step = {};
     var length = me._steps.length;
+    var handler = function (dom, key, css) {
+        me.emit(Event.css, dom, key, css);
+    };
     if (length > 0) {
         var front = me._steps[length - 1];
         var next = front.next;
         if (next) {
             front.next = function () {
                 next();
-                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
-                Compatible.css(me._dom, generator(), '', me);
+                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, handler);
+                Compatible.css(me._dom, generator(), '', handler);
             };
             if (me._index === me._steps.length) {
-                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
-                Compatible.css(me._dom, generator(), '', me);
+                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, handler);
+                Compatible.css(me._dom, generator(), '', handler);
             }
         }
         else {
             front.next = function () {
-                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
-                Compatible.css(me._dom, generator(), '', me);
+                Compatible.css(me._dom, cpt.parseCSS('transition'), transition, handler);
+                Compatible.css(me._dom, generator(), '', handler);
             };
             if (me._index === me._steps.length) {
                 front.next();
@@ -222,8 +220,8 @@ Transform.prototype._step = function (transition, generator, status) {
     }
     else {
         step.execute = function () {
-            Compatible.css(me._dom, cpt.parseCSS('transition'), transition, me);
-            Compatible.css(me._dom, generator(), '', me);
+            Compatible.css(me._dom, cpt.parseCSS('transition'), transition, handler);
+            Compatible.css(me._dom, generator(), '', handler);
         };
         if (this._executeInTime) {
             step.execute();
@@ -242,7 +240,7 @@ Transform.prototype._step = function (transition, generator, status) {
  * @return {string} 合并后的transform值
  */
 //  * @param {string} transform transform的css属性名，例如webkitTransform
-Transform.prototype._combineTransform = function (val) {
+Transition.prototype._combineTransform = function (val) {
     // 如果加入z轴变换，发现 matrix3d(...,offsetX, offsetY, offsetZ, 1) + translateZ(-offsetZ)在z方向不为0
     /* var current = Util.css(this._dom, transform);
     if (current && current !== 'none') {
@@ -261,7 +259,7 @@ Transform.prototype._combineTransform = function (val) {
  * @param {Object} apiMap 所支持的相应变化
  * @param {Array.<string>} val 根据config生成的transform变换值
  */
-Transform.prototype._fillTransformParams = function (config, apiMap, val) {
+Transition.prototype._fillTransformParams = function (config, apiMap, val) {
     var cpt = this._compatible;
     var transform = cpt.parseCSS('transform');
     var transition = cpt.parseCSS('transition');
@@ -290,7 +288,7 @@ Transform.prototype._fillTransformParams = function (config, apiMap, val) {
  * @param {Object}  config 变换配置对象
  * @param {Object} apiMap  所支持的相应变化
  */
-Transform.prototype._transform = function (config, apiMap) {
+Transition.prototype._transform = function (config, apiMap) {
     var me = this;
     var cpt = me._compatible;
     var $transform = cpt.cssMap('transform');
@@ -319,7 +317,7 @@ Transform.prototype._transform = function (config, apiMap) {
  * @param {Status} status 状态监听对象
  * @return {Object} 返回添加过api的配置对象，用于产出transition值，用不到api，只是方便调用
  */
-Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css, status) {
+Transition.prototype._fillCSSParams = function (configs, apiMap, transition, css, status) {
     var keyT;
     var me = this;
     var $transition = me._compatible.parseCSS('transition');
@@ -356,7 +354,7 @@ Transform.prototype._fillCSSParams = function (configs, apiMap, transition, css,
  * @param {(Object|Array.<Object>)} configs 由于为非transform变换，所以不共享transform，可以有多个配置
  * @param {Object} apiMap 所支持的相应变化
  */
-Transform.prototype._css = function (configs, apiMap) {
+Transition.prototype._css = function (configs, apiMap) {
     var transition = [];
     var css = {};
     var status = new Status();
@@ -370,10 +368,10 @@ Transform.prototype._css = function (configs, apiMap) {
  * 位移变换
  *
  * @param {Object|Array.<Object>} configs 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.moveTo = function (configs) {
-    var apiMap = Transform._apiMap.moveTo;
+Transition.prototype.moveTo = function (configs) {
+    var apiMap = Transition._apiMap.moveTo;
     configs = this._patchMoveTo(configs, apiMap);
     this._css(configs, apiMap);
     return this;
@@ -387,7 +385,7 @@ Transform.prototype.moveTo = function (configs) {
  * @param {Object} apiMap 所支持的相应变化
  * @return {Array.<Object>} 设置初始值后，返回数组configs
  */
-Transform.prototype._patchMoveTo = function (configs, apiMap) {
+Transition.prototype._patchMoveTo = function (configs, apiMap) {
     if (!(configs instanceof Array)) {
         configs = [configs];
     }
@@ -396,7 +394,7 @@ Transform.prototype._patchMoveTo = function (configs, apiMap) {
     var atr;
     var patch = {};
     Util.each(configs, function (config) {
-        Util.forKey(config, function (key) {
+        Util.forIn(config, function (key) {
             if (key in apiMap) {
                 atr = apiMap[key];
                 val = Util.css(dom, atr);
@@ -417,11 +415,11 @@ Transform.prototype._patchMoveTo = function (configs, apiMap) {
  * 变换
  *
  * @param {Object|Array.<Object>} configs 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.changeTo = function (configs) {
-    var apiMap = Transform._apiMap.changeTo;
-    configs = this._patchMoveTo(configs, Transform._apiMap.moveTo);
+Transition.prototype.changeTo = function (configs) {
+    var apiMap = Transition._apiMap.changeTo;
+    configs = this._patchMoveTo(configs, Transition._apiMap.moveTo);
     this._css(configs, apiMap);
     return this;
 };
@@ -430,10 +428,10 @@ Transform.prototype.changeTo = function (configs) {
  * 移动变换
  *
  * @param {Object} config 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.moveBy = function (config) {
-    var apiMap = Transform._apiMap.moveBy;
+Transition.prototype.moveBy = function (config) {
+    var apiMap = Transition._apiMap.moveBy;
     this._transform(config, apiMap);
     return this;
 };
@@ -442,10 +440,10 @@ Transform.prototype.moveBy = function (config) {
  * 缩放变换
  *
  * @param {Object} config 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.scaleBy = function (config) {
-    var apiMap = Transform._apiMap.scaleBy;
+Transition.prototype.scaleBy = function (config) {
+    var apiMap = Transition._apiMap.scaleBy;
     this._transform(config, apiMap);
     return this;
 };
@@ -454,10 +452,10 @@ Transform.prototype.scaleBy = function (config) {
  * 扭转变换
  *
  * @param {Object} config 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.skewBy = function (config) {
-    var apiMap = Transform._apiMap.skewBy;
+Transition.prototype.skewBy = function (config) {
+    var apiMap = Transition._apiMap.skewBy;
     this._transform(config, apiMap);
     return this;
 };
@@ -466,10 +464,10 @@ Transform.prototype.skewBy = function (config) {
  * 旋转变换
  *
  * @param {Object} config 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.rotateBy = function (config) {
-    var apiMap = Transform._apiMap.rotateBy;
+Transition.prototype.rotateBy = function (config) {
+    var apiMap = Transition._apiMap.rotateBy;
     this._transform(config, apiMap);
     return this;
 };
@@ -481,8 +479,8 @@ Transform.prototype.rotateBy = function (config) {
  * @param {Object} config 配置对象
  * @return {Array} 模拟得到的返回数据
  */
-Transform.prototype.mock = function (method, config) {
-    var apiMap = Transform._apiMap[method];
+Transition.prototype.mock = function (method, config) {
+    var apiMap = Transition._apiMap[method];
     var css = {};
     var status = new Status();
     var transition = [];
@@ -498,11 +496,11 @@ Transform.prototype.mock = function (method, config) {
         var mould = this._compatible.peelMould(config);
         var part;
         var transformCount = 0;
-        Util.forIn(Transform._apiMap, function (key, $apiMap) {
+        Util.forIn(Transition._apiMap, function (key, $apiMap) {
             if (key in config) {
                 part = config[key];
                 if (key === 'moveTo' || key === 'changeTo') {
-                    part = this._patchMoveTo(part, Transform._apiMap.moveTo);
+                    part = this._patchMoveTo(part, Transition._apiMap.moveTo);
                     Util.each(part, function (item) {
                         Util.extend(item, mould);
                     });
@@ -536,9 +534,9 @@ Transform.prototype.mock = function (method, config) {
  * 混合变换
  *
  * @param {Object} config 配置对象
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.mix = function (config) {
+Transition.prototype.mix = function (config) {
     var mould = this._compatible.peelMould(config);
     var part;
     var transition = [];
@@ -546,11 +544,11 @@ Transform.prototype.mix = function (config) {
     var status = new Status();
     var val = [];
     var transformCount = 0;
-    Util.forIn(Transform._apiMap, function (key, $apiMap) {
+    Util.forIn(Transition._apiMap, function (key, $apiMap) {
         if (key in config) {
             part = config[key];
             if (key === 'moveTo' || key === 'changeTo') {
-                part = this._patchMoveTo(part, Transform._apiMap.moveTo);
+                part = this._patchMoveTo(part, Transition._apiMap.moveTo);
                 Util.each(part, function (item) {
                     Util.extend(item, mould);
                 });
@@ -584,9 +582,9 @@ Transform.prototype.mix = function (config) {
  * 插入变换队列
  *
  * @param {Function} callback 回调函数
- * @return {Transform} 对象本身
+ * @return {Transition} 对象本身
  */
-Transform.prototype.then = function (callback) {
+Transition.prototype.then = function (callback) {
     var length = this._steps.length;
     if (length > 0) {
         var front = this._steps[length - 1];
@@ -614,7 +612,7 @@ Transform.prototype.then = function (callback) {
  * @param {string} name 动画事件名称
  * @param {Function} callback 事件回调函数
  */
-Transform.prototype._on = function (name, callback) {
+Transition.prototype._on = function (name, callback) {
     Util.on(this._dom, name, callback);
 };
 
@@ -625,11 +623,11 @@ Transform.prototype._on = function (name, callback) {
  * @param {string} name 动画事件名称
  * @param {Function} callback 事件回调函数
  */
-Transform.prototype._off = function (name, callback) {
+Transition.prototype._off = function (name, callback) {
     Util.off(this._dom, name, callback);
 };
 
-Transform.prototype._unListen = function () {
+Transition.prototype._unListen = function () {
     if (this._monitorEnd) {
         this._off(this._compatible.parseEvent(Event.end), this._monitorEnd);
     }
@@ -638,10 +636,10 @@ Transform.prototype._unListen = function () {
 /**
  * 设置视点位置
  *
- * @param {string} perspective 视点距离
- * @return {Transform} 对象本身
+ * @param {string|boolean} perspective 视点距离
+ * @return {Transition} 对象本身
  */
-Transform.prototype.perspective = function (perspective) {
+Transition.prototype.perspective = function (perspective) {
     var cpt = this._compatible;
     var parentNode = this._dom.parentNode;
     if (perspective === false) {

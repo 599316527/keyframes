@@ -14,6 +14,7 @@
  */
 function TFCompatible() {
     TFCompatible.superClass.call(this);
+    this.convertMap = {};
 }
 Util.inherit(TFCompatible, EventEmitter);
 
@@ -41,59 +42,38 @@ TFCompatible._keyMap = {
  * @return {string} 转换后的属性名
  */
 TFCompatible.prototype.parseCSS = function (key) {
+    if (key in TFCompatible._keyMap) {
+        key =  TFCompatible._keyMap[key][0];
+    }
+    var body = document.getElementsByTagName('body')[0];
+    if (typeof body.style[key] !== 'undefined') {
+        return key;
+    }
     var p = this.prefix.replace(/-/g, '');
-    if ('moz ms'.indexOf(p) > -1) {
-        TFCompatible.prototype.parseCSS = function (key) {
-            if (key in TFCompatible._keyMap) {
-                return TFCompatible._keyMap[key][0];
-            }
-            return key;
-        };
-    }
-    else {
-        TFCompatible.prototype.parseCSS = function (key) {
-            if (key in TFCompatible._keyMap) {
-                key = TFCompatible._keyMap[key][0];
-                return p + key[0].toUpperCase() + key.substr(1);
-            }
-            return key;
-        };
-    }
-    return this.parseCSS(key);
+    return p + key[0].toUpperCase() + key.substr(1);
 };
 
 /**
- * 设置transition的值时进行转换，例如transition： -webkit-transform 1s, border-radius 2s;
+ * 设置transition的值时进行转换, css属性名转js标准属性名
+ * 例如transition： -webkit-transform 1s, border-radius 2s;
+ * transform --> -webkit-transform
+ * backgroundColor --> background-color
  *
  * @param {string} propertyName 要转换的属性名
  * @return {string} 转换后的属性名
  */
 TFCompatible.prototype.cssMap = function (propertyName) {
-    var tmp;
-    switch (propertyName) {
-        case 'transform':
-            if (this.prefix === '-webkit-') {
-                tmp =  this.prefix + propertyName;
-            }
-            else {
-                tmp = propertyName;
-            }
-            break;
-        case 'backgroundColor': tmp = 'background-color'; break;
-        case 'borderRadius': tmp = 'border-radius'; break;
-        case 'fontSize': tmp = 'font-size'; break;
-        case 'color':
-        case 'top':
-        case 'bottom':
-        case 'left':
-        case 'width':
-        case 'height':
-        case 'opacity':
-        case 'border':
-        case 'right': tmp = propertyName; break;
-        default: throw new Error(propertyName + ' not supported!');
+    if (!(propertyName in this.convertMap)) {
+        var body = document.getElementsByTagName('body')[0];
+        var standardName = propertyName.replace(/[A-Z]/g, function ($0) {
+            return '-' + $0.toLowerCase();
+        });
+        if (typeof body.style[propertyName] === 'undefined') {
+            standardName = this.prefix + standardName;
+        }
+        this.convertMap[propertyName] = standardName;
     }
-    return tmp;
+    return this.convertMap[propertyName];
 };
 
 /**
@@ -144,7 +124,7 @@ TFCompatible.prototype.addStatus = function (status, key) {
  */
 TFCompatible.prototype.peelMould = function (config) {
     var mould = {};
-    Util.forKey(TFCompatible._keyMap, function (key) {
+    Util.forIn(TFCompatible._keyMap, function (key) {
         if (key in config) {
             mould[key] = config[key];
         }
