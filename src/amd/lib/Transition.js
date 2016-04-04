@@ -952,7 +952,7 @@ define('Util', function () {
 	            if (val === '') {
 	                all[pName] = true;
 	                this.addUp++;
-	                delete  once[pName];
+	                delete once[pName];
 	                return false;
 	            }
 	        }, this);

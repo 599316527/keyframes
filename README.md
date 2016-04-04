@@ -1,9 +1,9 @@
 keyframes
 ========
 
-#### JavaScript keyframes and transform library ####
+#### JavaScript keyframes and transition library ####
 
-The aim of the project is to create a lightweight CSS3 keyframes and transform library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transform&gt; ways to create css animation.
+The aim of the project is to create a lightweight CSS3 keyframes and transition library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transition&gt; ways to create css animation.
 
 [Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
 ![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)

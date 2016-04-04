@@ -1000,7 +1000,7 @@ Status.prototype.digest = function (pName) {
             if (val === '') {
                 all[pName] = true;
                 this.addUp++;
-                delete  once[pName];
+                delete once[pName];
                 return false;
             }
         }, this);
