@@ -151,8 +151,11 @@ KFCompatible.instance = function () {
     return KFCompatible._compatible;
 };
 KFCompatible.prototype.css = function (dom, key, css) {
+    var me = this;
     key = this.parseCSS(key);
-    return Compatible.css(dom, key, css, this);
+    return Compatible.css(dom, key, css, function (dom, key, css) {
+        me.emit(Event.css, dom, key, css);
+    });
 };
 // 只针对animation相关，简称转全称，并且加入兼容性前缀：name-->animationName-->webkitAnimationName
 KFCompatible.prototype.parseCSS = function (key) {
