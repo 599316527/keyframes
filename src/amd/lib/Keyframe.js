@@ -1057,7 +1057,7 @@ define('Util', function () {
 	    }
 	    return Compiler._compiler;
 	};
-	return Compiler;});define('Group', ['Util', 'Event', 'EventEmitter'], function (Util, Event, EventEmitter) {
+	return Compiler;});define('Group', ['Util', 'Event', 'EventEmitter', 'Compiler'], function (Util, Event, EventEmitter, Compiler) {
 	function Group(frames) {
 	    Group.superClass.call(this);
 	    this._frames = frames;

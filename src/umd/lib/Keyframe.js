@@ -1107,11 +1107,11 @@ if (typeof define === 'function' && define.amd) {
 	};
 	return Compiler;}));(function (root, factory) {
 if (typeof define === 'function' && define.amd) {
-    define('Group', ['Util', 'Event', 'EventEmitter'], factory);
+    define('Group', ['Util', 'Event', 'EventEmitter', 'Compiler'], factory);
 } else {
-    root.Group = factory(root.Util, root.Event, root.EventEmitter);
+    root.Group = factory(root.Util, root.Event, root.EventEmitter, root.Compiler);
 }
-}(this, function (Util, Event, EventEmitter) {
+}(this, function (Util, Event, EventEmitter, Compiler) {
 	function Group(frames) {
 	    Group.superClass.call(this);
 	    this._frames = frames;

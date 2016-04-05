@@ -1116,7 +1116,7 @@ Compiler.instance = function () {
  * @file 组管理类
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Util Event EventEmitter*/
+/* global Util Event EventEmitter Compiler*/
 /* define Group */
 function Group(frames) {
     Group.superClass.call(this);

@@ -1,4 +1,4 @@
-define(['Util', 'Event', 'EventEmitter'], function (Util, Event, EventEmitter) {
+define(['Util', 'Event', 'EventEmitter', 'Compiler'], function (Util, Event, EventEmitter, Compiler) {
 	function Group(frames) {
 	    Group.superClass.call(this);
 	    this._frames = frames;
