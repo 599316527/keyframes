@@ -1,4 +1,10 @@
-define(['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define(['Util', 'Event', 'Checker'], factory);
+} else {
+    root.EventEmitter = factory(root.Util, root.Event, root.Checker);
+}
+}(this, function (Util, Event, Checker) {
 	/**
 	 *  事件分发器
 	 *
@@ -214,4 +220,4 @@ define(['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
 	        }
 	    }
 	};
-	return EventEmitter;});
+	return EventEmitter;}));

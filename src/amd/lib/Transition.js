@@ -149,7 +149,7 @@ define('Util', function () {
 	         * @return {string} 随机字符
 	         */
 	        generator: function (seed) {
-	            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
+	            return String.fromCharCode(seed[0] + Math.floor(seed[1] * Math.random()));
 	        },
 	
 	        /**
@@ -354,7 +354,7 @@ define('Util', function () {
 	Checker.array = new Checker(Array);
 	return Checker;});define('EventEmitter', ['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
 	/**
-	 *  �¼��ַ���
+	 *  事件分发器
 	 *
 	 * @class
 	 */
@@ -363,7 +363,7 @@ define('Util', function () {
 	}
 	
 	/**
-	 *  �¼�����
+	 *  事件种类
 	 */
 	EventEmitter.type = {
 	    once: 'once',
@@ -371,11 +371,11 @@ define('Util', function () {
 	};
 	
 	/**
-	 * ע���¼����Ļص�����
+	 * 注册事件名的回调函数
 	 *
-	 * @param {string} eventName �¼���
-	 * @param {Function} fn �ص�����
-	 * @param {Object=} option ��ѡ����
+	 * @param {string} eventName 事件名
+	 * @param {Function} fn 回调函数
+	 * @param {Object=} option 可选参数
 	 */
 	EventEmitter.prototype.on = function (eventName, fn, option) {
 	    if (eventName) {
@@ -393,10 +393,10 @@ define('Util', function () {
 	};
 	
 	/**
-	 * ע���¼����Ļص�����
+	 * 注销事件名的回调函数
 	 *
-	 * @param {string} eventName �¼���
-	 * @param {Function} fn �ص�����
+	 * @param {string} eventName 事件名
+	 * @param {Function} fn 回调函数
 	 */
 	EventEmitter.prototype.off = function (eventName, fn) {
 	    if (Checker.string.check(arguments)) {
@@ -426,11 +426,11 @@ define('Util', function () {
 	};
 	
 	/**
-	 * ע���¼����ĵ��λص�����
+	 * 注册事件名的单次回调函数
 	 *
-	 * @param {string} eventName �¼���
-	 * @param {Function} fn �ص�����
-	 * @param {Object=} option ��ѡ����
+	 * @param {string} eventName 事件名
+	 * @param {Function} fn 回调函数
+	 * @param {Object=} option 可选参数
 	 */
 	EventEmitter.prototype.once = function (eventName, fn, option) {
 	    if (!option) {
@@ -442,11 +442,11 @@ define('Util', function () {
 	};
 	
 	/**
-	 * ע���¼����ĵ��λص�����
+	 * 注册事件名的单次回调函数
 	 *
-	 * @param {Function} fn �ص�����
-	 * @param {Object} option ���ò���
-	 * @param {Object} params ��������
+	 * @param {Function} fn 回调函数
+	 * @param {Object} option 配置参数
+	 * @param {Object} params 结果参数
 	 */
 	EventEmitter.prototype.callWithScope = function (fn, option, params) {
 	    params = params || [];
@@ -460,11 +460,11 @@ define('Util', function () {
 	};
 	
 	/**
-	 * ע���¼����ϵĻص�����
+	 * 注册事件集合的回调函数
 	 *
-	 * @param {Array.<string>} dependency �¼�����
-	 * @param {Function} fn �ص�����
-	 * @param {Object} option ���ò���
+	 * @param {Array.<string>} dependency 事件集合
+	 * @param {Function} fn 回调函数
+	 * @param {Object} option 配置参数
 	 */
 	EventEmitter.prototype.all = function (dependency, fn, option) {
 	    var record = {};
@@ -498,9 +498,9 @@ define('Util', function () {
 	};
 	
 	/**
-	 * �¼���������
+	 * 事件触发函数
 	 *
-	 * @param {string} eventName �¼���
+	 * @param {string} eventName 事件名
 	 */
 	EventEmitter.prototype.emit = function (eventName) {
 	    var fns = this._triggers[eventName];
@@ -568,7 +568,7 @@ define('Util', function () {
 	        }
 	    }
 	};
-	return EventEmitter;});define('Compatible', ['Util', 'Event'], function (Util, Event) {
+	return EventEmitter;});define('Compatible', ['Util'], function (Util) {
 	/**
 	 * @namespace
 	 */

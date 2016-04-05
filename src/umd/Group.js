@@ -1,4 +1,10 @@
-define(['Util', 'Event', 'EventEmitter'], function (Util, Event, EventEmitter) {
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define(['Util', 'Event', 'EventEmitter'], factory);
+} else {
+    root.Group = factory(root.Util, root.Event, root.EventEmitter);
+}
+}(this, function (Util, Event, EventEmitter) {
 	function Group(frames) {
 	    Group.superClass.call(this);
 	    this._frames = frames;
@@ -32,4 +38,4 @@ define(['Util', 'Event', 'EventEmitter'], function (Util, Event, EventEmitter) {
 	    }
 	    return this;
 	};
-	return Group;});
+	return Group;}));

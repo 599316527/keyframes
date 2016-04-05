@@ -1,4 +1,10 @@
-define(function () {
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define(factory);
+} else {
+    root.Util = factory();
+}
+}(this, function () {
 	/**
 	 * @namespace
 	 */
@@ -272,4 +278,4 @@ define(function () {
 	        dom.removeEventListener(name, fn, false);
 	    }
 	};
-	return Util;});
+	return Util;}));

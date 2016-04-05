@@ -1,4 +1,10 @@
-define('Util', function () {
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Util', factory);
+} else {
+    root.Util = factory();
+}
+}(this, function () {
 	/**
 	 * @namespace
 	 */
@@ -272,7 +278,13 @@ define('Util', function () {
 	        dom.removeEventListener(name, fn, false);
 	    }
 	};
-	return Util;});define('Checker', ['Util'], function (Util) {
+	return Util;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Checker', ['Util'], factory);
+} else {
+    root.Checker = factory(root.Util);
+}
+}(this, function (Util) {
 	/**
 	 * 参数类型匹配
 	 *
@@ -329,7 +341,13 @@ define('Util', function () {
 	Checker.sFunction = new Checker('string', 'function');
 	// 参数1为Array类型
 	Checker.array = new Checker(Array);
-	return Checker;});define('Pitch', ['Checker'], function (Checker) {
+	return Checker;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Pitch', ['Checker'], factory);
+} else {
+    root.Pitch = factory(root.Checker);
+}
+}(this, function (Checker) {
 	/**
 	 * css属性转cssText过滤器
 	 *
@@ -364,7 +382,13 @@ define('Util', function () {
 	Pitch.prototype.do = function (key, value, opt) {
 	    return this.next(0, key, value, opt);
 	};
-	return Pitch;});define('Event', function () {
+	return Pitch;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Event', factory);
+} else {
+    root.Event = factory();
+}
+}(this, function () {
 	/**
 	 * @namespace
 	 */
@@ -387,7 +411,13 @@ define('Util', function () {
 	    all: 'All',
 	    emit: 'Emit'
 	};
-	return Event;});define('EventEmitter', ['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
+	return Event;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('EventEmitter', ['Util', 'Event', 'Checker'], factory);
+} else {
+    root.EventEmitter = factory(root.Util, root.Event, root.Checker);
+}
+}(this, function (Util, Event, Checker) {
 	/**
 	 *  事件分发器
 	 *
@@ -603,7 +633,13 @@ define('Util', function () {
 	        }
 	    }
 	};
-	return EventEmitter;});define('Compatible', ['Util'], function (Util) {
+	return EventEmitter;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Compatible', ['Util'], factory);
+} else {
+    root.Compatible = factory(root.Util);
+}
+}(this, function (Util) {
 	/**
 	 * @namespace
 	 */
@@ -711,7 +747,13 @@ define('Util', function () {
 	        };
 	    }
 	};
-	return Compatible;});define('KFCompatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
+	return Compatible;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('KFCompatible', ['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], factory);
+} else {
+    root.KFCompatible = factory(root.Pitch, root.Util, root.Checker, root.Event, root.EventEmitter, root.Compatible);
+}
+}(this, function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
 	/**
 	 *  浏览器兼容处理
 	 *
@@ -887,7 +929,13 @@ define('Util', function () {
 	    return this.parseCSS(key);
 	};
 	KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
-	return KFCompatible;});define('Compiler', ['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], function (Checker, KFCompatible, Util, Event, EventEmitter) {
+	return KFCompatible;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Compiler', ['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], factory);
+} else {
+    root.Compiler = factory(root.Checker, root.KFCompatible, root.Util, root.Event, root.EventEmitter);
+}
+}(this, function (Checker, KFCompatible, Util, Event, EventEmitter) {
 	/**
 	 * 编译类，根据metaData生成class或者keyframes
 	 *
@@ -1057,7 +1105,13 @@ define('Util', function () {
 	    }
 	    return Compiler._compiler;
 	};
-	return Compiler;});define('Group', ['Util', 'Event', 'EventEmitter'], function (Util, Event, EventEmitter) {
+	return Compiler;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Group', ['Util', 'Event', 'EventEmitter'], factory);
+} else {
+    root.Group = factory(root.Util, root.Event, root.EventEmitter);
+}
+}(this, function (Util, Event, EventEmitter) {
 	function Group(frames) {
 	    Group.superClass.call(this);
 	    this._frames = frames;
@@ -1091,7 +1145,13 @@ define('Util', function () {
 	    }
 	    return this;
 	};
-	return Group;});define('ClassProxy', ['Util', 'Checker', 'Compiler'], function (Util, Checker, Compiler) {
+	return Group;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('ClassProxy', ['Util', 'Checker', 'Compiler'], factory);
+} else {
+    root.ClassProxy = factory(root.Util, root.Checker, root.Compiler);
+}
+}(this, function (Util, Checker, Compiler) {
 	/**
 	 * 样式代理,提供简便调用
 	 *
@@ -1156,7 +1216,13 @@ define('Util', function () {
 	    }
 	    return this;
 	};
-	return ClassProxy;});define('FrameProxy', ['Checker', 'Util', 'Compiler'], function (Checker, Util, Compiler) {
+	return ClassProxy;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('FrameProxy', ['Checker', 'Util', 'Compiler'], factory);
+} else {
+    root.FrameProxy = factory(root.Checker, root.Util, root.Compiler);
+}
+}(this, function (Checker, Util, Compiler) {
 	function FrameProxy(frame, metaData, clazz) {
 	    this._clazz = clazz;
 	    this._define(frame, metaData);
@@ -1221,7 +1287,13 @@ define('Util', function () {
 	    }
 	    return this;
 	};
-	return FrameProxy;});define('Keyframe', ['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible', 'KFCompatible'], function (Checker, Util, Compiler, Group, ClassProxy, FrameProxy, Event, EventEmitter, Compatible, KFCompatible) {
+	return FrameProxy;}));(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define('Keyframe', ['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible', 'KFCompatible'], factory);
+} else {
+    root.Keyframe = factory(root.Checker, root.Util, root.Compiler, root.Group, root.ClassProxy, root.FrameProxy, root.Event, root.EventEmitter, root.Compatible, root.KFCompatible);
+}
+}(this, function (Checker, Util, Compiler, Group, ClassProxy, FrameProxy, Event, EventEmitter, Compatible, KFCompatible) {
 	/**
 	 * css属性转cssText过滤器
 	 *
@@ -1565,4 +1637,4 @@ define('Util', function () {
 	    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
 	    return frameProxy;
 	};
-	return Keyframe;});
+	return Keyframe;}));

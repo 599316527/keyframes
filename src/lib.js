@@ -153,7 +153,7 @@ var Util = {
          * @return {string} éšæœºå­—ç¬¦
          */
         generator: function (seed) {
-            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
+            return String.fromCharCode(seed[0] + Math.floor(seed[1] * Math.random()));
         },
 
         /**
@@ -413,16 +413,16 @@ var Event = {
 };
 
 /**
- * @file ÊÂ¼ş·Ö·¢Àà¶¨Òå
+ * @file äº‹ä»¶åˆ†å‘ç±»å®šä¹‰
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* eslint-disable brace-style */
 /* global Util Event Checker */
-// µ±Ç°ÎÄ¼şÒÀÀµ¼ÓÔØ: Util.js Event.js Checker.js
+// å½“å‰æ–‡ä»¶ä¾èµ–åŠ è½½: Util.js Event.js Checker.js
 /* define EventEmitter */
 
 /**
- *  ÊÂ¼ş·Ö·¢Æ÷
+ *  äº‹ä»¶åˆ†å‘å™¨
  *
  * @class
  */
@@ -431,7 +431,7 @@ function EventEmitter() {
 }
 
 /**
- *  ÊÂ¼şÖÖÀà
+ *  äº‹ä»¶ç§ç±»
  */
 EventEmitter.type = {
     once: 'once',
@@ -439,11 +439,11 @@ EventEmitter.type = {
 };
 
 /**
- * ×¢²áÊÂ¼şÃûµÄ»Øµ÷º¯Êı
+ * æ³¨å†Œäº‹ä»¶åçš„å›è°ƒå‡½æ•°
  *
- * @param {string} eventName ÊÂ¼şÃû
- * @param {Function} fn »Øµ÷º¯Êı
- * @param {Object=} option ¿ÉÑ¡²ÎÊı
+ * @param {string} eventName äº‹ä»¶å
+ * @param {Function} fn å›è°ƒå‡½æ•°
+ * @param {Object=} option å¯é€‰å‚æ•°
  */
 EventEmitter.prototype.on = function (eventName, fn, option) {
     if (eventName) {
@@ -461,10 +461,10 @@ EventEmitter.prototype.on = function (eventName, fn, option) {
 };
 
 /**
- * ×¢ÏúÊÂ¼şÃûµÄ»Øµ÷º¯Êı
+ * æ³¨é”€äº‹ä»¶åçš„å›è°ƒå‡½æ•°
  *
- * @param {string} eventName ÊÂ¼şÃû
- * @param {Function} fn »Øµ÷º¯Êı
+ * @param {string} eventName äº‹ä»¶å
+ * @param {Function} fn å›è°ƒå‡½æ•°
  */
 EventEmitter.prototype.off = function (eventName, fn) {
     if (Checker.string.check(arguments)) {
@@ -494,11 +494,11 @@ EventEmitter.prototype.off = function (eventName, fn) {
 };
 
 /**
- * ×¢²áÊÂ¼şÃûµÄµ¥´Î»Øµ÷º¯Êı
+ * æ³¨å†Œäº‹ä»¶åçš„å•æ¬¡å›è°ƒå‡½æ•°
  *
- * @param {string} eventName ÊÂ¼şÃû
- * @param {Function} fn »Øµ÷º¯Êı
- * @param {Object=} option ¿ÉÑ¡²ÎÊı
+ * @param {string} eventName äº‹ä»¶å
+ * @param {Function} fn å›è°ƒå‡½æ•°
+ * @param {Object=} option å¯é€‰å‚æ•°
  */
 EventEmitter.prototype.once = function (eventName, fn, option) {
     if (!option) {
@@ -510,11 +510,11 @@ EventEmitter.prototype.once = function (eventName, fn, option) {
 };
 
 /**
- * ×¢²áÊÂ¼şÃûµÄµ¥´Î»Øµ÷º¯Êı
+ * æ³¨å†Œäº‹ä»¶åçš„å•æ¬¡å›è°ƒå‡½æ•°
  *
- * @param {Function} fn »Øµ÷º¯Êı
- * @param {Object} option ÅäÖÃ²ÎÊı
- * @param {Object} params ½á¹û²ÎÊı
+ * @param {Function} fn å›è°ƒå‡½æ•°
+ * @param {Object} option é…ç½®å‚æ•°
+ * @param {Object} params ç»“æœå‚æ•°
  */
 EventEmitter.prototype.callWithScope = function (fn, option, params) {
     params = params || [];
@@ -528,11 +528,11 @@ EventEmitter.prototype.callWithScope = function (fn, option, params) {
 };
 
 /**
- * ×¢²áÊÂ¼ş¼¯ºÏµÄ»Øµ÷º¯Êı
+ * æ³¨å†Œäº‹ä»¶é›†åˆçš„å›è°ƒå‡½æ•°
  *
- * @param {Array.<string>} dependency ÊÂ¼ş¼¯ºÏ
- * @param {Function} fn »Øµ÷º¯Êı
- * @param {Object} option ÅäÖÃ²ÎÊı
+ * @param {Array.<string>} dependency äº‹ä»¶é›†åˆ
+ * @param {Function} fn å›è°ƒå‡½æ•°
+ * @param {Object} option é…ç½®å‚æ•°
  */
 EventEmitter.prototype.all = function (dependency, fn, option) {
     var record = {};
@@ -566,9 +566,9 @@ EventEmitter.prototype.all = function (dependency, fn, option) {
 };
 
 /**
- * ÊÂ¼ş´¥·¢º¯Êı
+ * äº‹ä»¶è§¦å‘å‡½æ•°
  *
- * @param {string} eventName ÊÂ¼şÃû
+ * @param {string} eventName äº‹ä»¶å
  */
 EventEmitter.prototype.emit = function (eventName) {
     var fns = this._triggers[eventName];
@@ -641,8 +641,8 @@ EventEmitter.prototype.emit = function (eventName) {
  * @file æµè§ˆå™¨å…¼å®¹æ€§å¤„ç†å·¥å…·
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Util Event */
-// å½“å‰æ–‡ä»¶ä¾èµ–åŠ è½½: Util.js Event.js
+/* global Util */
+// å½“å‰æ–‡ä»¶ä¾èµ–åŠ è½½: Util.js
 /* define Compatible */
 /**
  * @namespace
@@ -1113,7 +1113,7 @@ Compiler.instance = function () {
 };
 
 /**
- * @file Èº×é¶¯»­¹ÜÀí
+ * @file ç»„ç®¡ç†ç±»
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Util Event EventEmitter*/
@@ -1142,10 +1142,13 @@ Group.prototype.start = function () {
     });
     return this;
 };
-Group.prototype.clear = function () {
+Group.prototype.clear = function (clearCSS) {
     Util.each(this._frames, function (frame) {
         frame.stop();
     });
+    if (clearCSS) {
+        Compiler.instance().clear();
+    }
     return this;
 };
 

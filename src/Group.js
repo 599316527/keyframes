@@ -1,5 +1,5 @@
 /**
- * @file 群组动画管理
+ * @file 缁勭鐞嗙被
  * @author tingkl(dingguoliang01@baidu.com)
  **/
 /* global Util Event EventEmitter*/
@@ -28,9 +28,12 @@ Group.prototype.start = function () {
     });
     return this;
 };
-Group.prototype.clear = function () {
+Group.prototype.clear = function (clearCSS) {
     Util.each(this._frames, function (frame) {
         frame.stop();
     });
+    if (clearCSS) {
+        Compiler.instance().clear();
+    }
     return this;
 };

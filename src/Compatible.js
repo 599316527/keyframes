@@ -2,8 +2,8 @@
  * @file 浏览器兼容性处理工具
  * @author tingkl(dingguoliang01@baidu.com)
  **/
-/* global Util Event */
-// 当前文件依赖加载: Util.js Event.js
+/* global Util */
+// 当前文件依赖加载: Util.js
 /* define Compatible */
 /**
  * @namespace

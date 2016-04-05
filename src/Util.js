@@ -153,7 +153,7 @@ var Util = {
          * @return {string} 随机字符
          */
         generator: function (seed) {
-            return String.fromCharCode(seed[0] + Math.round(seed[1] * Math.random()));
+            return String.fromCharCode(seed[0] + Math.floor(seed[1] * Math.random()));
         },
 
         /**

@@ -1,4 +1,10 @@
-define(['Util'], function (Util) {
+(function (root, factory) {
+if (typeof define === 'function' && define.amd) {
+    define(['Util'], factory);
+} else {
+    root.Compatible = factory(root.Util);
+}
+}(this, function (Util) {
 	/**
 	 * @namespace
 	 */
@@ -106,4 +112,4 @@ define(['Util'], function (Util) {
 	        };
 	    }
 	};
-	return Compatible;});
+	return Compatible;}));
