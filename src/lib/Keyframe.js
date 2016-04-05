@@ -1599,6 +1599,10 @@ Keyframe.timeLine = function (timeLine) {
     var map = {};
     var adjust = {};
     var float;
+    if ('_name' in timeLine) {
+        var name = timeLine['_name'];
+        delete timeLine['_name'];
+    }
     Util.forIn(timeLine, function (time) {
         Util.each(time.split(/\s+/), function (data) {
             float = parseFloat(data);
@@ -1627,7 +1631,14 @@ Keyframe.timeLine = function (timeLine) {
         });
         percentLine[percent.join(' ')] = item;
     });
-    var frameProxy = Keyframe.defineKeyframe(percentLine);
+    var frameProxy;
+    if (name) {
+        timeLine['_name'] = name;
+        frameProxy = Keyframe.defineKeyframe(name, percentLine);
+    }
+    else {
+        frameProxy = Keyframe.defineKeyframe(percentLine);
+    }
     frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
     return frameProxy;
 };

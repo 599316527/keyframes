@@ -1599,6 +1599,10 @@ Keyframe.timeLine = function (timeLine) {
     var map = {};
     var adjust = {};
     var float;
+    if ('_name' in timeLine) {
+        var name = timeLine['_name'];
+        delete timeLine['_name'];
+    }
     Util.forIn(timeLine, function (time) {
         Util.each(time.split(/\s+/), function (data) {
             float = parseFloat(data);
@@ -1627,7 +1631,14 @@ Keyframe.timeLine = function (timeLine) {
         });
         percentLine[percent.join(' ')] = item;
     });
-    var frameProxy = Keyframe.defineKeyframe(percentLine);
+    var frameProxy;
+    if (name) {
+        timeLine['_name'] = name;
+        frameProxy = Keyframe.defineKeyframe(name, percentLine);
+    }
+    else {
+        frameProxy = Keyframe.defineKeyframe(percentLine);
+    }
     frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
     return frameProxy;
 };
@@ -1679,8 +1690,7 @@ TFCompatible.prototype.parseCSS = function (key) {
     if (key in TFCompatible._keyMap) {
         key =  TFCompatible._keyMap[key][0];
     }
-    var body = document.getElementsByTagName('body')[0];
-    if (typeof body.style[key] !== 'undefined') {
+    if (typeof document.body.style[key] !== 'undefined') {
         return key;
     }
     var p = this.prefix.replace(/-/g, '');
@@ -1698,11 +1708,10 @@ TFCompatible.prototype.parseCSS = function (key) {
  */
 TFCompatible.prototype.cssMap = function (propertyName) {
     if (!(propertyName in this.convertMap)) {
-        var body = document.getElementsByTagName('body')[0];
         var standardName = propertyName.replace(/[A-Z]/g, function ($0) {
             return '-' + $0.toLowerCase();
         });
-        if (typeof body.style[propertyName] === 'undefined') {
+        if (typeof document.body.style[propertyName] === 'undefined') {
             standardName = this.prefix + standardName;
         }
         this.convertMap[propertyName] = standardName;

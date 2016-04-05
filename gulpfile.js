@@ -86,6 +86,7 @@ gulp.task('amd', function() {
                     }) + 'return ' + domain + ';\r});';
                 }
                 fs.writeFileSync(path.join('src', 'amd', files[i]), content);
+               // fs.writeFileSync(path.join('src', 'umd', files[i]), umdContent);
             }
         }
     }

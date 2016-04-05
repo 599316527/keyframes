@@ -716,8 +716,7 @@ define('Util', function () {
 	    if (key in TFCompatible._keyMap) {
 	        key =  TFCompatible._keyMap[key][0];
 	    }
-	    var body = document.getElementsByTagName('body')[0];
-	    if (typeof body.style[key] !== 'undefined') {
+	    if (typeof document.body.style[key] !== 'undefined') {
 	        return key;
 	    }
 	    var p = this.prefix.replace(/-/g, '');
@@ -735,11 +734,10 @@ define('Util', function () {
 	 */
 	TFCompatible.prototype.cssMap = function (propertyName) {
 	    if (!(propertyName in this.convertMap)) {
-	        var body = document.getElementsByTagName('body')[0];
 	        var standardName = propertyName.replace(/[A-Z]/g, function ($0) {
 	            return '-' + $0.toLowerCase();
 	        });
-	        if (typeof body.style[propertyName] === 'undefined') {
+	        if (typeof document.body.style[propertyName] === 'undefined') {
 	            standardName = this.prefix + standardName;
 	        }
 	        this.convertMap[propertyName] = standardName;
