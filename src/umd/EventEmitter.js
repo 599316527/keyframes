@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util', 'Event', 'Checker'], factory);
-} else {
-    root.EventEmitter = factory(root.Util, root.Event, root.Checker);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util', 'Event', 'Checker'], factory);
+    }
+    else {
+        root.EventEmitter = factory(root.Util, root.Event, root.Checker);
+    }
 }(this, function (Util, Event, Checker) {
-	/**
+    /**
 	 *  事件分发器
 	 *
 	 * @class
@@ -220,4 +221,6 @@ if (typeof define === 'function' && define.amd) {
 	        }
 	    }
 	};
-	return EventEmitter;}));
+	
+    return EventEmitter;
+}));

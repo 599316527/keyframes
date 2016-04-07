@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Checker', 'Util', 'Compiler'], factory);
-} else {
-    root.FrameProxy = factory(root.Checker, root.Util, root.Compiler);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Checker', 'Util', 'Compiler'], factory);
+    }
+    else {
+        root.FrameProxy = factory(root.Checker, root.Util, root.Compiler);
+    }
 }(this, function (Checker, Util, Compiler) {
-	function FrameProxy(frame, metaData, clazz) {
+    function FrameProxy(frame, metaData, clazz) {
 	    this._clazz = clazz;
 	    this._define(frame, metaData);
 	}
@@ -69,4 +70,6 @@ if (typeof define === 'function' && define.amd) {
 	    }
 	    return this;
 	};
-	return FrameProxy;}));
+	
+    return FrameProxy;
+}));

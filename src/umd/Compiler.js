@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], factory);
-} else {
-    root.Compiler = factory(root.Checker, root.KFCompatible, root.Util, root.Event, root.EventEmitter);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Checker', 'KFCompatible', 'Util', 'Event', 'EventEmitter'], factory);
+    }
+    else {
+        root.Compiler = factory(root.Checker, root.KFCompatible, root.Util, root.Event, root.EventEmitter);
+    }
 }(this, function (Checker, KFCompatible, Util, Event, EventEmitter) {
-	/**
+    /**
 	 * 编译类，根据metaData生成class或者keyframes
 	 *
 	 * @class
@@ -174,4 +175,6 @@ if (typeof define === 'function' && define.amd) {
 	    }
 	    return Compiler._compiler;
 	};
-	return Compiler;}));
+	
+    return Compiler;
+}));

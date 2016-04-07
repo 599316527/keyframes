@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], factory);
-} else {
-    root.Transition = factory(root.Util, root.Event, root.EventEmitter, root.Compatible, root.TFCompatible, root.Status);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], factory);
+    }
+    else {
+        root.Transition = factory(root.Util, root.Event, root.EventEmitter, root.Compatible, root.TFCompatible, root.Status);
+    }
 }(this, function (Util, Event, EventEmitter, Compatible, TFCompatible, Status) {
-	/**
+    /**
 	 * 使用transform + transition进行变换
 	 *
 	 * @param {Node} dom 进行动画变换的元素
@@ -649,4 +650,6 @@ if (typeof define === 'function' && define.amd) {
 	    }
 	    return this;
 	};
-	return Transition;}));
+	
+    return Transition;
+}));

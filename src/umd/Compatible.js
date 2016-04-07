@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util'], factory);
-} else {
-    root.Compatible = factory(root.Util);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util'], factory);
+    }
+    else {
+        root.Compatible = factory(root.Util);
+    }
 }(this, function (Util) {
-	/**
+    /**
 	 * @namespace
 	 */
 	var Compatible = {
@@ -112,4 +113,6 @@ if (typeof define === 'function' && define.amd) {
 	        };
 	    }
 	};
-	return Compatible;}));
+	
+    return Compatible;
+}));

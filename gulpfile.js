@@ -46,6 +46,14 @@ gulp.task('amd', function() {
     var path = require('path');
     var files = fs.readdirSync('src');
     //var combine = [];
+    function replacer(tpl, data) {
+        return tpl.replace(/{%(.*?)%}/g, function ($0, $1) {
+            if ($1 in data) {
+                return data[$1];
+            }
+            return '';
+        })
+    }
     for(var i in files)
     {
         var domain = files[i];
@@ -56,77 +64,43 @@ gulp.task('amd', function() {
         {
             if (domain !== 'lib') {
                 var content = fs.readFileSync(fName, 'utf-8').toString();
-                var umdContent;
                 var result = /\/\*\s*global\s+(.*?)\s*\*\/\s*/.exec(content);
                 var dependency;
                 var domain = /\/\*\s*define\s+(.*?)\s*\*\/\s*/.exec(content);
                 var index = domain.index + domain[0].length;
                 content = content.substring(index);
                 domain = domain[1];
-                if (result) {
-                    dependency = result[1];
-                    /*combine.push("define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r});');*/
-                    mergeMap[domain] = {path: fName, dependency: dependency.trim().split(/\s+/), content: "define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r});'};
-                    _content = content;
-                    mergeMap[domain]['umdContent'] = "(function (root, factory) {\n" +
-                    "if (typeof define === 'function' && define.amd) {\n" +
-                    "    define('" + domain + "', ['" + dependency.replace(/\s+/g, "', '") + "'], factory);\n" +
-                    "} else {\n" +
-                    "    root." + domain + " = factory(root." + dependency.replace(/\s+/g, ", root.")+ ");\n" +
-                    "}\n" +
-                    "}(this, function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + _content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r}));';
-
-                    content = "define(['" + dependency.replace(/\s+/g, "', '") + "'], function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r});';
-                    umdContent = "(function (root, factory) {\n" +
-                        "if (typeof define === 'function' && define.amd) {\n" +
-                        "    define(['" + dependency.replace(/\s+/g, "', '") + "'], factory);\n" +
-                        "} else {\n" +
-                        "    root." + domain + " = factory(root." + dependency.replace(/\s+/g, ", root.")+ ");\n" +
-                        "}\n" +
-                    "}(this, function (" + dependency.replace(/\s+/g, ", ") + ") {\r\n\t" + _content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r}));';
+                var umd = fs.readFileSync('./tpl/umd.js').toString();
+                if (result) { // 有dependency
+                    dependency = result[1].trim();
+                    _dependency = dependency.split(/\s+/);
+                    var obj = {
+                        domain: domain,
+                        'domain?': "'" + domain + "', ",
+                        dependency: "['" + _dependency.join("', '") + "'], ", // ['', ''],
+                        'dependency~': dependency.replace(/\s+/g, ", "),   // a, b, c
+                        'dependency!': "root." + dependency.replace(/\s+/g, ", root."),
+                        content: content.replace(/\n/g, function($0) {
+                            return '\n\t';
+                        })
+                    };
+                    mergeMap[domain] = {path: fName, dependency: _dependency, content: replacer(umd, obj)};
+                    delete obj['domain?']
+                    content = replacer(umd, obj);
                 }
                 else {
-                    /*combine.push("define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return  '\n\t';
-                    }) + 'return ' + domain + ';\r});');*/
-                    mergeMap[domain] = {path: fName, content: "define('" + domain + "', function () {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return  '\n\t';
-                    }) + 'return ' + domain + ';\r});'};
-                    _content = content;
-                    mergeMap[domain]['umdContent'] = "(function (root, factory) {\n" +
-                    "if (typeof define === 'function' && define.amd) {\n" +
-                    "    define('" + domain + "', factory);\n" +
-                    "} else {\n" +
-                    "    root." + domain + " = factory();\n" +
-                    "}\n" +
-                    "}(this, function () {\r\n\t" + _content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r}));';
-                    content = "define(function () {\r\n\t" + content.replace(/\n/g, function($0) {
-                        return  '\n\t';
-                    }) + 'return ' + domain + ';\r});';
-                    umdContent = "(function (root, factory) {\n" +
-                    "if (typeof define === 'function' && define.amd) {\n" +
-                    "    define(factory);\n" +
-                    "} else {\n" +
-                    "    root." + domain + " = factory();\n" +
-                    "}\n" +
-                    "}(this, function () {\r\n\t" + _content.replace(/\n/g, function($0) {
-                        return '\n\t';
-                    }) + 'return ' + domain + ';\r}));';
+                    var obj = {
+                        domain: domain,
+                        'domain?': "'" + domain + "', ",
+                        content: content.replace(/\n/g, function($0) {
+                            return '\n\t';
+                        })
+                    };
+                    mergeMap[domain] = {path: fName, content: replacer(umd, obj)};
+                    delete obj['domain?']
+                    content = replacer(umd, obj);
                 }
-                fs.writeFileSync(path.join('src', 'amd', files[i]), content);
-                fs.writeFileSync(path.join('src', 'umd', files[i]), umdContent);
+                fs.writeFileSync(path.join('src', 'umd', files[i]), content);
             }
         }
     }
@@ -150,30 +124,9 @@ gulp.task('amd', function() {
         }
         return result;
     }
-    function mergerUMD (denpendency, parentMoudleName, record, order) {
-        var result = '';
-        var moduleName;
-        var module;
-        if (denpendency) {
-            console.log(denpendency, parentMoudleName);
-            for (var i = 0; i < denpendency.length; i++) {
-                moduleName = denpendency[i];
-                module = mergeMap[moduleName];
-                if (!record[moduleName]) {
-                    result += mergerUMD(module.dependency, moduleName, record, order) + module.umdContent + '\r';
-                    record[moduleName] = true;
-                    order.push(module.path);
-                    console.log(moduleName + ' loadede!!');
-                }
-            }
-        }
-        return result;
-    }
     for (var key in generateMap) {
-        fs.writeFileSync(path.join('src', 'amd','lib', key + '.js'), merger([key], '', {}, generateMap[key]));
+        fs.writeFileSync(path.join('src', 'umd','lib', key + '.js'), merger([key], '', {}, generateMap[key]));
     }
-    var key = 'Keyframe';
-    fs.writeFileSync(path.join('src', 'umd','lib', key + '.js'), mergerUMD([key], '', {}, generateMap[key]));
     return true;
 });
 
@@ -246,20 +199,20 @@ gulp.task('cdn', [], function () {
 gulp.task('define', function () {
     var fs = require('fs');
     var path = require('path');
-    var content = fs.readFileSync(path.join('dist', 'amd', 'lib', 'Transition.js')).toString();
-    fs.writeFileSync(path.join('dist', 'amd', 'lib', 'Transition.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
+    var content = fs.readFileSync(path.join('dist', 'umd', 'lib', 'Transition.js')).toString();
+    fs.writeFileSync(path.join('dist', 'umd', 'lib', 'Transition.js'), "window['define'] = typeof ESL_define === 'function' ? ESL_define : window['define'];" + content);
     return true;
 });
 gulp.task('upload', function() {
     var path = require('path');
     var exec = require('child_process').exec;
-    exec('edp bcs dist' + path.sep + 'amd bs://public01/keyframes/dist/amd',
+   /* exec('edp bcs dist' + path.sep + 'amd bs://public01/keyframes/dist/amd',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
             console.log(stdout);
-        });
+        });*/
     exec('edp bcs dist' + path.sep + 'umd bs://public01/keyframes/dist/umd',
         function (error, stdout, stderr) {
             if (error !== null) {

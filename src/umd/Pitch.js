@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Checker'], factory);
-} else {
-    root.Pitch = factory(root.Checker);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Checker'], factory);
+    }
+    else {
+        root.Pitch = factory(root.Checker);
+    }
 }(this, function (Checker) {
-	/**
+    /**
 	 * css属性转cssText过滤器
 	 *
 	 * @param {string} name  pitch的别名.
@@ -39,4 +40,6 @@ if (typeof define === 'function' && define.amd) {
 	Pitch.prototype.do = function (key, value, opt) {
 	    return this.next(0, key, value, opt);
 	};
-	return Pitch;}));
+	
+    return Pitch;
+}));

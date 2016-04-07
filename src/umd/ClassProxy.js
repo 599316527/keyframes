@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util', 'Checker', 'Compiler'], factory);
-} else {
-    root.ClassProxy = factory(root.Util, root.Checker, root.Compiler);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util', 'Checker', 'Compiler'], factory);
+    }
+    else {
+        root.ClassProxy = factory(root.Util, root.Checker, root.Compiler);
+    }
 }(this, function (Util, Checker, Compiler) {
-	/**
+    /**
 	 * 样式代理,提供简便调用
 	 *
 	 * @param {string} className 样式名
@@ -69,4 +70,6 @@ if (typeof define === 'function' && define.amd) {
 	    }
 	    return this;
 	};
-	return ClassProxy;}));
+	
+    return ClassProxy;
+}));

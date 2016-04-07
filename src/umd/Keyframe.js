@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible', 'KFCompatible'], factory);
-} else {
-    root.Keyframe = factory(root.Checker, root.Util, root.Compiler, root.Group, root.ClassProxy, root.FrameProxy, root.Event, root.EventEmitter, root.Compatible, root.KFCompatible);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Checker', 'Util', 'Compiler', 'Group', 'ClassProxy', 'FrameProxy', 'Event', 'EventEmitter', 'Compatible', 'KFCompatible'], factory);
+    }
+    else {
+        root.Keyframe = factory(root.Checker, root.Util, root.Compiler, root.Group, root.ClassProxy, root.FrameProxy, root.Event, root.EventEmitter, root.Compatible, root.KFCompatible);
+    }
 }(this, function (Checker, Util, Compiler, Group, ClassProxy, FrameProxy, Event, EventEmitter, Compatible, KFCompatible) {
-	/**
+    /**
 	 * css属性转cssText过滤器
 	 *
 	 * @param {Dom} dom  dom元素.
@@ -348,4 +349,6 @@ if (typeof define === 'function' && define.amd) {
 	    frameProxy.setConfig({duration: duration + 's', delay: min + 's'});
 	    return frameProxy;
 	};
-	return Keyframe;}));
+	
+    return Keyframe;
+}));

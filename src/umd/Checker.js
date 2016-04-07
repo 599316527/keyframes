@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util'], factory);
-} else {
-    root.Checker = factory(root.Util);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util'], factory);
+    }
+    else {
+        root.Checker = factory(root.Util);
+    }
 }(this, function (Util) {
-	/**
+    /**
 	 * 参数类型匹配
 	 *
 	 * @class
@@ -61,4 +62,6 @@ if (typeof define === 'function' && define.amd) {
 	Checker.sFunction = new Checker('string', 'function');
 	// 参数1为Array类型
 	Checker.array = new Checker(Array);
-	return Checker;}));
+	
+    return Checker;
+}));

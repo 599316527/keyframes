@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util'], factory);
-} else {
-    root.Status = factory(root.Util);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util'], factory);
+    }
+    else {
+        root.Status = factory(root.Util);
+    }
 }(this, function (Util) {
-	/**
+    /**
 	 * transitionEnd事件兼容
 	 *
 	 * @class
@@ -93,4 +94,6 @@ if (typeof define === 'function' && define.amd) {
 	        }, this);
 	    }
 	};
-	return Status;}));
+	
+    return Status;
+}));

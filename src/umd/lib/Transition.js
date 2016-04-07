@@ -1,5 +1,12 @@
-define('Util', function () {
-	/**
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Util', factory);
+    }
+    else {
+        root.Util = factory();
+    }
+}(this, function () {
+    /**
 	 * @namespace
 	 */
 	
@@ -272,8 +279,17 @@ define('Util', function () {
 	        dom.removeEventListener(name, fn, false);
 	    }
 	};
-	return Util;});define('Event', function () {
-	/**
+	
+    return Util;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Event', factory);
+    }
+    else {
+        root.Event = factory();
+    }
+}(this, function () {
+    /**
 	 * @namespace
 	 */
 	var Event = {
@@ -295,8 +311,17 @@ define('Util', function () {
 	    all: 'All',
 	    emit: 'Emit'
 	};
-	return Event;});define('Checker', ['Util'], function (Util) {
-	/**
+	
+    return Event;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Checker', ['Util'], factory);
+    }
+    else {
+        root.Checker = factory(root.Util);
+    }
+}(this, function (Util) {
+    /**
 	 * 参数类型匹配
 	 *
 	 * @class
@@ -352,8 +377,17 @@ define('Util', function () {
 	Checker.sFunction = new Checker('string', 'function');
 	// 参数1为Array类型
 	Checker.array = new Checker(Array);
-	return Checker;});define('EventEmitter', ['Util', 'Event', 'Checker'], function (Util, Event, Checker) {
-	/**
+	
+    return Checker;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('EventEmitter', ['Util', 'Event', 'Checker'], factory);
+    }
+    else {
+        root.EventEmitter = factory(root.Util, root.Event, root.Checker);
+    }
+}(this, function (Util, Event, Checker) {
+    /**
 	 *  事件分发器
 	 *
 	 * @class
@@ -568,8 +602,17 @@ define('Util', function () {
 	        }
 	    }
 	};
-	return EventEmitter;});define('Compatible', ['Util'], function (Util) {
-	/**
+	
+    return EventEmitter;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Compatible', ['Util'], factory);
+    }
+    else {
+        root.Compatible = factory(root.Util);
+    }
+}(this, function (Util) {
+    /**
 	 * @namespace
 	 */
 	var Compatible = {
@@ -676,8 +719,17 @@ define('Util', function () {
 	        };
 	    }
 	};
-	return Compatible;});define('TFCompatible', ['Util', 'Event', 'EventEmitter', 'Compatible'], function (Util, Event, EventEmitter, Compatible) {
-	/**
+	
+    return Compatible;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('TFCompatible', ['Util', 'Event', 'EventEmitter', 'Compatible'], factory);
+    }
+    else {
+        root.TFCompatible = factory(root.Util, root.Event, root.EventEmitter, root.Compatible);
+    }
+}(this, function (Util, Event, EventEmitter, Compatible) {
+    /**
 	 *  浏览器兼容处理
 	 *
 	 * @class
@@ -867,8 +919,17 @@ define('Util', function () {
 	
 	// 兼容性事件转换函数
 	TFCompatible.prototype.parseEvent = Compatible.parseEvent('transition', 'Transition');
-	return TFCompatible;});define('Status', ['Util'], function (Util) {
-	/**
+	
+    return TFCompatible;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Status', ['Util'], factory);
+    }
+    else {
+        root.Status = factory(root.Util);
+    }
+}(this, function (Util) {
+    /**
 	 * transitionEnd事件兼容
 	 *
 	 * @class
@@ -956,8 +1017,17 @@ define('Util', function () {
 	        }, this);
 	    }
 	};
-	return Status;});define('Transition', ['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], function (Util, Event, EventEmitter, Compatible, TFCompatible, Status) {
-	/**
+	
+    return Status;
+}));(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Transition', ['Util', 'Event', 'EventEmitter', 'Compatible', 'TFCompatible', 'Status'], factory);
+    }
+    else {
+        root.Transition = factory(root.Util, root.Event, root.EventEmitter, root.Compatible, root.TFCompatible, root.Status);
+    }
+}(this, function (Util, Event, EventEmitter, Compatible, TFCompatible, Status) {
+    /**
 	 * 使用transform + transition进行变换
 	 *
 	 * @param {Node} dom 进行动画变换的元素
@@ -1601,4 +1671,6 @@ define('Util', function () {
 	    }
 	    return this;
 	};
-	return Transition;});
+	
+    return Transition;
+}));

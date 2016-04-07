@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], factory);
-} else {
-    root.KFCompatible = factory(root.Pitch, root.Util, root.Checker, root.Event, root.EventEmitter, root.Compatible);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Pitch', 'Util', 'Checker', 'Event', 'EventEmitter', 'Compatible'], factory);
+    }
+    else {
+        root.KFCompatible = factory(root.Pitch, root.Util, root.Checker, root.Event, root.EventEmitter, root.Compatible);
+    }
 }(this, function (Pitch, Util, Checker, Event, EventEmitter, Compatible) {
-	/**
+    /**
 	 *  浏览器兼容处理
 	 *
 	 * @class
@@ -180,4 +181,6 @@ if (typeof define === 'function' && define.amd) {
 	    return this.parseCSS(key);
 	};
 	KFCompatible.prototype.parseEvent = Compatible.parseEvent('animation', 'Animation');
-	return KFCompatible;}));
+	
+    return KFCompatible;
+}));

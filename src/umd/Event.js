@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(factory);
-} else {
-    root.Event = factory();
-}
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+    }
+    else {
+        root.Event = factory();
+    }
 }(this, function () {
-	/**
+    /**
 	 * @namespace
 	 */
 	var Event = {
@@ -27,4 +28,6 @@ if (typeof define === 'function' && define.amd) {
 	    all: 'All',
 	    emit: 'Emit'
 	};
-	return Event;}));
+	
+    return Event;
+}));

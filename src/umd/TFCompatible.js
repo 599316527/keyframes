@@ -1,11 +1,12 @@
 (function (root, factory) {
-if (typeof define === 'function' && define.amd) {
-    define(['Util', 'Event', 'EventEmitter', 'Compatible'], factory);
-} else {
-    root.TFCompatible = factory(root.Util, root.Event, root.EventEmitter, root.Compatible);
-}
+    if (typeof define === 'function' && define.amd) {
+        define(['Util', 'Event', 'EventEmitter', 'Compatible'], factory);
+    }
+    else {
+        root.TFCompatible = factory(root.Util, root.Event, root.EventEmitter, root.Compatible);
+    }
 }(this, function (Util, Event, EventEmitter, Compatible) {
-	/**
+    /**
 	 *  浏览器兼容处理
 	 *
 	 * @class
@@ -195,4 +196,6 @@ if (typeof define === 'function' && define.amd) {
 	
 	// 兼容性事件转换函数
 	TFCompatible.prototype.parseEvent = Compatible.parseEvent('transition', 'Transition');
-	return TFCompatible;}));
+	
+    return TFCompatible;
+}));
