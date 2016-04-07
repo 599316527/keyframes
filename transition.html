@@ -299,7 +299,7 @@
                 }]
             }
         };
-        require.config({baseUrl: 'dist/amd'});
+        require.config({baseUrl: 'dist/umd'});
         require(["Transition", "Event", "Util", "Keyframe"], function (Transition, Event, Util, Keyframe) {
             var _scale, _top;
             if ($(window).height() > 700) {
@@ -532,8 +532,8 @@
     </div>
 </div>
 <div id="fake">
-    <h4>打包好的Transition.js地址(UMD)：<a target="_blank" href="dist/amd/lib/Transition.js">bs.baidu.com/public01/keyframes/dist/umd/lib/Transition.js</a></h4>
-    <h4>未打包的Transition.js地址(UMD)：<a target="_blank" href="dist/amd/Transition.js">bs.baidu.com/public01/keyframes/dist/umd/Transition.js</a></h4>
+    <h4>打包好的Transition.js地址(UMD)：<a target="_blank" href="dist/umd/lib/Transition.js">bs.baidu.com/public01/keyframes/dist/umd/lib/Transition.js</a></h4>
+    <h4>未打包的Transition.js地址(UMD)：<a target="_blank" href="dist/umd/Transition.js">bs.baidu.com/public01/keyframes/dist/umd/Transition.js</a></h4>
     <h4>打包好的Transition.js地址(非UMD)：<a target="_blank" href="dist/lib/Transition.min.js">bs.baidu.com/public01/keyframes/dist/lib/Transition.min.js</a></h4>
     <h4>源代码:<a target="_blank" href="https://github.com/tingkl/keyframes">https://github.com/tingkl/keyframes</a></h4>
 </div>
