@@ -29,7 +29,9 @@ Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/li
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 (Keyframes based animation group)
+
 ![](https://github.com/tingkl/keyframes/raw/master/gif/middle.gif)
+
 This code creates a timeline which binds the target dom element with the animation config. Finally it creates css3 keyframes and  animates the whole timeline.
 
 ```html
@@ -121,7 +123,9 @@ If everything went well you should see [this](http://ecmc.bdimg.com/public01/key
 
 
 (ClassProxy based animation group)
+
 ![](https://github.com/tingkl/keyframes/raw/master/gif/cube.gif)
+
 This code creates a 3D cube with css3 style created by Javascript. Finally it refresh css3 style to animates the whole transform.
 
 ```html
