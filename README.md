@@ -15,7 +15,7 @@ The aim of the project is to create a lightweight CSS3 keyframes and transition 
 
 
 ### Usage ###
-[Ê¹ÓÃÖ¸ÄÏ](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
+[Ê¹ï¿½ï¿½Ö¸ï¿½ï¿½](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
 
 Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
@@ -28,7 +28,7 @@ This code creates a timeline which binds the target dom element with the animati
 
 ```html
 <script>
-// ×Ô¶¯Ëõ·Å
+// ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 var defaultEntryWidth = 230;
 var suposeScreenWidth = 600;
 var timeline = {
@@ -122,7 +122,7 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
 <script>
 var config = {
     'class': {
-        // safariä¯ÀÀÆ÷±ØÐë°üÒ»²ãcontainer£¬·ñÔòÏÔÊ¾ÓÐÎÊÌâ£¬µ°ÌÛ£¬ÆäËûä¯ÀÀÆ÷¿ÉÒÔ²»°ü
+        // safariï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½containerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½Û£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½
         'container': {
             'perspective': '800px',
             'perspective-origin': '50% 40%'
@@ -184,8 +184,8 @@ function state1() {
             'color': randomColor()
         },
         'cube-1': {
-            // ÏÈscaleÖ®ºó£¬ºóÃæµÄtranslate¶¼ÊÇ·Å´óµÄ£¬±ÈÈçtranslateZ 100px ÆäÊµÊÇ 120px,Òª¶ÔzÃæÉúÐ§±ØÐëscale3d
-            // rotateX(90deg)ºó £¬zÃæÆäÊµÊÇÔ­ÏÈµÄxÃæ
+            // ï¿½ï¿½scaleÖ®ï¿½ó£¬ºï¿½ï¿½ï¿½ï¿½translateï¿½ï¿½ï¿½Ç·Å´ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½translateZ 100px ï¿½ï¿½Êµï¿½ï¿½ 120px,Òªï¿½ï¿½zï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½scale3d
+            // rotateX(90deg)ï¿½ï¿½ ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ô­ï¿½Èµï¿½xï¿½ï¿½
             'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(90deg) translateZ(100px)'
         },
         'cube-2': {
@@ -204,8 +204,8 @@ function state1() {
             'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(-90deg) translateZ(100px) rotate(180deg)'
         },
         'cube-7': {
-            // ÏÈscaleÖ®ºó£¬ºóÃæµÄtranslate¶¼ÊÇ·Å´óµÄ£¬±ÈÈçtranslateZ 100px ÆäÊµÊÇ 120px
-            // rotateX(90deg)ºó £¬zÃæÆäÊµÊÇÔ­ÏÈµÄxÃæ
+            // ï¿½ï¿½scaleÖ®ï¿½ó£¬ºï¿½ï¿½ï¿½ï¿½translateï¿½ï¿½ï¿½Ç·Å´ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½translateZ 100px ï¿½ï¿½Êµï¿½ï¿½ 120px
+            // rotateX(90deg)ï¿½ï¿½ ï¿½ï¿½zï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½Ô­ï¿½Èµï¿½xï¿½ï¿½
             'transform': 'scale3d(0.8, 0.8, 0.8) rotateX(90deg) translateZ(100px)'
         },
         'cube-8': {

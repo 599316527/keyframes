@@ -68,7 +68,7 @@
 </div>
 <script>
     var envWin = document.getElementById('env').contentWindow;
-    require.config({paths: {ace: '../ace', ani:'../dist/amd'}});
+    require.config({paths: {ace: '../ace', ani:'../dist/umd'}});
     require(['ace/ace', 'ani/Util'], function (ACE, Util) {
         Util.on(document.getElementsByTagName('button')[0], 'click', function () {
             cssEditor.setValue('');

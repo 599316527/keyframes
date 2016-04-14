@@ -199,7 +199,7 @@
     tree.treeview({
         data: getTree()
     });
-    require.config({paths: {ace: '../ace', ani: '../dist/amd'}});
+    require.config({paths: {ace: '../ace', ani: '../dist/umd'}});
     require(['ace/ace', 'ani/Util'], function (ACE, Util) {
         function all(count, cb) {
             var _count = 0;
