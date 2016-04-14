@@ -6,16 +6,22 @@ keyframes
 The aim of the project is to create a lightweight CSS3 keyframes and transition library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transition&gt; ways to create css animation.
 
 [Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
+
 ![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
+
 [Configure](http://ecmc.bdimg.com/public01/keyframes/index.html)
+
 ![http://ecmc.bdimg.com/public01/keyframes/index.html](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
+
 [Effect](http://ecmc.bdimg.com/public01/keyframes/example/index.html)
+
 ![http://ecmc.bdimg.com/public01/keyframes/example/index.html](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)
+
 [Migrating](https://github.com/tingkl/keyframes)
 
 
 ### Usage ###
-[ʹ��ָ��](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
+[使用指南](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
 
 Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
