@@ -28,7 +28,7 @@ This code creates a timeline which binds the target dom element with the animati
 
 ```html
 <script>
-// �Զ�����
+// 自动缩放
 var defaultEntryWidth = 230;
 var suposeScreenWidth = 600;
 var timeline = {
@@ -122,7 +122,7 @@ This code creates a 3D cube with css3 style created by Javascript. Finally it re
 <script>
 var config = {
     'class': {
-        // safari����������һ��container��������ʾ�����⣬���ۣ�������������Բ���
+        // safari浏览器必须包一层container，否则显示有问题，蛋疼，其他浏览器可以不包
         'container': {
             'perspective': '800px',
             'perspective-origin': '50% 40%'
@@ -184,8 +184,8 @@ function state1() {
             'color': randomColor()
         },
         'cube-1': {
-            // ��scale֮�󣬺����translate���ǷŴ�ģ�����translateZ 100px ��ʵ�� 120px,Ҫ��z����Ч����scale3d
-            // rotateX(90deg)�� ��z����ʵ��ԭ�ȵ�x��
+            // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实是 120px,要对z面生效必须scale3d
+            // rotateX(90deg)后 ，z面其实是原先的x面
             'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(90deg) translateZ(100px)'
         },
         'cube-2': {
@@ -204,8 +204,8 @@ function state1() {
             'transform': 'scale3d(1.2, 1.2, 1.2) rotateX(-90deg) translateZ(100px) rotate(180deg)'
         },
         'cube-7': {
-            // ��scale֮�󣬺����translate���ǷŴ�ģ�����translateZ 100px ��ʵ�� 120px
-            // rotateX(90deg)�� ��z����ʵ��ԭ�ȵ�x��
+            // 先scale之后，后面的translate都是放大的，比如translateZ 100px 其实是 120px
+            // rotateX(90deg)后 ，z面其实是原先的x面
             'transform': 'scale3d(0.8, 0.8, 0.8) rotateX(90deg) translateZ(100px)'
         },
         'cube-8': {
