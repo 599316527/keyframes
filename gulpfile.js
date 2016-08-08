@@ -213,21 +213,22 @@ gulp.task('upload', function() {
             }
             console.log(stdout);
         });*/
-    exec('edp bcs dist' + path.sep + 'umd bs://public01/keyframes/dist/umd',
+    //bos://cae-pub-read/adtest
+    exec('edp bos dist' + path.sep + 'umd bos://cae-pub-read/public01/keyframes/dist/umd',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
             console.log(stdout);
         });
-    exec('edp bcs dist' + path.sep + 'lib bs://public01/keyframes/dist/lib',
+    exec('edp bos dist' + path.sep + 'lib bos://cae-pub-read/public01/keyframes/dist/lib',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
             }
             console.log(stdout);
         });
-    exec('edp bcs dist' + path.sep + 'lib.min.js bs://public01/keyframes/dist/',
+    exec('edp bos dist' + path.sep + 'lib.min.js bos://cae-pub-read/public01/keyframes/dist/',
         function (error, stdout, stderr) {
             if (error !== null) {
                 console.log('exec error: ' + error);
