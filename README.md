@@ -5,17 +5,17 @@ keyframes
 
 The aim of the project is to create a lightweight CSS3 keyframes and transition library with a higher level of accessibility. The library provides &lt;keyframes&gt; and &lt;transition&gt; ways to create css animation.
 
-[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
+[Examples](http://static.leanote.top/keyframes/demo/doc.html)
 
-![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
+![http://static.leanote.top/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
 
-[Configure](http://ecmc.bdimg.com/public01/keyframes/index.html)
+[Configure](http://static.leanote.top/keyframes/index.html)
 
-![http://ecmc.bdimg.com/public01/keyframes/index.html](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
+![http://static.leanote.top/keyframes/index.html](https://github.com/tingkl/keyframes/raw/master/gif/index.gif)
 
-[Effect](http://ecmc.bdimg.com/public01/keyframes/example/index.html)
+[Effect](http://static.leanote.top/keyframes/example/index.html)
 
-![http://ecmc.bdimg.com/public01/keyframes/example/index.html](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)
+![http://static.leanote.top/keyframes/example/index.html](https://github.com/tingkl/keyframes/raw/master/gif/example.gif)
 
 [Migrating](https://github.com/tingkl/keyframes)
 
@@ -23,7 +23,7 @@ The aim of the project is to create a lightweight CSS3 keyframes and transition 
 ### Usage ###
 [使用指南](https://github.com/tingkl/keyframes/blob/master/DOCUMENT.md)
 
-Download the [minified library](http://ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
+Download the [minified library](http://static.leanote.top/keyframes/dist/lib/Keyframe.min.js) and include it in your html.
 
 ```html
 <script src="keyframes/dist/lib/Keyframe.min.js"></script>
@@ -119,7 +119,7 @@ var group = Keyframe.group(timeline);
 group.start();
 </script>
 ```
-If everything went well you should see [this](http://ecmc.bdimg.com/public01/keyframes/demo/middle/index.app.html).
+If everything went well you should see [this](http://static.leanote.top/keyframes/demo/middle/index.app.html).
 
 
 (ClassProxy based animation group)
@@ -309,5 +309,5 @@ setTimeout(function () {
 }, 500);
 </script>
 ```
-If everything went well you should see [this](http://ecmc.bdimg.com/public01/keyframes/demo/3d-cube/index.app.html).
+If everything went well you should see [this](http://static.leanote.top/keyframes/demo/3d-cube/index.app.html).
 

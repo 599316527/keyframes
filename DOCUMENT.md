@@ -1,47 +1,47 @@
-keyframesÊ¹ÓÃÎÄµµ
+keyframesÊ¹ï¿½ï¿½ï¿½Äµï¿½
 ========
 
- [1 Ç°ÑÔ](#1-preface)
+ [1 Ç°ï¿½ï¿½](#1-preface)
 
- [2 Æð²½](#2-start)
+ [2 ï¿½ï¿½](#2-start)
 
- [3 ¶¯Ì¬classºÍkeyframes](#3-dynamic-classkeyframes)
+ [3 ï¿½ï¿½Ì¬classï¿½ï¿½keyframes](#3-dynamic-classkeyframes)
                           
-¡¡¡¡[3.1 Éú³Éclass](#31-create-class)
+ï¿½ï¿½ï¿½ï¿½[3.1 ï¿½ï¿½ï¿½class](#31-create-class)
 
-¡¡¡¡[3.2 ¸üÐÂclass](#32-update-class)
+ï¿½ï¿½ï¿½ï¿½[3.2 ï¿½ï¿½ï¿½ï¿½class](#32-update-class)
 
-¡¡¡¡[3.3 Éú³Ékeyframes](#33-create-keyframes)
+ï¿½ï¿½ï¿½ï¿½[3.3 ï¿½ï¿½ï¿½keyframes](#33-create-keyframes)
 
-¡¡¡¡[3.4 ¸üÐÂkeyframes](#34-update-keyframes)
+ï¿½ï¿½ï¿½ï¿½[3.4 ï¿½ï¿½ï¿½ï¿½keyframes](#34-update-keyframes)
 
- [4 ¿ØÖÆÔªËØ¶¯»­](#4-apply-animation)
+ [4 ï¿½ï¿½ï¿½ï¿½Ôªï¿½Ø¶ï¿½ï¿½ï¿½](#4-apply-animation)
 
-¡¡¡¡[4.1 °ó¶¨ÔªËØÓë¶¯»­](#41-bind-domanimation)
+ï¿½ï¿½ï¿½ï¿½[4.1 ï¿½ï¿½Ôªï¿½ï¿½ï¿½ë¶¯ï¿½ï¿½](#41-bind-domanimation)
 
-¡¡¡¡[4.2 ¼àÌý¶¯»­×´Ì¬](#42-monitor-animation)
+ï¿½ï¿½ï¿½ï¿½[4.2 ï¿½ï¿½ï¿½ï¿½×´Ì¬](#42-monitor-animation)
 
-¡¡¡¡[4.3 ¿ØÖÆ¶¯»­](#43-control-animation)
+ï¿½ï¿½ï¿½ï¿½[4.3 ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½](#43-control-animation)
 
-[5 ÊµÕ½Ê±¼äÖá](#5-timeline-in-action)
+[5 ÊµÕ½Ê±ï¿½ï¿½ï¿½ï¿½](#5-timeline-in-action)
 
-¡¡¡¡[5.1 Éú³Éclass](#51-create-class)
+ï¿½ï¿½ï¿½ï¿½[5.1 ï¿½ï¿½ï¿½class](#51-create-class)
 
-¡¡¡¡[5.2 Éú³Ékeyframes](#52-create-keyframes)
+ï¿½ï¿½ï¿½ï¿½[5.2 ï¿½ï¿½ï¿½keyframes](#52-create-keyframes)
 
-¡¡¡¡[5.3 °ó¶¨ÔªËØÓë¶¯»­](#53-bind-domanimation)
+ï¿½ï¿½ï¿½ï¿½[5.3 ï¿½ï¿½Ôªï¿½ï¿½ï¿½ë¶¯ï¿½ï¿½](#53-bind-domanimation)
 
-¡¡¡¡[5.4 °¸Àý](#54-demo)
+ï¿½ï¿½ï¿½ï¿½[5.4 ï¿½ï¿½ï¿½ï¿½](#54-demo)
 
 ## 1 preface
 
-css3¶¯»­×÷Îªflash¶¯»­µÄÒ»ÖÖÌæ´ú·½°¸£¬Æä¿ª·¢·½Ê½ÊÇ±àÐ´cssÑùÊ½ÎÄ¼þ£¬²»¾ßÓÐ¶¯Ì¬ÐÔ¡£keyframesÀà¿âÖÂÁ¦ÓÚ¶¯Ì¬Éú³ÉclassºÍkeyframes£¬Í¬Ê±Ö§³Ö½ø¶ÈÖáºÍÊ±¼äÖáÁ½ÖÖÉú³É¶¯»­µÄÍ¾¾¶£¬¼ò»¯¶¯»­µÄµÄ±àÐ´£¬Í¸Ã÷¶¯»­µÄ¿ØÖÆÒÔ¼°¼àÌý£¬Ê¹¿ª·¢Õß½«¸ü¶àµÄ¾«Á¦Í¶Èëµ½¶¯»­µÄ´´Ôì¡£
+css3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªflashï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä¿ªï¿½ï¿½ï¿½ï¿½Ê½ï¿½Ç±ï¿½Ð´cssï¿½ï¿½Ê½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½Ì¬ï¿½Ô¡ï¿½keyframesï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½Ì¬ï¿½ï¿½ï¿½classï¿½ï¿½keyframesï¿½ï¿½Í¬Ê±Ö§ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¶ï¿½ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿½ï¿½ï¿½ò»¯¶ï¿½ï¿½ï¿½ï¿½ÄµÄ±ï¿½Ð´ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½Í¶ï¿½ëµ½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ì¡£
 
 ## 2 start
 
-ÏÂÔØÑ¹ËõºóµÄ´úÂëÎÄ¼þ£¬²¢½«Ëü°üº¬µ½ÄãµÄhtmlÎÄ¼þÖÐ£¬»òÕßÊ¹ÓÃcdnµÄÎÄ¼þµØÖ·¡£
+ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½htmlï¿½Ä¼ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½cdnï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ö·ï¿½ï¿½
 ```html
-<script src="//ecmc.bdimg.com/public01/keyframes/dist/lib/Keyframe.min.js"></script>
+<script src="//static.leanote.top/keyframes/dist/lib/Keyframe.min.js"></script>
 ```
 ## 3 dynamic class&keyframes
 
@@ -49,7 +49,7 @@ css3¶¯»­×÷Îªflash¶¯»­µÄÒ»ÖÖÌæ´ú·½°¸£¬Æä¿ª·¢·½Ê½ÊÇ±àÐ´cssÑùÊ½ÎÄ¼þ£¬²»¾ßÓÐ¶¯Ì¬ÐÔ¡£
 ```js
 // by ClassProxy
 var cpl = Compiler.instance();
-// Ò²¿ÉÒÔµ÷ÓÃKeyframe.defineClass
+// Ò²ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Keyframe.defineClass
 var proxy = new ClassProxy('scene', {
         'width': '200px',
         'height': '200px',
@@ -57,7 +57,7 @@ var proxy = new ClassProxy('scene', {
         'position': 'relative',
         'transform-style': 'preserve-3d'
     });
-cpl.compile();   // Ò²¿ÉÒÔµ÷ÓÃKeyframe.compile()
+cpl.compile();   // Ò²ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Keyframe.compile()
 ```
 ```css
 .scene {
@@ -65,10 +65,10 @@ cpl.compile();   // Ò²¿ÉÒÔµ÷ÓÃKeyframe.compile()
     height: 200px;
     margin: 150px auto;
     position: relative;
-    -webkit-transform-style: preserve-3d;  //×Ô¶¯ÊÊÅää¯ÀÀÆ÷Ç°×º
+    -webkit-transform-style: preserve-3d;  //ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×º
 }
 ```
-####Î±Àà·½·¨(hover, focus, before, after)
+####Î±ï¿½à·½ï¿½ï¿½(hover, focus, before, after)
 ```js
 proxy.hover({'color': 'red'});
 cpl.compile();
@@ -78,7 +78,7 @@ cpl.compile();
     color: red;
 }
 ```
-####×ÓÀà·½·¨(selector, selectors)
+####ï¿½ï¿½ï¿½à·½ï¿½ï¿½(selector, selectors)
 ```js
 proxy.selector('init', {
         'background-color': randomColor(),
@@ -110,29 +110,29 @@ cpl.compile();
      height: 150px;
  }
 ```
-####ÀàÃû»ìÏý(²»Ö¸¶¨ÀàÃû)
+####ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 ```js
 var mixClass = new ClassProxy({
         'width': '200px',
         'height': '200px',
         'transform-style': 'preserve-3d'
     });
-console.log(mixClass.getName()); // Ëæ»úÀàÃû£¬ÀýÈç£ºXn9gQ41e
+console.log(mixClass.getName()); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç£ºXn9gQ41e
 cpl.compile();
 ```
 ```css
 .Xn9gQ41e {
     width: 200px;
     height: 200px;
-    -webkit-transform-style: preserve-3d;   // ×Ô¶¯ÊÊÅää¯ÀÀÆ÷Ç°×º
+    -webkit-transform-style: preserve-3d;   // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×º
 }
 ```
 
 ###3.2 update class
-####³õÊ¼»¯ÑùÊ½
+####ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê½
 ```js
 var cpl = Compiler.instance();
-// Ò²¿ÉÒÔµ÷ÓÃKeyframe.defineClass
+// Ò²ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Keyframe.defineClass
 var proxy = new ClassProxy({
         'width': '200px',
         'height': '200px',
@@ -141,7 +141,7 @@ var proxy = new ClassProxy({
         'transform-style': 'preserve-3d'
     });
 proxy.hover({'color': 'red'});
-cpl.compile();   // Ò²¿ÉÒÔµ÷ÓÃKeyframe.compile()
+cpl.compile();   // Ò²ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Keyframe.compile()
 ```
 ```css
 .Xn9gQ41e {
@@ -149,13 +149,13 @@ cpl.compile();   // Ò²¿ÉÒÔµ÷ÓÃKeyframe.compile()
     height: 200px;
     margin: 150px auto;
     position: relative;
-    -webkit-transform-style: preserve-3d;  //×Ô¶¯ÊÊÅää¯ÀÀÆ÷Ç°×º
+    -webkit-transform-style: preserve-3d;  //ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×º
 }
 .Xn9gQ41e:hover {
     color: red;
 }
 ```
-####¸üÐÂºóÑùÊ½Ë¢ÐÂ
+####ï¿½ï¿½ï¿½Âºï¿½ï¿½ï¿½Ê½Ë¢ï¿½ï¿½
 ```js
 proxy.rewrite({
         'width': '100px',
@@ -176,7 +176,7 @@ cpl.compile();
 ###3.3 create keyframes
 ```js
 var cpl = Compiler.instance();
-// »òÕßµ÷ÓÃKeyframe.defineKeyframe
+// ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½Keyframe.defineKeyframe
 var proxy = cpl.defineKeyframe({
     '0 50': {
         'rotateY': '0'
@@ -185,8 +185,8 @@ var proxy = cpl.defineKeyframe({
         'rotateY': '360deg'
     }
 });
-console.log(proxy.getName()); // P236bM6IËæ»ú
-cpl.compile(); // »òÕßµ÷ÓÃKeyframe.compile()
+console.log(proxy.getName()); // P236bM6Iï¿½ï¿½ï¿½
+cpl.compile(); // ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½Keyframe.compile()
 ```
 ```css
 @-webkit-keyframes P236bM6I {
@@ -200,7 +200,7 @@ cpl.compile(); // »òÕßµ÷ÓÃKeyframe.compile()
 ```
 ###3.4 update keyframes
 ```js
-// ÔÚ3.3Éú³ÉµÄproxy»ù´¡ÉÏ¸üÐÂ
+// ï¿½ï¿½3.3ï¿½ï¿½Éµï¿½proxyï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ï¿½
 proxy.rewrite({
     '0': {
         'rotateY': '20deg'
@@ -209,8 +209,8 @@ proxy.rewrite({
         'rotateY': '360deg'
     }
 });
-console.log(proxy.getName()); // P236bM6I±£³Ö²»±ä
-cpl.compile(); // »òÕßµ÷ÓÃKeyframe.compile()
+console.log(proxy.getName()); // P236bM6Iï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½
+cpl.compile(); // ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½Keyframe.compile()
 ```
 ```css
 @-webkit-keyframes P236bM6I {
@@ -223,7 +223,7 @@ cpl.compile(); // »òÕßµ÷ÓÃKeyframe.compile()
 }
 ```
 ```js
-// »òÕßÍ¨¹ýÖØ¶¨Òå¸²¸Ç
+// ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½å¸²ï¿½ï¿½
 proxy = cpl.defineKeyframe(proxy.getName(), {
     '0': {
         'rotateY': '20deg'
@@ -232,13 +232,13 @@ proxy = cpl.defineKeyframe(proxy.getName(), {
         'rotateY': '360deg'
     }
 });
-console.log(proxy.getName()); // P236bM6I±£³Ö²»±ä
-cpl.compile(); // »òÕßµ÷ÓÃKeyframe.compile()
+console.log(proxy.getName()); // P236bM6Iï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½
+cpl.compile(); // ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½Keyframe.compile()
 ```
 ##4 apply animation
 
 ###4.1 bind dom&animation
-####µ¥¶Ôµ¥
+####ï¿½ï¿½ï¿½Ôµï¿½
 ```js
 Keyframe.defineKeyframe('zoomIn', {
     '0': {
@@ -249,7 +249,7 @@ Keyframe.defineKeyframe('zoomIn', {
         'opacity': 1
     }
 });
-// ÔÚdomÉÏ°ó¶¨Ò»¸ö¶¯»­
+// ï¿½ï¿½domï¿½Ï°ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 var oneToOne = new Keyframe(document.getElementById('demo'), {
     'name': 'zoomIn',
     'duration': '1.8s',
@@ -259,7 +259,7 @@ var oneToOne = new Keyframe(document.getElementById('demo'), {
     'direction': 'normal' // 'alternate'
 });
 ```
-####µ¥¶Ô¶à
+####ï¿½ï¿½ï¿½Ô¶ï¿½
 ```js
 Keyframe.defineKeyframe('speedIn', {
     '0': {
@@ -278,7 +278,7 @@ Keyframe.defineKeyframe('speedIn', {
         'transform': 'none'
     }
 });
-// ÔÚdomÉÏ°ó¶¨¶à¸ö¶¯»­
+// ï¿½ï¿½domï¿½Ï°ó¶¨¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 var oneToMany = new Keyframe(document.getElementById('demo'), [
     {
         'name': 'zoomIn',
@@ -301,40 +301,40 @@ oneToMany.on(Event.iteration, function () {});
 oneToMany.on(Event.end, function () {});
 ```
 ###4.3 control animation
-####¿ªÊ¼
+####ï¿½ï¿½Ê¼
 ```js
 oneToOne.start();
 oneToMany.start();
 ```
-####ÔÝÍ£
+####ï¿½ï¿½Í£
 ```js
 oneToOne.pause();
-oneToMany.pause(); // ÔÝÍ£ËùÓÐ¶¯»­
-oneToMany.pause('zoomIn'); // ÔÝÍ£Ö¸¶¨¶¯»­
+oneToMany.pause(); // ï¿½ï¿½Í£ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
+oneToMany.pause('zoomIn'); // ï¿½ï¿½Í£Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
-####¼ÌÐø
+####ï¿½ï¿½ï¿½ï¿½
 ```js
 oneToOne.goon();
-oneToMany.goon(); // ¼ÌÐøËùÓÐ¶¯»­
-oneToMany.goon('zoomIn'); // ¼ÌÐøÖ¸¶¨¶¯»­
+oneToMany.goon(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
+oneToMany.goon('zoomIn'); // ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
-####ÖØÆô
+####ï¿½ï¿½ï¿½ï¿½
 ```js
 oneToOne.restart();
-oneToMany.restart(); // ¼ÌÐøËùÓÐ¶¯»­
+oneToMany.restart(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
 ```
-####Çå³ý
+####ï¿½ï¿½ï¿½
 ```js
 oneToOne.clear();
-oneToMany.clear(); // ÇåÀíËùÓÐ¶¯»­
+oneToMany.clear(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
 ```
 ##5 timeline in action
-Ê¹ÓÃKeyframeÉú³É»ùÓÚ½ø¶ÈÖáµÄ¶¯»­£¬Êµ¼Ê¿ª·¢ÖÐ£¬¸ü¶àµÄÐèÇóÊÇÕë¶ÔÌØ¶¨domµÄÊ±¼äÖá¶¯»­¡£Õë¶ÔÕâÖÖÐèÇó£¬group·½·¨ÓÃÓÚ¼ò»¯¶¯»­¿ØÖÆÓë°ó¶¨¡£
+Ê¹ï¿½ï¿½Keyframeï¿½ï¿½É»ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½Ê¿ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½domï¿½ï¿½Ê±ï¿½ï¿½ï¿½á¶¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½groupï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ò»¯¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó¶¨¡ï¿½
 
 ###5.1 create class
 ```js
 var config = {
-    // °ü¹üÔÚclassÏÂ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½classï¿½ï¿½
     'class': {
         'container': {
             'perspective': '800px',
@@ -368,7 +368,7 @@ var group = Keyframe.group(config);
 ```
 ```css
 .container {
-    -webkit-perspective: 800px; // ×Ô¶¯ÊÊÅäÇ°×º
+    -webkit-perspective: 800px; // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×º
     -webkit-perspective-origin: 50% 40%;
 }
 
@@ -429,8 +429,8 @@ var group = Keyframe.group(config);
 ```
 ###5.3 bind dom&animation
 
-###°ó¶¨Ê±¼äÖá¶¯»­
-²»ÐèÒªÉèÖÃÑÓ³ÙºÍ³ÖÐøÊ±¼ä£¬ÒÑ°üº¬µ½Ê±¼äÖáÅäÖÃÖÐ
+###ï¿½ï¿½Ê±ï¿½ï¿½ï¿½á¶¯ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ó³ÙºÍ³ï¿½ï¿½ï¿½Ê±ï¿½ä£¬ï¿½Ñ°ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```js
 var config = {
     'shape#infinite': {
@@ -459,10 +459,10 @@ var group = Keyframe.group(config);
 }
 ```
 ```html
-// Í¨¹ýÒÔÉÏÅäÖÃ£¬ÒÑ¾­½«ÔªËØºÍ¶¯»­°ó¶¨£¬×Ô¶¯ÉèÖÃstyle
+// Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ôªï¿½ØºÍ¶ï¿½ï¿½ï¿½ï¿½ó¶¨£ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½style
 <div id="shape" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
-###°ó¶¨½ø¶ÈÖá¶¯»­
+###ï¿½ó¶¨½ï¿½ï¿½ï¿½á¶¯ï¿½ï¿½
 ```js
 var rot = Keyframe.defineKeyframe({
     40: { 'background': 'hsla(253, 85%, 25%, 1)'},
@@ -492,9 +492,9 @@ var timeline = {
             'bottom': '-2px'
         }
     },
-    'idSelector#infinite~5s_2.1s@linear>alternate': rot  // °ó¶¨½ø¶ÈÖá¶¯»­£¬ÐèÒªÉèÖÃÊ±³¤ºÍÑÓ³Ù
+    'idSelector#infinite~5s_2.1s@linear>alternate': rot  // ï¿½ó¶¨½ï¿½ï¿½ï¿½á¶¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½
 };
-timeline['.classSelector#infinite~5s_2.1s@linear>alternate'] = rot; // Ö§³ÖidÑ¡ÔñÆ÷ºÍclassÑ¡ÔñÆ÷
+timeline['.classSelector#infinite~5s_2.1s@linear>alternate'] = rot; // Ö§ï¿½ï¿½idÑ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½classÑ¡ï¿½ï¿½ï¿½ï¿½
 var group = Keyframe.group(timeline);
 group.start();
 ```
@@ -535,28 +535,28 @@ group.start();
 }
 ```
 ```html
-// Í¨¹ýÒÔÉÏÅäÖÃ£¬ÒÑ¾­½«ÔªËØºÍ¶¯»­°ó¶¨£¬×Ô¶¯ÉèÖÃstyle
+// Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ôªï¿½ØºÍ¶ï¿½ï¿½ï¿½ï¿½ó¶¨£ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½style
 <div id="idSelector" style="animation: xV38lnYg 9.9s linear 2.1s infinite normal forwards;"></div>
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 <div class="classSelector gen" style="animation: WuHfsn54 9.9s linear 2.1s infinite normal forwards;"></div>
 ```
-####¿ÉÅäÖÃÏî
-Óï·¨: (idÑ¡ÔñÆ÷|classÑ¡ÔñÆ÷)[#animation-count][@animation-timing-function][>animation-direction][_animation-delay][~animation-duration]
+####ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï·¨: (idÑ¡ï¿½ï¿½ï¿½ï¿½|classÑ¡ï¿½ï¿½ï¿½ï¿½)[#animation-count][@animation-timing-function][>animation-direction][_animation-delay][~animation-duration]
 
 idSelector#infinite~5s_2.1s@linear>alternate
 
 .classSelector#infinite~5s_2.1s@linear>alternate
 
 <table>
-<tr><td>Ç°×º·û</td><td>Ó³ÉäÊôÐÔ</td><td>Ä¬ÈÏÖµ</td><td>¿ÉÑ¡Öµ</td><td>ÊÊÓÃ·¶Î§</td></tr>
-<tr><td>@</td><td>animation-timing-function</td><td>linear</td><td>linear|ease|ease-in|ease-out|ease-in-out|cubic-bezier(n,n,n,n)</td><td>Ê±¼äÖá&½ø¶ÈÖá</td></tr>
-<tr><td>#</td><td>animation-count</td><td>1</td><td>1,2,...|infinite</td><td>Ê±¼äÖá&½ø¶ÈÖá</td></tr>
-<tr><td>></td><td>animation-direction</td><td>normal</td><td>normal|alternate</td><td>Ê±¼äÖá&½ø¶ÈÖá</td></tr>
-<tr><td>_</td><td>animation-delay</td><td>0</td><td></td><td>½ø¶ÈÖá</td></tr>
-<tr><td>~</td><td>animation-duration</td><td></td><td></td><td>½ø¶ÈÖá</td></tr>
+<tr><td>Ç°×ºï¿½ï¿½</td><td>Ó³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</td><td>Ä¬ï¿½ï¿½Öµ</td><td>ï¿½ï¿½Ñ¡Öµ</td><td>ï¿½ï¿½ï¿½Ã·ï¿½Î§</td></tr>
+<tr><td>@</td><td>animation-timing-function</td><td>linear</td><td>linear|ease|ease-in|ease-out|ease-in-out|cubic-bezier(n,n,n,n)</td><td>Ê±ï¿½ï¿½ï¿½ï¿½&ï¿½ï¿½ï¿½ï¿½ï¿½</td></tr>
+<tr><td>#</td><td>animation-count</td><td>1</td><td>1,2,...|infinite</td><td>Ê±ï¿½ï¿½ï¿½ï¿½&ï¿½ï¿½ï¿½ï¿½ï¿½</td></tr>
+<tr><td>></td><td>animation-direction</td><td>normal</td><td>normal|alternate</td><td>Ê±ï¿½ï¿½ï¿½ï¿½&ï¿½ï¿½ï¿½ï¿½ï¿½</td></tr>
+<tr><td>_</td><td>animation-delay</td><td>0</td><td></td><td>ï¿½ï¿½ï¿½ï¿½ï¿½</td></tr>
+<tr><td>~</td><td>animation-duration</td><td></td><td></td><td>ï¿½ï¿½ï¿½ï¿½ï¿½</td></tr>
 </table>
 
 ###5.4 demo
 
-[Examples](http://ecmc.bdimg.com/public01/keyframes/demo/doc.html)
-![http://ecmc.bdimg.com/public01/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
+[Examples](http://static.leanote.top/keyframes/demo/doc.html)
+![http://static.leanote.top/keyframes/demo/doc.html](https://github.com/tingkl/keyframes/raw/master/gif/demo.gif)
